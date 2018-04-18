@@ -24,12 +24,12 @@ namespace Qiuxun.C8.Api
                 config.EnableCors(cors);
             }
             //全局错误处理
-            config.MessageHandlers.Add(new CustomErrorMessageDelegatingHandler());
-            //config.EnableErrorHandler();
+            //config.MessageHandlers.Add(new CustomErrorMessageDelegatingHandler());
+            config.EnableErrorHandler();
             config.EnableLogHandler(false);
-            config.EnableCommonHandler(true, true);
-            ////config.EnableVersionRoute();
-            config.EnableJsonNegotiator();
+            //config.EnableCommonHandler(true, true);
+            //////config.EnableVersionRoute();
+            //config.EnableJsonNegotiator();
 
             var route = config.Routes.MapHttpRoute(
                 "DefaultApi",

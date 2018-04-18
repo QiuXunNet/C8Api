@@ -77,6 +77,33 @@ namespace Qiuxun.C8.Api.Service.Data
             };
         }
 
+
+        /// <summary>
+        /// 设置密码
+        /// </summary>
+        /// <param name="reqDto"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public ApiResult SetPassword(SetPasswordReqDto reqDto, long userId)
+        {
+            string password = Tool.GetMD5(reqDto.Password);
+
+            string sql = "update dbo.userInfo set [Password]=@Password where Id=@UserId";
+            var sqlParameter = new[]
+            {
+                new SqlParameter("@Password",password),
+                new SqlParameter("@UserId",userId),
+            };
+            int count = SqlHelper.ExecuteNonQuery(sql, sqlParameter);
+
+            if (count < 1)
+            {
+                return new ApiResult(11001, "设置失败");
+            }
+
+            return new ApiResult();
+        }
+
         /// <summary>
         /// 根据手机号查询用户信息
         /// </summary>
@@ -115,5 +142,8 @@ namespace Qiuxun.C8.Api.Service.Data
                 return list.FirstOrDefault();
             return null;
         }
+
+
+
     }
 }
