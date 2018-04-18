@@ -1,0 +1,263 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{82FEC6A4-6E60-4211-83ED-A3D488163867}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Qiuxun.C8.Api.Service</RootNamespace>
+    <AssemblyName>Qiuxun.C8.Api.Service</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="CryptSharp, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\CryptSharpOfficial.2.1.0.0\lib\CryptSharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.85.4.369, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <HintPath>..\packages\ICSharpCode.SharpZipLib.dll.0.85.4.369\lib\net20\ICSharpCode.SharpZipLib.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Memcached.Client, Version=1.0.0.0, Culture=neutral, PublicKeyToken=42c0400964dcc297, processorArchitecture=MSIL">
+      <HintPath>..\packages\Memcached.Client.1.0.0\lib\Memcached.Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.4\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.4\lib\net45\System.Web.Helpers.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Http, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.4\lib\net45\System.Web.Http.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.4\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.4\lib\net45\System.Web.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.4\lib\net45\System.Web.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.4\lib\net45\System.Web.WebPages.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.4\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.4\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Api\AesKeyIv.cs" />
+    <Compile Include="Api\InterfaceFilters\ApiInterfaceConfig.cs" />
+    <Compile Include="Api\InterfaceFilters\ApiInterfaceControl.cs" />
+    <Compile Include="Api\InterfaceFilters\HttpHeaderCheckFilter.cs" />
+    <Compile Include="Api\InterfaceFilters\IApiRequestFilter.cs" />
+    <Compile Include="Api\ImeiSecurity.cs" />
+    <Compile Include="Api\InterfaceFilters\InterfaceConfig.cs" />
+    <Compile Include="Api\InterfaceFilters\InterfaceSetting.cs" />
+    <Compile Include="Api\InterfaceFilters\LimitListConfig.cs" />
+    <Compile Include="Api\InterfaceFilters\RequestLimit.cs" />
+    <Compile Include="Api\InterfaceFilters\RequestLimitConfig.cs" />
+    <Compile Include="Api\InterfaceSetting.cs" />
+    <Compile Include="Api\LocationSearchCriteria.cs" />
+    <Compile Include="Api\QiuxunApiContentNegotiator.cs" />
+    <Compile Include="Api\QiuxunApiController.cs" />
+    <Compile Include="Api\QiuxunApiFilterAttribute.cs" />
+    <Compile Include="Api\QiuxunApiLogHandler.cs" />
+    <Compile Include="Api\QiuxunHttpMessageHandler.cs" />
+    <Compile Include="Api\QiuxunTokenAuthAttribute.cs" />
+    <Compile Include="Api\RequestLimit.cs" />
+    <Compile Include="Api\Securities\AesJsonMediaTypeFormatter.cs" />
+    <Compile Include="Api\Securities\AesTextJsonMediaTypeFormatter.cs" />
+    <Compile Include="Api\Securities\JsonWithRsaSignFormatter.cs" />
+    <Compile Include="Api\Securities\RSAData.cs" />
+    <Compile Include="Api\Securities\RsaJsonMediaTypeFormatter.cs" />
+    <Compile Include="Api\Securities\RsaLoResult.cs" />
+    <Compile Include="Api\Securities\RsaTextJsonMediaTypeFormatter.cs" />
+    <Compile Include="Api\Securities\WebSecuritySettings.cs" />
+    <Compile Include="Auth\AllowPermissionAttribute.cs" />
+    <Compile Include="Auth\ApiAuthContainer.cs" />
+    <Compile Include="Auth\AuthContainerBase.cs" />
+    <Compile Include="Auth\AuthSettings.cs" />
+    <Compile Include="Auth\IdentityInfo.cs" />
+    <Compile Include="Auth\PermissionHelper.cs" />
+    <Compile Include="Auth\QiuxunTokenAuthorizer.cs" />
+    <Compile Include="Auth\TokenInfo.cs" />
+    <Compile Include="Caching\CacheHelper.cs" />
+    <Compile Include="Caching\MemClientFactory.cs" />
+    <Compile Include="Common\AESHelper.cs" />
+    <Compile Include="Common\AllWebRequestLogEntity.cs" />
+    <Compile Include="Common\ApiException.cs" />
+    <Compile Include="Common\ApiJsonResult.cs" />
+    <Compile Include="Common\ApiResult.cs" />
+    <Compile Include="Common\ApiUnauthorizedException.cs" />
+    <Compile Include="Common\ApiVersion.cs" />
+    <Compile Include="Common\ApiVersionConverter.cs" />
+    <Compile Include="Common\ClientIpSource.cs" />
+    <Compile Include="Common\CompatibleLongTypeConvert.cs" />
+    <Compile Include="Common\CustomErrorMessageDelegatingHandler.cs" />
+    <Compile Include="Common\ErrorCodes.cs" />
+    <Compile Include="Common\JsonSerializerManager.cs" />
+    <Compile Include="Common\LogerFactory.cs" />
+    <Compile Include="Common\LogHelper.cs" />
+    <Compile Include="Common\QiuxunLogResult.cs" />
+    <Compile Include="Common\QxApiLogHandler.cs" />
+    <Compile Include="Common\RequestImeiDto.cs" />
+    <Compile Include="Common\RequestInfo.cs" />
+    <Compile Include="Common\RequestLog.cs" />
+    <Compile Include="Common\ServerRoles.cs" />
+    <Compile Include="Common\WebLogHandleErrorAttribute.cs" />
+    <Compile Include="Data\UserInfoService.cs" />
+    <Compile Include="Dtos\LoginReqDto.cs" />
+    <Compile Include="Enum\ClientIpType.cs" />
+    <Compile Include="Enum\CommentTypeEnum.cs" />
+    <Compile Include="Enum\CommissionTypeEnum.cs" />
+    <Compile Include="Enum\DevicePlatform.cs" />
+    <Compile Include="Enum\HashCryptoType.cs" />
+    <Compile Include="Enum\LikeStatusEnum.cs" />
+    <Compile Include="Enum\LocationType.cs" />
+    <Compile Include="Enum\OAuthType.cs" />
+    <Compile Include="Enum\ResourceTypeEnum.cs" />
+    <Compile Include="Enum\ServerRoleEnum.cs" />
+    <Compile Include="Enum\StrToBytesType.cs" />
+    <Compile Include="Enum\TransactionTypeEnum.cs" />
+    <Compile Include="Enum\UserInternalMessageTypeEnum.cs" />
+    <Compile Include="Enum\UserState.cs" />
+    <Compile Include="Extension\CollectionExtension.cs" />
+    <Compile Include="Extension\HexExtension.cs" />
+    <Compile Include="Extension\HttpConfigExtensions.cs" />
+    <Compile Include="Extension\HttpRequestMessageExtensions.cs" />
+    <Compile Include="Common\KeyWordsFilter\FilterKeyWords.cs" />
+    <Compile Include="Common\KeyWordsFilter\KeyWordFilter.cs" />
+    <Compile Include="Common\KeyWordsFilter\KeyWordsHelper.cs" />
+    <Compile Include="Common\Paging\ApiPageParameter.cs" />
+    <Compile Include="Common\Paging\IPagedList.cs" />
+    <Compile Include="Common\Paging\IPagedListT.cs" />
+    <Compile Include="Common\Paging\IPageParameter.cs" />
+    <Compile Include="Common\Paging\PagedListDtoT.cs" />
+    <Compile Include="Common\Paging\PagedListExtension.cs" />
+    <Compile Include="Common\Paging\PagedListT.cs" />
+    <Compile Include="Common\Paging\PageParameter.cs" />
+    <Compile Include="Common\VersionHelper.cs" />
+    <Compile Include="Extension\IdentityInfoExtensions.cs" />
+    <Compile Include="Extension\JsonExtension.cs" />
+    <Compile Include="Extension\NameValueCollectionExtensions.cs" />
+    <Compile Include="Extension\StringExtension.cs" />
+    <Compile Include="HashHelper.cs" />
+    <Compile Include="Model\AccessRecord.cs" />
+    <Compile Include="Model\BankInfo.cs" />
+    <Compile Include="Model\BettingRecord.cs" />
+    <Compile Include="Model\CoinRate.cs" />
+    <Compile Include="Model\ComeOutRecord.cs" />
+    <Compile Include="Model\CommissionSetting.cs" />
+    <Compile Include="Model\Expert.cs" />
+    <Compile Include="Model\Follow.cs" />
+    <Compile Include="Model\FriendLink.cs" />
+    <Compile Include="Model\IntegralRule.cs" />
+    <Compile Include="Model\LinkVisitRecord.cs" />
+    <Compile Include="Model\Lottery.cs" />
+    <Compile Include="Model\LotteryCharge.cs" />
+    <Compile Include="Model\LotteryRecord.cs" />
+    <Compile Include="Model\LotteryType.cs" />
+    <Compile Include="Model\LotteryType2.cs" />
+    <Compile Include="Model\MakeMoneyTask.cs" />
+    <Compile Include="Model\News\Comment.cs" />
+    <Compile Include="Model\News\Gallery.cs" />
+    <Compile Include="Model\News\GalleryType.cs" />
+    <Compile Include="Model\News\LikeRecord.cs" />
+    <Compile Include="Model\News\News.cs" />
+    <Compile Include="Model\News\NewsType.cs" />
+    <Compile Include="Model\Plan.cs" />
+    <Compile Include="Model\Play.cs" />
+    <Compile Include="Model\RankingList.cs" />
+    <Compile Include="Model\ResourceMapping.cs" />
+    <Compile Include="Model\SiteSetting.cs" />
+    <Compile Include="Model\Talk\BlackListView.cs" />
+    <Compile Include="Model\Talk\ChatRoom.cs" />
+    <Compile Include="Model\Talk\ProcessingRecords.cs" />
+    <Compile Include="Model\Talk\TalkBlackList.cs" />
+    <Compile Include="Model\Talk\TalkNotes.cs" />
+    <Compile Include="Model\UserInfo.cs" />
+    <Compile Include="Model\UserInternalMessage.cs" />
+    <Compile Include="Model\UserState.cs" />
+    <Compile Include="Model\UserTask.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Extension\DateTimeExtensions.cs" />
+    <Compile Include="Public\HttpCommon.cs" />
+    <Compile Include="Public\LuoUtil.cs" />
+    <Compile Include="Public\SmsSender.cs" />
+    <Compile Include="Public\SqlHelper.cs" />
+    <Compile Include="Public\Tool.cs" />
+    <Compile Include="Public\Util.cs" />
+    <Compile Include="Public\WebHelper.cs" />
+    <Compile Include="RequestHelper.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,39 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<script src="/Scripts/jquery-1.10.2.js"></script>
+<script src="/Scripts/json2.js"></script>
+<script>
+    $(function () {
+
+        //$.getJSON('/api/', json)
+        //{
+        //    console.write(json);
+        //}
+
+
+        $.post('/api/AttractBusinessManage/', {
+            
+
+
+        }, function(json) {
+            console.log(json);
+        }, 'json');
+
+    })
+
+</script>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+</head>
+<body>
+    <div>
+      
+        <a href="javascript:;">  test  btn</a>
+    </div>
+</body>
+</html>

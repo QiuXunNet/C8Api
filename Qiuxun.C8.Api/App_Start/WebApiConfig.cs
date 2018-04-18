@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
-using System.Net.Http;
 using System.Web.Http;
-using Microsoft.Owin.Security.OAuth;
-using Newtonsoft.Json.Serialization;
+using System.Web.Http.Cors;
+using Qiuxun.C8.Api.Service.Common;
 
 namespace Qiuxun.C8.Api
 {
@@ -13,18 +13,30 @@ namespace Qiuxun.C8.Api
         public static void Register(HttpConfiguration config)
         {
             // Web API 配置和服务
-            // 将 Web API 配置为仅使用不记名令牌身份验证。
-            config.SuppressDefaultHostAuthentication();
-            config.Filters.Add(new HostAuthenticationFilter(OAuthDefaults.AuthenticationType));
+            // Web API CORS support
+            var hosts = ConfigurationManager.AppSettings["cors_hosts"];
+            if (!string.IsNullOrEmpty(hosts))
+            {
+                var cors = new EnableCorsAttribute(hosts, "*", "*");
+                //设置预检查时间
+                cors.PreflightMaxAge = 20 * 60;
+                cors.SupportsCredentials = true;
+                config.EnableCors(cors);
+            }
+            //全局错误处理
+            config.MessageHandlers.Add(new CustomErrorMessageDelegatingHandler());
+            //config.EnableErrorHandler();
+            config.EnableLogHandler(false);
+            config.EnableCommonHandler(true, true);
+            ////config.EnableVersionRoute();
+            config.EnableJsonNegotiator();
 
-            // Web API 路由
-            config.MapHttpAttributeRoutes();
-
-            config.Routes.MapHttpRoute(
-                name: "DefaultApi",
-                routeTemplate: "api/{controller}/{id}",
-                defaults: new { id = RouteParameter.Optional }
+            var route = config.Routes.MapHttpRoute(
+                "DefaultApi",
+                "api/{controller}/{action}",
+                new { controller = "Auth", action = "Login" }
             );
+
         }
     }
 }

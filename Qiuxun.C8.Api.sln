@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qiuxun.C8.Api", "Qiuxun.C8.Api\Qiuxun.C8.Api.csproj", "{C43E2D98-B6EA-4737-B844-E3D2D8722C5D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qiuxun.C8.Api.Service", "Qiuxun.C8.Api.Service\Qiuxun.C8.Api.Service.csproj", "{82FEC6A4-6E60-4211-83ED-A3D488163867}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qiuxun.C8.Api", "Qiuxun.C8.Api\Qiuxun.C8.Api.csproj", "{C52DF61F-2E6E-4AC9-9B80-CFA2C41986F1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +13,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{C43E2D98-B6EA-4737-B844-E3D2D8722C5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C43E2D98-B6EA-4737-B844-E3D2D8722C5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C43E2D98-B6EA-4737-B844-E3D2D8722C5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C43E2D98-B6EA-4737-B844-E3D2D8722C5D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82FEC6A4-6E60-4211-83ED-A3D488163867}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82FEC6A4-6E60-4211-83ED-A3D488163867}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82FEC6A4-6E60-4211-83ED-A3D488163867}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82FEC6A4-6E60-4211-83ED-A3D488163867}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C52DF61F-2E6E-4AC9-9B80-CFA2C41986F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C52DF61F-2E6E-4AC9-9B80-CFA2C41986F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C52DF61F-2E6E-4AC9-9B80-CFA2C41986F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C52DF61F-2E6E-4AC9-9B80-CFA2C41986F1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

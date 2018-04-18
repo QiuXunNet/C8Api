@@ -1,0 +1,133 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>WebAPI测试</title>
+    <!--
+
+            <link href="Content/Site.css" rel="stylesheet"  />
+    -->
+
+    <script src="Scripts/jquery-1.10.2.js"></script>
+    <script src="Scripts/json2.js"></script>
+    <script>
+        function getCookie(c_name) {
+            if (document.cookie.length > 0) {
+                c_start = document.cookie.indexOf(c_name + "=")
+                if (c_start != -1) {
+                    c_startc_start = c_start + c_name.length + 1;
+                    c_end = document.cookie.indexOf(";", c_start)
+                    if (c_end == -1) c_end = document.cookie.length
+                    return unescape(document.cookie.substring(c_startc_start, c_end))
+                }
+            }
+            return ""
+        }
+        $(document).ready(function () {
+            $("#doCall").click(function () {
+                $("#txtResult").html("");
+                var token = $("#txtToken").val();
+                if (token.trim() != "") {
+                    var expireTime = new Date().getTime() + 1000 * 36000;
+                    var da = new Date();
+                    da.setTime(expireTime);
+                    document.cookie = 'token=' + token + ';expires=' + da.toGMTString() + ';path=/';
+                }
+                try {
+                    $.ajax({
+                        headers: {
+                            "Compatible-LongType": "1"
+                        },
+                        url: $("#txtUrl").val(),
+                        data: $.parseJSON($("#txtData").val()),
+                        type: $("#ddlRequestType").val()
+                    }).done(function (result) {
+                        try {
+                            $("#txtToken").val(getCookie('token'));
+                            console.log(result);
+                        }
+                        catch (e) {
+                            e;
+                        }
+                        var str = JSON.stringify(result);
+                        $("#txtResult").html(str);
+
+                    }).fail(function (err) {
+                        $("#txtResult").html("服务器异常，状态码：" + err.status + "响应结果：" + err.responseText);
+                    });
+                }
+                catch (e) {
+                    alert(e);
+                }
+
+
+
+            });
+        });
+
+
+        //红包广告购买配置项（json）：2BD21EBB-B08F-4DB4-8415-F200A5456AB3
+        var a =
+        {
+            DefaultCount: 10,
+            MinCount: 30000,
+            MaxCount: 5000000,
+            BonusStart: 10000,
+            BonusRate: 0.01,
+            Price: 0.1,
+            UnitName: "万",
+            UnitValue: 10000
+        };
+
+        //红包广告有效期配置项(json): 0895962B-BBAA-4D9C-A5CF-62BBCFE1D1FD
+        var b = [
+            {
+                ValidPeriod: 1,
+                TimeDesc: '3小时'
+            }, {
+                ValidPeriod: 2,
+                TimeDesc: '6小时'
+            }, {
+                ValidPeriod: 3,
+                TimeDesc: '12小时'
+            }, {
+                ValidPeriod: 4,
+                TimeDesc: '一天'
+            }, {
+                ValidPeriod: 5,
+                TimeDesc: '2天'
+            }, {
+                ValidPeriod: 6,
+                TimeDesc: '3天'
+            }, {
+                ValidPeriod: 7,
+                TimeDesc: '一周'
+            }
+        ];
+
+
+
+    </script>
+</head>
+<body>
+    <div style="padding-left:5px;">
+
+        <h2>ApiTest</h2>
+        地址：<input type="text" id="txtUrl" value="api/auth" style="width:500px;">&nbsp;&nbsp;<button id="doCall">调用</button>
+        <br />
+
+        请求类型：<select id="ddlRequestType"><option value="POST">Post</option><option value="GET">Get</option></select>
+        <br />
+        Token：<input id="txtToken" type="text" style="width:500px;" />
+        <br />
+        请求参数：<textarea id="txtData" rows="5" style="width: 600px; height: 300px;">{"account":"15880269263","password":"888888"}</textarea>
+
+        <br />
+        <br />
+        请求结果：<div id="txtResult" style="width:1200px;overflow:auto;max-height:400px;word-break:break-all;white-space:normal;word-wrap:break-word">
+        </div>
+        <br />
+
+    </div>
+</body>
+</html>

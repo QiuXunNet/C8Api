@@ -1,0 +1,60 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <script src="/Scripts/jquery-1.10.2.min.js"></script>
+</head>
+
+<script type="text/javascript">
+
+    var u = navigator.userAgent;
+    var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
+    var isIos = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+
+    function paySuccess() {
+        $("body").append("开始调用");
+        if (isAndroid) {
+            window.JSInterface.onPaySuccess();
+        }
+        else if (isIos) {
+            $("body").append("调用IOS_onPaySuccess");
+            //onPaySuccess();
+            window.webkit.messageHandlers.onPaySuccess.postMessage({});
+        }
+        else {
+            $("body").append("不是android或IOS客户端");
+        }
+    }
+
+    function payFailed() {
+        $("body").append("开始调用");
+
+        if (isAndroid) {
+            $("body").append("调用android");
+            window.JSInterface.onPayFailed();
+        }
+        else if (isIos) {
+            //onPayFailed();
+            $("body").append("调用IOS_onPayFailed");
+            window.webkit.messageHandlers.onPayFailed.postMessage({});
+        }
+        else {
+            $("body").append("不是android或IOS客户端");
+        }
+    }
+
+</script>
+<body>
+    <div>
+        <input type="button" value="支付成功" onclick="paySuccess()">
+        <input type="button" value="支付失败" onclick="payFailed()">
+
+    </div>
+</body>
+</html>
