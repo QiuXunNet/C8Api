@@ -10,59 +10,33 @@ namespace Qiuxun.C8.Api.Model
     /// <summary>
     /// LotteryType2:实体类(属性说明自动提取数据库字段的描述信息)
     /// </summary>
-    [Serializable]
-    public partial class LotteryType2
+    
+    public class LotteryType2
     {
-        public LotteryType2()
-        { }
         #region Model
-        private int _id;
-        private int _pid = 0;
-        private int? _ltype;
-        private string _name;
-        private int? _position;
 
         /// <summary>
         /// 
         /// </summary>
-        public int Id
-        {
-            set { _id = value; }
-            get { return _id; }
-        }
+        public int Id { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        public int PId
-        {
-            set { _pid = value; }
-            get { return _pid; }
-        }
+        public int PId { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        public int? lType
-        {
-            set { _ltype = value; }
-            get { return _ltype; }
-        }
+        public int lType { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        public string Name
-        {
-            set { _name = value; }
-            get { return _name; }
-        }
+        public string Name { get; set; }
+
         /// <summary>
         /// 
         /// </summary>
-        public int? Position
-        {
-            set { _position = value; }
-            get { return _position; }
-        }
-     
+        public int Position { get; set; }
+
         #endregion Model
 
 

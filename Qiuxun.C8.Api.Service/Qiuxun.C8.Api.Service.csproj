@@ -163,6 +163,7 @@
     <Compile Include="Common\RequestLog.cs" />
     <Compile Include="Common\ServerRoles.cs" />
     <Compile Include="Common\WebLogHandleErrorAttribute.cs" />
+    <Compile Include="Data\LotteryService.cs" />
     <Compile Include="Data\UserInfoService.cs" />
     <Compile Include="Dtos\CheckerResDto.cs" />
     <Compile Include="Dtos\LoginReqDto.cs" />
