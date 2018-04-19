@@ -10,7 +10,7 @@ namespace Qiuxun.C8.Api.Model
     /// <summary>
     /// LotteryType2:实体类(属性说明自动提取数据库字段的描述信息)
     /// </summary>
-    
+
     public class LotteryType2
     {
         #region Model
@@ -55,7 +55,7 @@ namespace Qiuxun.C8.Api.Model
                     foreach (LotteryType2 lotteryType2 in list)
                     {
                         idArr[count] = (int)lotteryType2.lType;
-                        count ++;
+                        count++;
                     }
 
                     return idArr;
@@ -65,5 +65,21 @@ namespace Qiuxun.C8.Api.Model
             }
         }
 
+        /// <summary>
+        /// 彩种Logo
+        /// </summary>
+        public string Logo
+        {
+            get
+            {
+                //一级lType为分类名，第二级为具体彩种
+                if (PId > 0)
+                {
+                    return Util.GetLotteryIconUrl(lType);
+                }
+
+                return string.Empty;
+            }
+        }
     }
 }

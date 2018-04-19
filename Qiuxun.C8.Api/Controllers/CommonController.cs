@@ -44,6 +44,17 @@ namespace Qiuxun.C8.Api.Controllers
         }
 
         /// <summary>
+        /// 获取首页开奖列表
+        /// </summary>
+        /// <param name="parentId">彩种分类Id</param>
+        /// <returns></returns>
+        [HttpGet]
+        public ApiResult<List<IndexLotteryInfoResDto>> GetIndexLotteryList(int parentId)
+        {
+            return lotteryService.GetIndexLotteryList(parentId);
+        }
+
+        /// <summary>
         /// 获取玩法列表
         /// </summary>
         /// <param name="ltype">彩种Id，可空。空时返回所有彩种的玩法</param>

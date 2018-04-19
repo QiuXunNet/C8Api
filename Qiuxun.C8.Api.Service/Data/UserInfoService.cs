@@ -92,6 +92,18 @@ namespace Qiuxun.C8.Api.Service.Data
         /// <returns></returns>
         public ApiResult SetPassword(SetPasswordReqDto reqDto, long userId)
         {
+            var userInfo = Util.GetEntityById<UserInfo>((int)userId);
+            if (userInfo.Password.StartsWith("$2y"))
+            {
+                if (!Crypter.CheckPassword(reqDto.OldPassowd, userInfo.Password))
+                {
+                    if (Tool.GetMD5(reqDto.Password) != userInfo.Password)
+                    {
+                        throw new ApiException(15023, "旧密码未通过验证");
+                    }
+                }
+            }
+
             string password = Tool.GetMD5(reqDto.Password);
 
             string sql = "update dbo.userInfo set [Password]=@Password where Id=@UserId";
@@ -106,6 +118,48 @@ namespace Qiuxun.C8.Api.Service.Data
             {
                 return new ApiResult(11001, "设置失败");
             }
+
+            return new ApiResult();
+        }
+
+        /// <summary>
+        /// 忘记密码
+        /// </summary>
+        /// <param name="reqDto"></param>
+        /// <returns></returns>
+        public ApiResult ForgotPassword(ForgotPasswordReqDto reqDto)
+        {
+            string password = Tool.GetMD5(reqDto.Password);
+
+            string sql = "update dbo.userInfo set [Password]=@Password where Mobile=@mobile";
+            var sqlParameter = new[]
+            {
+                new SqlParameter("@Password", password),
+                new SqlParameter("@mobile", reqDto.Phone),
+            };
+            int count = SqlHelper.ExecuteNonQuery(sql, sqlParameter);
+
+            if (count < 1)
+            {
+                return new ApiResult(11001, "设置失败");
+            }
+
+            return new ApiResult();
+        }
+
+
+        /// <summary>
+        /// 删除账户
+        /// </summary>
+        /// <param name="phone"></param>
+        /// <returns></returns>
+        public ApiResult DeleteAccount(string phone)
+        {
+            string sql = "Delete from dbo.UserInfo where Mobile=@Mobile";
+
+            int result = SqlHelper.ExecuteNonQuery(sql, new SqlParameter("@Mobile", phone));
+
+            if (result > 0) return new ApiResult(40000, "删除失败");
 
             return new ApiResult();
         }

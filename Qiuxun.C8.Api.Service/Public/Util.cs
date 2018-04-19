@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
@@ -21755,7 +21756,7 @@ namespace Qiuxun.C8.Api.Public
 
             return result;
         }
-        
+
 
         public static string HandIssueSpecial(int lType, DateTime d, string date, string issue, string result)
         {
@@ -22586,7 +22587,7 @@ namespace Qiuxun.C8.Api.Public
         }
 
 
-        
+
 
 
         public static string GetTwoDateChaWithOutHour(DateTime dTemp, DateTime target)
@@ -25180,7 +25181,25 @@ namespace Qiuxun.C8.Api.Public
 
         }
 
-      
+
+        public static string GetLotteryIconUrl(int lType)
+        {
+            string imgName = GetLotteryIcon(lType);
+
+            string webHost = GetWebHost();
+
+            return string.Format("{0}/images/{1}.png", webHost, imgName);
+        }
+
+        public static string GetWebHost()
+        {
+            string host = ConfigurationManager.AppSettings["webHost"].ToLower();
+
+            if (host.StartsWith("http://"))
+                return host;
+            else
+                return "http://" + host;
+        }
 
 
     }
