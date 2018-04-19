@@ -24,7 +24,7 @@ namespace Qiuxun.C8.Api.Controllers
         /// <param name="parentId">上级分类Id，可空。空是返回所有彩种</param>
         /// <returns></returns>
         [HttpGet, AllowAnonymous]
-        public ApiResult GetLotteryTypeList(int? parentId)
+        public ApiResult<List<LotteryType2>> GetLotteryTypeList(int? parentId)
         {
             var result = new ApiResult<List<LotteryType2>>();
 
