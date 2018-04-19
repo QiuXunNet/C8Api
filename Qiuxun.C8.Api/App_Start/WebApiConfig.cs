@@ -27,7 +27,7 @@ namespace Qiuxun.C8.Api
             //config.MessageHandlers.Add(new CustomErrorMessageDelegatingHandler());
             config.EnableErrorHandler();
             config.EnableLogHandler(false);
-            //config.EnableCommonHandler(true, true);
+            config.EnableCommonHandler(true, true);
             //////config.EnableVersionRoute();
             //config.EnableJsonNegotiator();
 

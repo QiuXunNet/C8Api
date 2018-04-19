@@ -9,24 +9,25 @@ using System.Web;
 using Qiuxun.C8.Api.Public;
 using System.IO;
 using System.Drawing;
+using Qiuxun.C8.Api.Service.Common;
 
 namespace Qiuxun.C8.Api.Public
 {
-   public class Tool
+    public class Tool
     {
         /// <summary>
         /// md5 加密 kcp
         /// </summary>
         /// <param name="myString"></param>
         /// <returns></returns>
-     public static string GetMD5(string myString)
+        public static string GetMD5(string myString)
         {
             MD5 md5 = new MD5CryptoServiceProvider();
             byte[] fromData = System.Text.Encoding.Unicode.GetBytes(myString);
             byte[] targetData = md5.ComputeHash(fromData);
             string byte2String = null;
 
-            for (int i = 0; i<targetData.Length; i++)
+            for (int i = 0; i < targetData.Length; i++)
             {
                 byte2String += targetData[i].ToString("x");
             }
@@ -34,7 +35,7 @@ namespace Qiuxun.C8.Api.Public
             return byte2String;
         }
 
-       
+
 
         /// <summary>
         /// 获取IP
@@ -107,7 +108,7 @@ namespace Qiuxun.C8.Api.Public
         /// <param name="str"></param>
         /// <param name="excludeWordList"></param>
         /// <returns></returns>
-       public static bool CheckSensitiveWords(string str)
+        public static bool CheckSensitiveWords(string str)
         {
             string words = WebHelper.GetSensitiveWords();
             string[] zang = words.Split(',');
@@ -151,7 +152,7 @@ namespace Qiuxun.C8.Api.Public
                 case 9:
                     imgsrc = "/images/47_6.png";
                     break;
-              
+
             }
             return imgsrc;
         }
@@ -164,7 +165,7 @@ namespace Qiuxun.C8.Api.Public
         /// <returns></returns>
         public static string Rmoney(decimal money)
         {
-           return string.Format("{0:N}", money);
+            return string.Format("{0:N}", money);
         }
 
 
@@ -188,13 +189,18 @@ namespace Qiuxun.C8.Api.Public
             byte[] arr = Convert.FromBase64String(img_array[1]);
             using (MemoryStream ms = new MemoryStream(arr))
             {
+                if (ms.Length > 4194304)
+                {
+                    throw new ApiException(400, "资源文件超过限制");
+                }
+
                 Bitmap bmp = new Bitmap(ms);
                 if (!Directory.Exists(file_name))
                     Directory.CreateDirectory(file_name);
                 if (img_array[0].ToLower() == "data:image/jpeg;base64")
                 {
                     //bmp.Save(file_name + ".jpg");
-                    return SetImg(file_name,Guid.NewGuid().ToString().Replace('-', 'p').Substring(4), "jpg", arr);
+                    return SetImg(file_name, Guid.NewGuid().ToString().Replace('-', 'p').Substring(4), "jpg", arr);
                 }
                 else if (img_array[0].ToLower() == "data:image/png;base64")
                 {
@@ -204,13 +210,12 @@ namespace Qiuxun.C8.Api.Public
                 else if (img_array[0].ToLower() == "data:image/gif;base64")
                 {
                     //bmp.Save(file_name + ".gif");
-                    
+
                     return SetImg(file_name, Guid.NewGuid().ToString().Replace('-', 'p').Substring(4), "gif", arr);
                 }
                 else
                 {
-                    error = "不支持该文件格式。";
-                    return new Phonto();
+                    throw new ApiException(400, "不支持的文件格式");
                 }
             }
             //}
@@ -229,13 +234,13 @@ namespace Qiuxun.C8.Api.Public
         /// <param name="suffix">后缀名</param>
         /// <param name="arr">base64</param>
         /// <returns>图片的路径</returns>
-        public static Phonto SetImg(string path,string ImgName, string suffix, byte[] arr)
+        public static Phonto SetImg(string path, string ImgName, string suffix, byte[] arr)
         {
 
             Phonto p = new Phonto();
             System.IO.File.WriteAllBytes(path + ImgName + "." + suffix + "", arr);
             p.Extension = "." + suffix;
-            p.RPath= path + ImgName + "." + suffix + "";
+            p.RPath = path + ImgName + "." + suffix + "";
             p.RSize = arr.Length;
             p.ImgName = ImgName;
             return p;
@@ -260,7 +265,7 @@ namespace Qiuxun.C8.Api.Public
         /// </summary>
         /// <param name="Type"></param>
         /// <returns></returns>
-        public static string GetTimeWhere(string Timefiled,string queryType)
+        public static string GetTimeWhere(string Timefiled, string queryType)
         {
             DateTime today = DateTime.Today;
             string sqlWhere = "";
@@ -297,7 +302,7 @@ namespace Qiuxun.C8.Api.Public
         /// <returns></returns>
         public static int GetCacheTime(string queryType)
         {
-            int time=0;
+            int time = 0;
             DateTime today = DateTime.Today;
             switch (queryType)
             {
@@ -328,7 +333,7 @@ namespace Qiuxun.C8.Api.Public
         /// <param name="dateBegin">开始时间</param>
         /// <param name="dateEnd">结束时间</param>
         /// <returns>返回(秒)单位，比如: 0.00239秒</returns>
-        public static int  ExecDateDiff(DateTime dateBegin, DateTime dateEnd)
+        public static int ExecDateDiff(DateTime dateBegin, DateTime dateEnd)
         {
             TimeSpan ts1 = new TimeSpan(dateBegin.Ticks);
             TimeSpan ts2 = new TimeSpan(dateEnd.Ticks);

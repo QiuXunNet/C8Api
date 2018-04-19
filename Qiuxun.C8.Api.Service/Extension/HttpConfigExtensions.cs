@@ -67,6 +67,10 @@ namespace System.Web.Http
             config.MessageHandlers.Add(new QiuxunHttpMessageHandler(list));
         }
 
+        /// <summary>
+        /// 启用全局错误处理
+        /// </summary>
+        /// <param name="config"></param>
         public static void EnableErrorHandler(this HttpConfiguration config)
         {
             IFilter filter = null;

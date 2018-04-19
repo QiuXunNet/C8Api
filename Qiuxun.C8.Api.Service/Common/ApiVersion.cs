@@ -103,7 +103,7 @@ namespace Qiuxun.C8.Api.Service.Common
             ApiVersion other = obj as ApiVersion;
             if (other == null)
             {
-                throw new ArgumentException("不是有效的LoVersion对象");
+                throw new ArgumentException("不是有效的ApiVersion对象");
             }
             return this.CompareTo(other);
         }
