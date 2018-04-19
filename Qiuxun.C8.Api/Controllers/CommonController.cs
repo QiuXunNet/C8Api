@@ -24,10 +24,10 @@ namespace Qiuxun.C8.Api.Controllers
         /// <summary>
         /// 获取彩种大分类
         /// </summary>
-        /// <param name="parentId">上级分类Id，可空。空是返回所有彩种</param>
+        /// <param name="parentId">上级分类Id，可空。空时返回所有彩种</param>
         /// <returns></returns>
         [HttpGet, AllowAnonymous]
-        public ApiResult GetLotteryTypeList(int? parentId)
+        public ApiResult<List<LotteryType2>> GetLotteryTypeList(int? parentId)
         {
             var result = new ApiResult<List<LotteryType2>>();
 
@@ -41,6 +41,17 @@ namespace Qiuxun.C8.Api.Controllers
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// 获取玩法列表
+        /// </summary>
+        /// <param name="ltype">彩种Id，可空。空时返回所有彩种的玩法</param>
+        /// <returns></returns>
+        [HttpGet, AllowAnonymous]
+        public ApiResult<List<PlayResDto>> GetPlayList(int? ltype)
+        {
+            return lotteryService.GetPlayList(ltype);
         }
 
         /// <summary>
@@ -78,5 +89,31 @@ namespace Qiuxun.C8.Api.Controllers
 
             return new ApiResult();
         }
+
+        /// <summary>
+        /// 上传资源
+        /// </summary>
+        /// <param name="reqDto">File:Base64图片信息；Type:资源类型，1=文章资源 2=用户头像，可空</param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiResult<UploadFileResDto> UploadFile(UploadFileReqDto reqDto)
+        {
+            #region 验证
+            if (reqDto == null)
+                throw new ApiException(10000, "验证参数失败");
+
+            if (string.IsNullOrWhiteSpace(reqDto.File))
+                throw new ApiException(10000, "验证参数File失败");
+            #endregion
+
+            var resourceService = new ResourceManagementService();
+
+            long userId = UserInfo != null ? UserInfo.UserId : 0;
+            int resType = reqDto.Type ?? 0;
+
+            return resourceService.UploadFile(reqDto.File, resType, userId, this.Request);
+        }
+
+
     }
 }

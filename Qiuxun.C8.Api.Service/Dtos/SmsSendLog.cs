@@ -73,7 +73,7 @@ namespace Qiuxun.C8.Api.Service.Dtos
         /// </summary>
         public int SendPort { get; set; }
         /// <summary>
-        /// 发送结果 0=已发送 1=成功
+        /// 发送结果 0=成功 其他=失败
         /// </summary>
         public int SendResult { get; set; }
         /// <summary>

@@ -18,7 +18,7 @@ namespace Qiuxun.C8.Api.Service.Common
     {
         public override void OnException(HttpActionExecutedContext filterContext)
         {
-            ILog logger = LogManager.GetLogger(filterContext.ActionContext.ControllerContext.ControllerDescriptor.ControllerType);
+            //ILog logger = LogManager.GetLogger(filterContext.ActionContext.ControllerContext.ControllerDescriptor.ControllerType);
 
             ApiUnauthorizedException exception = filterContext.Exception as ApiUnauthorizedException;
             if (exception != null)
@@ -31,7 +31,7 @@ namespace Qiuxun.C8.Api.Service.Common
                 };
                 message.Content = content;
                 filterContext.Response = message;
-                logger.ErrorFormat("请求错误，地址：{0}。\r\n{1}", filterContext.Request.RequestUri, filterContext.Exception);
+                LogHelper.ErrorFormat("请求错误，地址：{0}。\r\n{1}", filterContext.Request.RequestUri, filterContext.Exception);
             }
             else
             {
@@ -39,14 +39,14 @@ namespace Qiuxun.C8.Api.Service.Common
                 if (exception2 != null)
                 {
                     filterContext.Response = filterContext.Request.CreateResponse<ApiResult>(
-                        HttpStatusCode.Forbidden, new ApiResult(exception2.Code, exception2.Desc));
-                    logger.ErrorFormat("请求错误，地址：{0}。\r\n{1}", filterContext.Request.RequestUri, filterContext.Exception);
+                        HttpStatusCode.OK, new ApiResult(exception2.Code, exception2.Desc));
+                    //logger.ErrorFormat("请求错误，地址：{0}。\r\n{1}", filterContext.Request.RequestUri, filterContext.Exception);
                 }
                 else
                 {
                     ApiResult result4 = new ApiResult(-100, "未知错误，请联系管理员。");
                     filterContext.Response = filterContext.Request.CreateResponse<ApiResult>(HttpStatusCode.InternalServerError, result4);
-                    logger.ErrorFormat("请求错误，地址：{0}。\r\n{1}", filterContext.Request.RequestUri, filterContext.Exception);
+                    LogHelper.ErrorFormat("请求错误，地址：{0}。\r\n{1}", filterContext.Request.RequestUri, filterContext.Exception);
 
                 }
 

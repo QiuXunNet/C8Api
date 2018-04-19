@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
-using Qiuxun.C8.Api.Model;
+﻿using System.Web.Http;
 using Qiuxun.C8.Api.Public;
 using Qiuxun.C8.Api.Service.Api;
 using Qiuxun.C8.Api.Service.Auth;
@@ -28,7 +22,7 @@ namespace Qiuxun.C8.Api.Controllers
         /// <param name="reqDto">Account:账号，Password:密码</param>
         /// <returns></returns>
         [HttpPost, AllowAnonymous]
-        public ApiResult Login(LoginReqDto reqDto)
+        public ApiResult<LoginResDto> Login(LoginReqDto reqDto)
         {
             if (string.IsNullOrWhiteSpace(reqDto.Account))
                 throw new ApiException(16000, "参数account验证失败");
@@ -46,7 +40,7 @@ namespace Qiuxun.C8.Api.Controllers
         /// <param name="reqDto"></param>
         /// <returns></returns>
         [HttpPost, AllowAnonymous]
-        public ApiResult Register(RegisterReqDto reqDto)
+        public ApiResult<LoginResDto> Register(RegisterReqDto reqDto)
         {
             #region 验证请求
 
@@ -60,7 +54,7 @@ namespace Qiuxun.C8.Api.Controllers
 
             if (reqDto == null)
                 throw new ApiException(50000, "验证参数失败");
-            if (!ValidateUtil.IsValidPhone(reqDto.Phone))
+            if (!ValidateUtil.IsValidMobile(reqDto.Phone))
                 throw new ApiException(50000, "手机号不正确");
             if (!ValidateUtil.IsValidUserName(reqDto.NickName))
                 throw new ApiException(50000, "昵称格式不正确");
@@ -76,7 +70,22 @@ namespace Qiuxun.C8.Api.Controllers
 
             #endregion
 
-            userInfoService.UserRegister(reqDto);
+            return userInfoService.UserRegister(reqDto, this.Request);
+        }
+
+        /// <summary>
+        /// 验证手机号存在
+        /// </summary>
+        /// <param name="phone">手机号，不可空</param>
+        /// <returns></returns>
+        [HttpGet, AllowAnonymous]
+        public ApiResult ValidateMobile(string phone)
+        {
+            if (!ValidateUtil.IsValidMobile(phone))
+                throw new ApiException(50000, "手机号不正确");
+
+            if (userInfoService.ExistsMobile(phone))
+                throw new ApiException(50000, "手机号已存在");
 
             return new ApiResult();
         }

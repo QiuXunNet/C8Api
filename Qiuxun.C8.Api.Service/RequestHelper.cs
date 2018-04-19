@@ -37,7 +37,7 @@ namespace Qiuxun.C8.Api.Service
         public const string _query_string_header_key = "__h";
         public const string _token_key = "token";
         private static readonly ILog log4Logger = LogManager.GetLogger(typeof(RequestHelper));
-        
+
 
         public static RequestInfo BuildRequestInfo(HttpRequestMessage request)
         {
@@ -97,8 +97,8 @@ namespace Qiuxun.C8.Api.Service
             {
                 try
                 {
-                   //TODO:解析区域位置
-                        
+                    //TODO:解析区域位置
+
                 }
                 catch (Exception exception)
                 {
@@ -231,7 +231,7 @@ namespace Qiuxun.C8.Api.Service
             log.ElapsedMilliseconds = (int)span.TotalMilliseconds;
             return log;
         }
-        
+
         private static string GetApiRequestData(HttpRequestMessage request, RequestInfo requestInfo)
         {
             string str = "";
@@ -322,7 +322,7 @@ namespace Qiuxun.C8.Api.Service
                 LocationType = log.LocationType,
                 OtherHeader = log.OtherHeader,
                 RequestCookie = log.RequestCookie,
-                RequestData =log.RequestData,
+                RequestData = log.RequestData,
                 RequestTime = log.RequestTime,
                 ResponseCookie = log.ResponseCookie,
                 Route = log.Route,
@@ -342,14 +342,15 @@ namespace Qiuxun.C8.Api.Service
                 CityCode = log.CityCode,
                 Id = log.Id
             };
-            
+
             try
             {
                 //TODO:请求日志持久化
+                LogHelper.InfoFormat("请求日志：\r\n{0}", entity.ToJsonString());
             }
             catch (Exception exception)
             {
-                log4Logger.Error(exception);
+                LogHelper.Error("", exception);
             }
         }
 
@@ -401,16 +402,18 @@ namespace Qiuxun.C8.Api.Service
                 DistrictCode = log.DistrictCode,
                 CityCode = log.CityCode,
                 Id = log.Id
-                
+
             };
-           
+
             try
             {
                 //TODO:api请求日志持久化
+
+                LogHelper.InfoFormat("请求日志：\r\n{0}", entity.ToJsonString());
             }
             catch (Exception exception)
             {
-                log4Logger.Error(exception);
+                LogHelper.Error("", exception);
             }
         }
 

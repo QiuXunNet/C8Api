@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Net.Http;
@@ -45,10 +46,15 @@ namespace Qiuxun.C8.Api.Service.Data
                 //}
             }
 
+            string webHost = ConfigurationManager.AppSettings["webHost"];
+            string avater = string.IsNullOrWhiteSpace(accountInfo.Headpath)
+                ? string.Format("{0}/images/default_avater.png", webHost)
+                : accountInfo.Headpath;
+
             LoginResDto resDto = new LoginResDto()
             {
                 Account = accountInfo.Mobile,
-                Avater = accountInfo.Headpath,
+                Avater = avater,
                 UserId = accountInfo.Id,
                 Mobile = accountInfo.Mobile,
                 NickName = accountInfo.Name
@@ -63,7 +69,7 @@ namespace Qiuxun.C8.Api.Service.Data
                 UserStatus = (int)accountInfo.State,
                 UserName = accountInfo.Name,
                 IsTemp = false,
-                Avater = accountInfo.Headpath
+                Avater = avater
             };
 
             var tokenAuth = new QiuxunTokenAuthorizer(new ApiAuthContainer(request));
@@ -118,6 +124,15 @@ namespace Qiuxun.C8.Api.Service.Data
             if (list != null)
                 return list.FirstOrDefault();
             return null;
+        }
+        /// <summary>
+        /// 根据用户Id查询用户信息
+        /// </summary>
+        /// <param name="uid"></param>
+        /// <returns></returns>
+        public UserInfo GetUserInfo(long uid)
+        {
+            return Util.GetEntityById<UserInfo>((int)uid);
         }
 
         /// <summary>
@@ -175,7 +190,8 @@ namespace Qiuxun.C8.Api.Service.Data
         /// 用户注册
         /// </summary>
         /// <param name="dto"></param>
-        public void UserRegister(RegisterReqDto dto)
+        /// <param name="request"></param>
+        public ApiResult<LoginResDto> UserRegister(RegisterReqDto dto, HttpRequestMessage request)
         {
             string password = Tool.GetMD5(dto.Password);
             string ip = Tool.GetIP();
@@ -197,6 +213,202 @@ namespace Qiuxun.C8.Api.Service.Data
             if (obj == null)
                 throw new ApiException(50000, "注册失败，请重试");
 
+            int userId = Convert.ToInt32(obj);
+
+            //TODO:事务优化处理
+            #region 发放邀请注册奖励
+            if (dto.InviteCode.HasValue)
+            {
+                try
+                {
+                    var inviteUser = GetUserInfo(dto.InviteCode.Value);
+                    if (inviteUser != null)
+                    {
+                        //受邀奖励
+                        int myReward = GetRadomReward(3);
+                        AddCoinReward(userId, myReward, 6, (int)inviteUser.Id);
+                        //邀请奖励
+                        int upReward = GetRadomReward(1);
+                        AddCoinReward((int)inviteUser.Id, upReward, 7, userId);
+                        //添加邀请任务记录
+                        AddUserTask((int)dto.InviteCode.Value, 105);
+
+                        //上级的上级奖励
+                        if (inviteUser.Pid.HasValue && inviteUser.Pid > 0)
+                        {
+                            var superUser = GetUserInfo(inviteUser.Pid.Value);
+
+                            if (superUser != null)
+                            {
+                                int superReward = GetRadomReward(2);
+                                AddCoinReward((int)superUser.Id, superReward, 7, (int)inviteUser.Id);
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.Error("发放邀请注册奖励异常", ex);
+                }
+
+            }
+            #endregion
+
+            #region 下发登录token
+            string webHost = ConfigurationManager.AppSettings["webHost"];
+            string avater = string.Format("{0}/images/default_avater.png", webHost);
+            IdentityInfo authInfo = new IdentityInfo()
+            {
+                UserId = userId,
+                UserAccount = dto.Phone,
+                UserStatus = 0,
+                UserName = dto.NickName,
+                IsTemp = false,
+                Avater = avater
+            };
+
+            var tokenAuth = new QiuxunTokenAuthorizer(new ApiAuthContainer(request));
+            tokenAuth.Authorize(authInfo);
+
+            #endregion
+
+            LoginResDto resDto = new LoginResDto()
+            {
+                Account = dto.Phone,
+                Avater = avater,
+                UserId = userId,
+                Mobile = dto.Phone,
+                NickName = dto.NickName
+            };
+
+            return new ApiResult<LoginResDto>()
+            {
+                Data = resDto
+            };
+        }
+
+
+        /// <summary>
+        /// 获取随机金币奖励
+        /// </summary>
+        /// <param name="gradeId"></param>
+        /// <returns></returns>
+        public int GetRadomReward(int gradeId)
+        {
+            int num = 0;
+
+            List<int> listNum = new List<int>();
+            try
+            {
+                string strsql = "select * from CoinRate where GradeId = @GradeId";
+                SqlParameter[] sp = new SqlParameter[] {
+                    new SqlParameter("@GradeId", gradeId)
+                };
+                List<CoinRate> list = Util.ReaderToList<CoinRate>(strsql, sp);
+                if (list.Count > 0)
+                {
+                    foreach (var item in list)
+                    {
+                        for (int i = 0; i < item.Rate; i++)
+                        {
+                            listNum.Add(item.Num);
+                        }
+
+                    }
+                }
+                Random rm = new Random();
+                int j = rm.Next(listNum.Count);
+                num = listNum[j];
+
+            }
+            catch (Exception ex)
+            {
+                LogHelper.WriteLog(string.Format("生成随机奖励金币异常。异常消息：{0}，异常堆栈：{1}。", ex.Message, ex.StackTrace));
+                return 0;
+            }
+            return num;
+        }
+
+        /// <summary>
+        /// 添加金币奖励
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="coin"></param>
+        /// <param name="type"></param>
+        /// <param name="otherId"></param>
+        public void AddCoinReward(int id, int coin, int type, int otherId)
+        {
+            try
+            {
+
+                StringBuilder strSql = new StringBuilder();
+
+                strSql.Append("update UserInfo set Coin+=@Coin where Id =@UserId;");
+                strSql.Append(@"insert into CoinRecord(lType, UserId, OtherId, Type, [Money], SubTime)
+                             values(0, @UserId, @OtherId, @Type, @Coin, getdate());");
+
+                var parameters = new[]
+                {
+                    new SqlParameter("@UserId",id),
+                    new SqlParameter("@OrderId",otherId),
+                    new SqlParameter("@Type",type),
+                    new SqlParameter("@Money",coin)
+                };
+
+                SqlHelper.ExecuteTransaction(strSql.ToString(), parameters);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.WriteLog(string.Format("添加金币奖励异常。异常消息：{0}，异常堆栈：{1}", ex.Message, ex.StackTrace));
+            }
+        }
+
+        /// <summary>
+        /// 增加邀请成功注册任务记录
+        /// </summary>
+        public void AddUserTask(int userId, int taskCode)
+        {
+            string countsql = "select * from UserTask where UserId=@UserId and TaskId=@TaskId ";
+            string strsqlup = "update UserTask set CompletedCount=CompletedCount+1 where UserId=@UserId and TaskId=@TaskId";
+            string strsqlins = "insert into UserTask(UserId, TaskId, CompletedCount)values(@UserId, @TaskId, 1)";
+            string strtasksql = "select * from MakeMoneyTask   where Code = 105";//邀请成功注册任务
+
+            SqlParameter[] sp = new SqlParameter[] {
+                new SqlParameter("@UserId",userId),
+                new SqlParameter("@TaskId",taskCode)
+
+            };
+            try
+            {
+                UserTask task = Util.ReaderToModel<UserTask>(countsql, sp);
+                if (task != null)
+                {
+                    int update = SqlHelper.ExecuteNonQuery(strsqlup, sp);
+                    if (update > 0)
+                    {
+                        UserTask task1 = Util.ReaderToModel<UserTask>(string.Format("select * from UserTask where UserId={0} and TaskId={1}", userId, taskCode));
+                        MakeMoneyTask mtask = Util.ReaderToModel<MakeMoneyTask>(strtasksql);
+                        if (task1.CompletedCount == mtask.Count)
+                        {
+                            string strsqlinstask = string.Format(@"insert into ComeOutRecord(UserId, OrderId, Type, Money, SubTime)
+                                   values({0}, {1}, 8, {2}, getdate())", userId, taskCode, mtask.Coin);
+                            SqlHelper.ExecuteNonQuery(strsqlinstask);
+
+                        }
+                    }
+                }
+                else
+                {
+                    SqlHelper.ExecuteNonQuery(strsqlins, sp);
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
         }
     }
+
 }
