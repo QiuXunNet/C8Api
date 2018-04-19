@@ -84,7 +84,7 @@ namespace Qiuxun.C8.Api.Service.Api
         {
             get
             {
-                return base.Request.GetProperty<RequestInfo>("");
+                return base.Request.GetProperty<RequestInfo>();
             }
         }
 

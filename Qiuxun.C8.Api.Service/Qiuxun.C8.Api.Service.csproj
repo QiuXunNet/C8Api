@@ -164,10 +164,13 @@
     <Compile Include="Common\ServerRoles.cs" />
     <Compile Include="Common\WebLogHandleErrorAttribute.cs" />
     <Compile Include="Data\LotteryService.cs" />
+    <Compile Include="Data\SmsService.cs" />
     <Compile Include="Data\UserInfoService.cs" />
     <Compile Include="Dtos\CheckerResDto.cs" />
+    <Compile Include="Dtos\RegisterReqDto.cs" />
     <Compile Include="Dtos\LoginReqDto.cs" />
     <Compile Include="Dtos\SetPasswordReqDto.cs" />
+    <Compile Include="Dtos\SmsSendLog.cs" />
     <Compile Include="Enum\ClientIpType.cs" />
     <Compile Include="Enum\ClientUpdateStatus.cs" />
     <Compile Include="Enum\CommentTypeEnum.cs" />
@@ -179,6 +182,7 @@
     <Compile Include="Enum\OAuthType.cs" />
     <Compile Include="Enum\ResourceTypeEnum.cs" />
     <Compile Include="Enum\ServerRoleEnum.cs" />
+    <Compile Include="Enum\SmsStatusEnum.cs" />
     <Compile Include="Enum\StrToBytesType.cs" />
     <Compile Include="Enum\TransactionTypeEnum.cs" />
     <Compile Include="Enum\UserInternalMessageTypeEnum.cs" />

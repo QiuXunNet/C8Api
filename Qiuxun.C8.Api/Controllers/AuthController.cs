@@ -5,7 +5,9 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using Qiuxun.C8.Api.Model;
+using Qiuxun.C8.Api.Public;
 using Qiuxun.C8.Api.Service.Api;
+using Qiuxun.C8.Api.Service.Auth;
 using Qiuxun.C8.Api.Service.Common;
 using Qiuxun.C8.Api.Service.Data;
 using Qiuxun.C8.Api.Service.Dtos;
@@ -38,6 +40,47 @@ namespace Qiuxun.C8.Api.Controllers
 
         }
 
+        /// <summary>
+        /// 用户注册
+        /// </summary>
+        /// <param name="reqDto"></param>
+        /// <returns></returns>
+        [HttpPost, AllowAnonymous]
+        public ApiResult Register(RegisterReqDto reqDto)
+        {
+            #region 验证请求
+
+            var smsService = new SmsService();
+            smsService.ValidateSmsCode(new SmsCodeValidateDto()
+            {
+                Phone = reqDto.Phone,
+                Code = reqDto.Code,
+                Type = 1
+            });
+
+            if (reqDto == null)
+                throw new ApiException(50000, "验证参数失败");
+            if (!ValidateUtil.IsValidPhone(reqDto.Phone))
+                throw new ApiException(50000, "手机号不正确");
+            if (!ValidateUtil.IsValidUserName(reqDto.NickName))
+                throw new ApiException(50000, "昵称格式不正确");
+            if (!ValidateUtil.IsValidPassword(reqDto.Password))
+                throw new ApiException(50000, "密码不符合");
+
+            if (Tool.CheckSensitiveWords(reqDto.NickName))
+                throw new ApiException(50000, "昵称包含敏感字符");
+            if (userInfoService.ExistsMobile(reqDto.Phone))
+                throw new ApiException(50000, "手机号已注册");
+            if (userInfoService.ExistsNickName(reqDto.NickName))
+                throw new ApiException(50000, "该昵称已被占用");
+
+            #endregion
+
+            userInfoService.UserRegister(reqDto);
+
+            return new ApiResult();
+        }
+
 
         /// <summary>
         /// 设置密码
@@ -54,6 +97,19 @@ namespace Qiuxun.C8.Api.Controllers
                 throw new ApiException(11000, "密码包含非法字符");
 
             return userInfoService.SetPassword(reqDto, this.UserInfo.UserId);
+        }
+
+        /// <summary>
+        /// 登出
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiResult Logout()
+        {
+            var authorizer = new QiuxunTokenAuthorizer(new ApiAuthContainer(this.Request));
+            authorizer.Expire();
+
+            return new ApiResult();
         }
 
 

@@ -18,8 +18,6 @@ namespace Qiuxun.C8.Api.Service.Data
 {
     public class UserInfoService
     {
-
-
         public ApiResult<LoginResDto> Login(LoginReqDto reqDto, HttpRequestMessage request)
         {
             UserInfoService service = new UserInfoService();
@@ -57,6 +55,7 @@ namespace Qiuxun.C8.Api.Service.Data
             };
 
             #region 下发登录token
+
             IdentityInfo authInfo = new IdentityInfo()
             {
                 UserId = accountInfo.Id,
@@ -69,6 +68,7 @@ namespace Qiuxun.C8.Api.Service.Data
 
             var tokenAuth = new QiuxunTokenAuthorizer(new ApiAuthContainer(request));
             tokenAuth.Authorize(authInfo);
+
             #endregion
 
             return new ApiResult<LoginResDto>()
@@ -91,8 +91,8 @@ namespace Qiuxun.C8.Api.Service.Data
             string sql = "update dbo.userInfo set [Password]=@Password where Id=@UserId";
             var sqlParameter = new[]
             {
-                new SqlParameter("@Password",password),
-                new SqlParameter("@UserId",userId),
+                new SqlParameter("@Password", password),
+                new SqlParameter("@UserId", userId),
             };
             int count = SqlHelper.ExecuteNonQuery(sql, sqlParameter);
 
@@ -121,6 +121,34 @@ namespace Qiuxun.C8.Api.Service.Data
         }
 
         /// <summary>
+        /// 验证手机号是否存在
+        /// </summary>
+        /// <param name="mobile"></param>
+        /// <returns></returns>
+        public bool ExistsMobile(string mobile)
+        {
+            string sql = "select count(1) from dbo.UserInfo where Mobile = @mobile ";
+
+            object obj = SqlHelper.ExecuteScalar(sql, new SqlParameter("@Mobile", mobile));
+
+            return obj != null && Convert.ToInt32(obj) > 0;
+        }
+
+        /// <summary>
+        /// 验证昵称是否存在
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
+        public bool ExistsNickName(string userName)
+        {
+            string sql = "select count(1) from dbo.UserInfo where Name = @Name ";
+
+            object obj = SqlHelper.ExecuteScalar(sql, new SqlParameter("@Name", userName));
+
+            return obj != null && Convert.ToInt32(obj) > 0;
+        }
+
+        /// <summary>
         /// 获取用户完整信息，
         /// </summary>
         /// <param name="account"></param>
@@ -134,7 +162,7 @@ namespace Qiuxun.C8.Api.Service.Data
             var sqlParameter = new[]
             {
                 new SqlParameter("@Mobile", account),
-                new SqlParameter("@ResourceType", (int)ResourceTypeEnum.用户头像),
+                new SqlParameter("@ResourceType", (int) ResourceTypeEnum.用户头像),
             };
             var list = Util.ReaderToList<UserInfo>(sql, sqlParameter);
 
@@ -143,7 +171,32 @@ namespace Qiuxun.C8.Api.Service.Data
             return null;
         }
 
+        /// <summary>
+        /// 用户注册
+        /// </summary>
+        /// <param name="dto"></param>
+        public void UserRegister(RegisterReqDto dto)
+        {
+            string password = Tool.GetMD5(dto.Password);
+            string ip = Tool.GetIP();
+            string regsql = @"
+  insert into UserInfo(UserName, Name, Password, Mobile, Coin, Money, Integral, SubTime, LastLoginTime, State,Pid,RegisterIP)
+  values(@UserName, @Name, @Password, @Mobile, 0,0, 0, getdate(), getdate(), 0,@Pid,@RegisterIP);select @@identity ";
+            SqlParameter[] regsp = new SqlParameter[]
+            {
+                new SqlParameter("@UserName", dto.Phone),
+                new SqlParameter("@Name", dto.NickName),
+                new SqlParameter("@Password", password),
+                new SqlParameter("@Mobile", dto.Phone),
+                new SqlParameter("@Pid", dto.InviteCode.HasValue ? dto.InviteCode.Value : 0),
+                new SqlParameter("@RegisterIP", ip)
+            };
 
+            object obj = SqlHelper.ExecuteScalar(regsql, regsp);
 
+            if (obj == null)
+                throw new ApiException(50000, "注册失败，请重试");
+
+        }
     }
 }
