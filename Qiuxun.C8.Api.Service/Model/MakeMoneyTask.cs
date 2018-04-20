@@ -12,85 +12,60 @@ namespace Qiuxun.C8.Api.Model
     [Serializable]
     public partial class MakeMoneyTask
     {
-        public MakeMoneyTask()
-        { }
-        #region Model
-        private int _id;
-        private string _taskitem;
-        private int _coin = 0;
-        private DateTime _subtime;
-        private int _count = 0;
-        private int _state = 1;
-        private int _code;
         /// <summary>
         /// 
         /// </summary>
         public int Id
         {
-            set { _id = value; }
-            get { return _id; }
+            set;
+            get;
         }
         /// <summary>
         /// 任务项
         /// </summary>
         public string TaskItem
         {
-            set { _taskitem = value; }
-            get { return _taskitem; }
+            set;
+            get;
         }
         /// <summary>
         /// 奖励金币
         /// </summary>
         public int Coin
         {
-            set { _coin = value; }
-            get { return _coin; }
+            set;
+            get;
         }
         /// <summary>
         /// 创建时间
         /// </summary>
         public DateTime SubTime
         {
-            set { _subtime = value; }
-            get { return _subtime; }
+            set;
+            get;
         }
         /// <summary>
         /// 任务次数
         /// </summary>
         public int Count
         {
-            set { _count = value; }
-            get { return _count; }
+            set;
+            get;
         }
         /// <summary>
         /// 任务状态 1-正常 2-禁用 3-删除
         /// </summary>
         public int State
         {
-            get
-            {
-                return _state;
-            }
-
-            set
-            {
-                _state = value;
-            }
+            set;
+            get;
         }
 
         public int Code
         {
-            get
-            {
-                return _code;
-            }
-
-            set
-            {
-                _code = value;
-            }
+            set;
+            get;
         }
-        #endregion Model
 
     }
 }

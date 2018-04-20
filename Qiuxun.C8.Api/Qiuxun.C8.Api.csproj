@@ -231,7 +231,10 @@
     <Compile Include="Controllers\IndexController.cs" />
     <Compile Include="Controllers\NewsController.cs" />
     <Compile Include="Controllers\PersonalController.cs" />
+    <Compile Include="Controllers\PlanController.cs" />    
+    <Compile Include="Controllers\LeaderboardController.cs" />    
     <Compile Include="Controllers\RechargeController.cs" />
+    <Compile Include="Controllers\RecordController.cs" />
     <Compile Include="Controllers\TalkingController.cs" />
     <Compile Include="Controllers\VersionController.cs" />
     <Compile Include="Global.asax.cs">

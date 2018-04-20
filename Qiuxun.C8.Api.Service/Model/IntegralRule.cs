@@ -12,55 +12,46 @@ namespace Qiuxun.C8.Api.Model
     [Serializable]
     public partial class IntegralRule
     {
-        public IntegralRule()
-        { }
-        #region Model
-        private int _id;
-        private int _ltype;
-        private string _playname;
-        private int _addscore;
-        private int _jianscore;
         /// <summary>
         /// 
         /// </summary>
         public int Id
         {
-            set { _id = value; }
-            get { return _id; }
+            set;
+            get;
         }
         /// <summary>
         /// 
         /// </summary>
         public int lType
         {
-            set { _ltype = value; }
-            get { return _ltype; }
+            set;
+            get;
         }
         /// <summary>
         /// 
         /// </summary>
         public string PlayName
         {
-            set { _playname = value; }
-            get { return _playname; }
+            set;
+            get;
         }
         /// <summary>
         /// 
         /// </summary>
         public int AddScore
         {
-            set { _addscore = value; }
-            get { return _addscore; }
+            set;
+            get;
         }
         /// <summary>
         /// 
         /// </summary>
         public int JianScore
         {
-            set { _jianscore = value; }
-            get { return _jianscore; }
+            set;
+            get;
         }
-        #endregion Model
 
     }
 }

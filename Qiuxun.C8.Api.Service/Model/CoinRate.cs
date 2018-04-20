@@ -12,46 +12,38 @@ namespace Qiuxun.C8.Api.Model
     [Serializable]
     public partial class CoinRate
     {
-        public CoinRate()
-        { }
-        #region Model
-        private int _id;
-        private int _num;
-        private decimal _rate;
-        private int _gradeid;
         /// <summary>
         /// 
         /// </summary>
         public int Id
         {
-            set { _id = value; }
-            get { return _id; }
+            set;
+            get;
         }
         /// <summary>
         /// 
         /// </summary>
         public int Num
         {
-            set { _num = value; }
-            get { return _num; }
+            set;
+            get;
         }
         /// <summary>
         /// 
         /// </summary>
         public decimal Rate
         {
-            set { _rate = value; }
-            get { return _rate; }
+            set;
+            get;
         }
         /// <summary>
         /// 
         /// </summary>
         public int GradeId
         {
-            set { _gradeid = value; }
-            get { return _gradeid; }
+            set;
+            get;
         }
-        #endregion Model
 
     }
 }

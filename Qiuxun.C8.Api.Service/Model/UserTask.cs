@@ -12,46 +12,38 @@ namespace Qiuxun.C8.Api.Model
     [Serializable]
     public partial class UserTask
     {
-        public UserTask()
-        { }
-        #region Model
-        private int _id;
-        private long _userid;
-        private int _taskid;
-        private int _completedcount = 0;
         /// <summary>
         /// 
         /// </summary>
         public int Id
         {
-            set { _id = value; }
-            get { return _id; }
+            set;
+            get;
         }
         /// <summary>
         /// 用户ID
         /// </summary>
         public long UserId
         {
-            set { _userid = value; }
-            get { return _userid; }
+            set;
+            get;
         }
         /// <summary>
         /// 任务ID
         /// </summary>
         public int TaskId
         {
-            set { _taskid = value; }
-            get { return _taskid; }
+            set;
+            get;
         }
         /// <summary>
         /// 已完成次数
         /// </summary>
         public int CompletedCount
         {
-            set { _completedcount = value; }
-            get { return _completedcount; }
+            set;
+            get;
         }
-        #endregion Model
 
     }
 }
