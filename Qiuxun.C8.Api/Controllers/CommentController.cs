@@ -53,6 +53,7 @@ namespace Qiuxun.C8.Api.Controllers
         /// <param name="type">类型 1=计划 2=文章</param>
         /// <param name="count">查询数量</param>
         /// <returns></returns>
+        [HttpGet, AllowAnonymous]
         public ApiResult<List<CommentResDto>> GetWonderfulComment(int id, int type, int count = 3)
         {
             var userId = UserInfo != null ? UserInfo.UserId : 0;
@@ -68,10 +69,43 @@ namespace Qiuxun.C8.Api.Controllers
         /// <param name="lastId">每页拉取的最有一条Id</param>
         /// <param name="pageSize">页码</param>
         /// <returns></returns>
+        [HttpGet, AllowAnonymous]
         public ApiResult<List<CommentResDto>> GetCommentList(int id, int type, int lastId = 0,
             int pageSize = 20)
         {
             return commentService.GetCommentList(id, lastId, type, pageSize);
+        }
+
+        /// <summary>
+        /// 获取回复列表
+        /// </summary>
+        /// <param name="id">计划Id或文章Id</param>
+        /// <param name="type">类型 1=计划 2=文章</param>
+        /// <param name="lastId">每页拉取的最有一条Id</param>
+        /// <param name="pageSize">页码</param>
+        /// <returns></returns>
+        [HttpGet, AllowAnonymous]
+        public ApiResult<List<CommentResDto>> GetReplayList(int id, int type, int lastId = 0,
+            int pageSize = 20)
+        {
+            long userId = UserInfo != null ? UserInfo.UserId : 0;
+            return commentService.GetReplayList(id, lastId, type, pageSize, userId);
+        }
+
+        /// <summary>
+        /// 点赞
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiResult ClickLike(ClickLikeReqDto reqDto)
+        {
+            if (reqDto == null)
+                return new ApiResult(40000, "验证参数失败");
+
+            if (reqDto.Type != 1 && reqDto.Type != 2)
+                return new ApiResult(50000, "超出业务范围");
+
+            return commentService.ClickLike(reqDto.Id, reqDto.OperationType, reqDto.Type, UserInfo.UserId);
         }
     }
 }

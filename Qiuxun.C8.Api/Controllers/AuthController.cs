@@ -119,22 +119,22 @@ namespace Qiuxun.C8.Api.Controllers
         {
             #region 验证参数
             if (reqDto == null)
-                throw new ApiException(11000, "参数验证失败");
+                return new ApiResult(11000, "参数验证失败");
             //验证码验证
-            //var smsService = new SmsService();
-            //smsService.ValidateSmsCode(new SmsCodeValidateDto()
-            //{
-            //    Phone = reqDto.Phone,
-            //    Code = reqDto.Code,
-            //    Type = 1
-            //});
+            var smsService = new SmsService();
+            smsService.ValidateSmsCode(new SmsCodeValidateDto()
+            {
+                Phone = reqDto.Phone,
+                Code = reqDto.Code,
+                Type = 1
+            });
 
             if (string.IsNullOrWhiteSpace(reqDto.Phone))
-                throw new ApiException(11000, "参数Phone验证失败");
+                return new ApiResult(11000, "参数Phone验证失败");
             if (string.IsNullOrWhiteSpace(reqDto.Password))
-                throw new ApiException(11000, "参数Password验证失败");
+                return new ApiResult(11000, "参数Password验证失败");
             if (!ValidateUtil.IsValidPassword(reqDto.Password))
-                throw new ApiException(11000, "密码包含非法字符");
+                return new ApiResult(11000, "密码包含非法字符");
             #endregion
 
             return userInfoService.ForgotPassword(reqDto);

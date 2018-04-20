@@ -179,6 +179,7 @@
     <Compile Include="Data\SmsService.cs" />
     <Compile Include="Data\UserInfoService.cs" />
     <Compile Include="Dtos\BankInfoResDto.cs" />
+    <Compile Include="Dtos\ClickLikeReqDto.cs" />
     <Compile Include="Dtos\Personal\Request\EditUserInfoReqDto.cs" />
     <Compile Include="Dtos\Personal\Request\ModifyPwdReqDto.cs" />
     <Compile Include="Dtos\Plan\Request\BetReqDto.cs" />

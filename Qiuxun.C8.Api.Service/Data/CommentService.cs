@@ -236,5 +236,200 @@ from Comment a
                 Data = pageData
             };
         }
+
+        /// <summary>
+        /// 获取回复列表
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="type"></param>
+        /// <param name="lastId"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public ApiResult<List<CommentResDto>> GetReplayList(int id, int type, int lastId, int pageSize, long userId)
+        {
+            string sql = "select top " + pageSize + @"a.*,isnull(b.Name,'') as NickName,isnull(c.RPath,'') as Avater 
+,(select count(1) from LikeRecord where [Status]=1 and [Type]=a.[Type] and CommentId=a.Id and UserId=@UserId) as CurrentUserLikes 
+,(select count(1) from Comment where PId = a.Id ) as ReplayCount
+from Comment a
+  left join UserInfo b on b.Id = a.UserId
+  left join ResourceMapping c on c.FkId = a.UserId and c.Type = @ResourceType
+  where a.RefCommentId = @RefCommentId and a.IsDeleted = 0 and a.Type=@Type";
+
+            if (lastId > 0)
+            {
+                sql += " and a.Id <" + lastId;
+            }
+
+            sql += " order by Id DESC";
+
+            var parameters = new[]
+           {
+                new SqlParameter("@UserId",userId),
+                new SqlParameter("@ResourceType",(int)ResourceTypeEnum.用户头像),
+                new SqlParameter("@RefCommentId",id),
+            };
+
+            var list = Util.ReaderToList<Comment>(sql, parameters);
+
+            string webHost = ConfigurationManager.AppSettings["webHost"];
+            string defaultAvater = string.Format("{0}/images/default_avater.png", webHost);
+            var pageData = list.Select(x => new CommentResDto()
+            {
+                Id = x.Id,
+                ArticleId = x.ArticleId,
+                Avater = string.IsNullOrWhiteSpace(x.Avater) ? defaultAvater : x.Avater,
+                Content = x.Content,
+                IsLike = x.CurrentUserLikes > 0,
+                NickName = x.NickName,
+                PId = x.PId,
+                RefCommentId = x.RefCommentId,
+                ReplayCount = x.ReplayCount
+            }).ToList();
+
+            return new ApiResult<List<CommentResDto>>()
+            {
+                Data = pageData
+            };
+        }
+
+
+        /// <summary>
+        /// 点赞
+        /// </summary>
+        /// <param name="id">评论Id</param>
+        /// <param name="ctype">操作类型 1=点赞 2=取消点赞</param>
+        /// <param name="type">类型 1=计划 2=文章</param>
+        /// <param name="userId">用户Id</param>
+        /// <returns></returns>
+        public ApiResult ClickLike(int id, int ctype, int type, long userId)
+        {
+            var result = new ApiResult();
+            string sql = "select [Id],[CommentId],[UserId],[Status],[Type] from [dbo].[LikeRecord] where [Type]=" + type + " and CommentId=" + id + " and UserId=" + userId;
+
+            var list = Util.ReaderToList<LikeRecord>(sql);
+
+            if (ctype == 1)
+            {
+                if (list.Any())
+                {
+                    //已存在点赞记录
+                    var likeRecord = list.FirstOrDefault();
+                    if (likeRecord.Status == (int)LikeStatusEnum.Canceled)
+                    {
+                        //已存在的点赞记录为取消状态
+                        //修改点赞状态
+                        result = MoidfyLike(id, type, userId, (int)LikeStatusEnum.Clicked);
+                    }
+                    else
+                    {
+                        result = new ApiResult(10000, "你已经点过赞");
+                    }
+                }
+                else
+                {
+                    #region 添加点赞
+                    try
+                    {
+                        //添加点赞
+                        //SqlHelper.ExecuteTransaction();
+                        string insert = @"INSERT INTO [dbo].[LikeRecord]
+           ([CommentId]
+           ,[UserId]
+           ,[CreateTime]
+           ,[Status]
+           ,[UpdateTime]
+           ,[Type])
+     VALUES
+           (@CommentId
+           ,@UserId
+           ,GETDATE()
+           ,1
+           ,GETDATE()
+           ,@Type);
+        UPDATE [dbo].[Comment] SET [StarCount]+=1 WHERE Id=@CommentId;";
+
+                        var insertParameters = new[]
+                        {
+                        new SqlParameter("@CommentId", id),
+                        new SqlParameter("@UserId", userId),
+                        new SqlParameter("@Type", type),
+                    };
+
+                        SqlHelper.ExecuteTransaction(insert, insertParameters);
+                    }
+                    catch (Exception ex)
+                    {
+                        //LogHelper.WriteLog($"点赞异常，用户：{UserHelper.GetUser().Name},点赞类型：{type},Id:{id}。堆栈：{ex.StackTrace}");
+                        result = new ApiResult(500, ex.Message);
+                    }
+                    #endregion
+
+                }
+            }
+            else if (ctype == 2)
+            {
+                //取消点赞
+                if (list.Any())
+                {
+                    result = MoidfyLike(id, type, userId, (int)LikeStatusEnum.Canceled);
+                }
+            }
+            else
+            {
+                result = new ApiResult(400, "超出业务范围");
+            }
+
+            return result;
+        }
+
+
+        /// <summary>
+        /// 修改点赞
+        /// </summary>
+        /// <param name="id">评论Id</param>
+        /// <param name="type">评论类型</param>
+        /// <param name="userId">用户Id</param>
+        /// <param name="likeStatus">点赞操作类型 </param>
+        /// <returns></returns>
+        private static ApiResult MoidfyLike(int id, int type, long userId, int likeStatus)
+        {
+            var result = new ApiResult();
+            try
+            {
+                //修改点赞
+                //SqlHelper.ExecuteTransaction();
+                string updateSql = @"
+        UPDATE [dbo].[LikeRecord] SET [Status]=@Status,[UpdateTime]=GETDATE() 
+        WHERE [CommentId]=@CommentId AND [UserId]=@UserId AND [Type]=@Type;";
+
+                if (likeStatus == 1)
+                {
+                    updateSql += "UPDATE [dbo].[Comment] SET [StarCount] +=1 WHERE [StarCount]>0 and Id=@CommentId;";
+                }
+                else
+                {
+                    updateSql += "UPDATE [dbo].[Comment] SET [StarCount] -=1 WHERE [StarCount]>0 and Id=@CommentId;";
+                }
+
+                var updateParameters = new[]
+                {
+                    new SqlParameter("@CommentId", id),
+                    new SqlParameter("@UserId", userId),
+                    new SqlParameter("@Type", type),
+                    new SqlParameter("@Status", likeStatus)
+                };
+
+                SqlHelper.ExecuteTransaction(updateSql, updateParameters);
+            }
+            catch (Exception ex)
+            {
+                //LogHelper.WriteLog($"取消点赞异常，用户：{UserHelper.GetUser().Name},点赞类型：{type},Id:{id}。堆栈：{ex.StackTrace}");
+                LogHelper.WriteLog("取消点赞异常，用户：" + userId + ",点赞类型：" + type + ", Id:" + id + "。堆栈：" + ex.StackTrace);
+
+                result = new ApiResult(500, ex.Message);
+            }
+            return result;
+        }
     }
 }
