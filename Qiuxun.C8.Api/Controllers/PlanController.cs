@@ -96,7 +96,7 @@ namespace Qiuxun.C8.Api.Controllers
         /// <summary>
         /// 获取专家列表
         /// </summary>
-        /// <param name="model">彩种Id</param>      
+        /// <param name="model">lType:彩种Id playName:玩法名称 type:类型 1=高手推荐 2=免费专家 pageIndex:页码 pageSize:页数据量</param>      
         /// <returns></returns>
         [HttpPost]
         public ApiResult<PagedListP<Expert>> GetExpertList(ExpertListReqDto model)
@@ -109,7 +109,7 @@ namespace Qiuxun.C8.Api.Controllers
         /// <summary>
         /// 获取用户近期竞猜记录(返回当前用户是否点阅过该记录)
         /// </summary>
-        /// <param name="model">lType:彩种Id playName:玩法名称 type:类型 1=高手推荐 2=免费专家 pageIndex:页码 pageSize:页数据量</param>
+        /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
         public ApiResult<PagedListP<AchievementModel>> GetUserLastPlay(LastPlayReqDto model)
