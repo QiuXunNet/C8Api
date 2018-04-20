@@ -165,7 +165,10 @@
     <Compile Include="Common\ToolsHelper.cs" />
     <Compile Include="Common\WebLogHandleErrorAttribute.cs" />
     <Compile Include="Data\AmountService.cs" />
+    <Compile Include="Data\BaseService.cs" />
+    <Compile Include="Data\CommentService.cs" />
     <Compile Include="Data\LotteryService.cs" />
+    <Compile Include="Data\NewsService.cs" />
     <Compile Include="Data\PersonalService.cs" />
     <Compile Include="Data\RechargeService.cs" />
     <Compile Include="Data\TalkingService.cs" />
@@ -173,6 +176,14 @@
     <Compile Include="Data\SmsService.cs" />
     <Compile Include="Data\UserInfoService.cs" />
     <Compile Include="Dtos\BankInfoResDto.cs" />
+    <Compile Include="Dtos\CommentReqDto.cs" />
+    <Compile Include="Dtos\CommentResDto.cs" />
+    <Compile Include="Dtos\GalleryTypeResDto.cs" />
+    <Compile Include="Dtos\LhcNavResDto.cs" />
+    <Compile Include="Dtos\LotteryTypeResDto.cs" />
+    <Compile Include="Dtos\NewsResDto.cs" />
+    <Compile Include="Dtos\NewsTypeResDto.cs" />
+    <Compile Include="Dtos\RecommendGalleryResDto.cs" />
     <Compile Include="Dtos\Talk\AddBlackReqDto.cs" />
     <Compile Include="Dtos\Talk\BlackListResDto.cs" />
     <Compile Include="Dtos\Talk\ChatRoomResDto.cs" />
@@ -197,6 +208,7 @@
     <Compile Include="Dtos\Talk\TalkNotesReqDto.cs" />
     <Compile Include="Dtos\Talk\TalkNotesResDto.cs" />
     <Compile Include="Dtos\Talk\UserStateResDto.cs" />
+    <Compile Include="Dtos\ValidateCaptchaReqDto.cs" />
     <Compile Include="Dtos\WXResDto.cs" />
     <Compile Include="Dtos\ZFBResDto.cs" />
     <Compile Include="Dtos\SmsSendLog.cs" />

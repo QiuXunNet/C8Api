@@ -18,7 +18,7 @@ namespace Qiuxun.C8.Api.Service.Dtos
         /// <summary>
         /// 旧密码
         /// </summary>
-        public string OldPassowd { get; set; }
+        public string OldPassword { get; set; }
     }
 
     /// <summary>

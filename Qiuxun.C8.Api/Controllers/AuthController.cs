@@ -83,7 +83,7 @@ namespace Qiuxun.C8.Api.Controllers
         public ApiResult ValidateMobile(string phone)
         {
             if (!ValidateUtil.IsValidMobile(phone))
-                throw new ApiException(50000, "手机号不正确");
+                throw new ApiException(50001, "手机号不正确");
 
             if (userInfoService.ExistsMobile(phone))
                 throw new ApiException(50000, "手机号已存在");
@@ -103,7 +103,7 @@ namespace Qiuxun.C8.Api.Controllers
             if (string.IsNullOrWhiteSpace(reqDto.Password))
                 throw new ApiException(11000, "参数Password验证失败");
 
-            if (ValidateUtil.IsValidPassword(reqDto.Password))
+            if (!ValidateUtil.IsValidPassword(reqDto.Password))
                 throw new ApiException(11000, "密码包含非法字符");
 
             return userInfoService.SetPassword(reqDto, this.UserInfo.UserId);
@@ -121,6 +121,42 @@ namespace Qiuxun.C8.Api.Controllers
             if (reqDto == null)
                 throw new ApiException(11000, "参数验证失败");
             //验证码验证
+            //var smsService = new SmsService();
+            //smsService.ValidateSmsCode(new SmsCodeValidateDto()
+            //{
+            //    Phone = reqDto.Phone,
+            //    Code = reqDto.Code,
+            //    Type = 1
+            //});
+
+            if (string.IsNullOrWhiteSpace(reqDto.Phone))
+                throw new ApiException(11000, "参数Phone验证失败");
+            if (string.IsNullOrWhiteSpace(reqDto.Password))
+                throw new ApiException(11000, "参数Password验证失败");
+            if (!ValidateUtil.IsValidPassword(reqDto.Password))
+                throw new ApiException(11000, "密码包含非法字符");
+            #endregion
+
+            return userInfoService.ForgotPassword(reqDto);
+        }
+
+        /// <summary>
+        /// 校验验证码
+        /// </summary>
+        /// <param name="reqDto">请求参数类</param>
+        /// <returns></returns>
+        [HttpPost, AllowAnonymous]
+        public ApiResult ValidateCaptcha(ValidateCaptchaReqDto reqDto)
+        {
+            if (reqDto == null)
+                return new ApiResult(11000, "参数验证失败");
+            if (!ValidateUtil.IsValidMobile(reqDto.Phone))
+                return new ApiResult(11000, "手机号格式错误");
+
+            if (string.IsNullOrWhiteSpace(reqDto.Code))
+                return new ApiResult(50000, "请输入验证码");
+
+            //验证码验证
             var smsService = new SmsService();
             smsService.ValidateSmsCode(new SmsCodeValidateDto()
             {
@@ -129,15 +165,7 @@ namespace Qiuxun.C8.Api.Controllers
                 Type = 1
             });
 
-            if (string.IsNullOrWhiteSpace(reqDto.Phone))
-                throw new ApiException(11000, "参数Phone验证失败");
-            if (string.IsNullOrWhiteSpace(reqDto.Password))
-                throw new ApiException(11000, "参数Password验证失败");
-            if (ValidateUtil.IsValidPassword(reqDto.Password))
-                throw new ApiException(11000, "密码包含非法字符");
-            #endregion
-
-            return userInfoService.ForgotPassword(reqDto);
+            return new ApiResult();
         }
 
         /// <summary>
