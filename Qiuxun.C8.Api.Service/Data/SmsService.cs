@@ -24,7 +24,7 @@ namespace Qiuxun.C8.Api.Service.Data
         public bool Send(SmsSendDto dto)
         {
             string code = SmsSender.GetVCode();
-            int sendResult = SmsSender.SendMsgByTXY("", dto.Sender, code);
+            int sendResult = SmsSender.SendMsgByTXY("", dto.Receiver, code);
 
             var sendLog = new SmsSendLog()
             {
@@ -37,7 +37,8 @@ namespace Qiuxun.C8.Api.Service.Data
                 SendPort = 0,
                 SendTime = DateTime.Now,
                 UpdateTime = DateTime.Now,
-                Status = 0
+                Status = 0,
+                SendResult = sendResult
             };
 
             if (sendResult != 0)
@@ -49,15 +50,15 @@ namespace Qiuxun.C8.Api.Service.Data
                 sendLog.Status = 1;
             }
 
-            string sql = string.Format(@"INSERT INTO [dbo].[sms_send_log]
+            string sql = string.Format(@"INSERT INTO [dbo].[SmsSendLog]
       ([UserId],[Sender],[Receiver],[Type],[Code],[Status],[Count],[SendTime],[SendPort],[SendResult],[UpdateTime])
-      VALUES({0},'{1}','{2}',{3},{4},{5},{6},GETDATE(),{7},{8},GETDATE())",
+      VALUES({0},'{1}','{2}',{3},'{4}',{5},{6},GETDATE(),{7},{8},GETDATE())",
       sendLog.UserId, sendLog.Sender, sendLog.Receiver, sendLog.Type, sendLog.Code,
       sendLog.Status, sendLog.Status, sendLog.SendPort, sendLog.SendResult);
 
             SqlHelper.ExecuteNonQuery(sql);
 
-            return sendLog.SendResult == 1;
+            return sendLog.SendResult == 0;
 
         }
 
@@ -121,7 +122,7 @@ namespace Qiuxun.C8.Api.Service.Data
                 throw new ApiException(50000, "验证码错误，请重新输入");
 
         }
-        
+
         /// <summary>
         /// 更新消息日志
         /// </summary>

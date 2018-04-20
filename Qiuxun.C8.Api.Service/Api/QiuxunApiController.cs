@@ -95,5 +95,17 @@ namespace Qiuxun.C8.Api.Service.Api
                 return base.Request.GetProperty<IdentityInfo>("");
             }
         }
+
+        /// <summary>
+        /// Mobile站点Host
+        /// </summary>
+        public string WebHost
+        {
+            get
+            {
+                string webHost = ConfigurationManager.AppSettings["webHost"];
+                return webHost;
+            }
+        }
     }
 }

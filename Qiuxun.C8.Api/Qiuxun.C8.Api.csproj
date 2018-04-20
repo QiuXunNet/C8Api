@@ -43,6 +43,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Qiuxun.C8.Api.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AopSdk">
@@ -226,6 +227,8 @@
     <Compile Include="Controllers\AuthController.cs" />
     <Compile Include="Controllers\CommonController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\IndexController.cs" />
+    <Compile Include="Controllers\PersonalController.cs" />
     <Compile Include="Controllers\LeaderboardController.cs" />
     <Compile Include="Controllers\RechargeController.cs" />
     <Compile Include="Controllers\RecordController.cs" />
