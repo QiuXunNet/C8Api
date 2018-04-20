@@ -179,6 +179,7 @@
     <Compile Include="Dtos\Personal\Request\EditUserInfoReqDto.cs" />
     <Compile Include="Dtos\Personal\Request\ModifyPwdReqDto.cs" />
     <Compile Include="Dtos\Plan\Request\BetReqDto.cs" />
+    <Compile Include="Dtos\Plan\Request\ExpertListReqDto.cs" />
     <Compile Include="Dtos\Plan\Request\ExpertSearchListReqDto.cs" />
     <Compile Include="Dtos\Plan\Request\HasSubBetReqDto.cs" />
     <Compile Include="Dtos\Plan\Request\LastPlayReqDto.cs" />

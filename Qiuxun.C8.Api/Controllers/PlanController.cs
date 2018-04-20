@@ -86,7 +86,7 @@ namespace Qiuxun.C8.Api.Controllers
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        [HttpGet]
+        [HttpPost]
         public ApiResult<BettingRecord> GetLastPlay(LastPlayReqDto model)
         {
             PlanService service = new PlanService();
@@ -96,26 +96,22 @@ namespace Qiuxun.C8.Api.Controllers
         /// <summary>
         /// 获取专家列表
         /// </summary>
-        /// <param name="lType">彩种Id</param>
-        /// <param name="playName">玩法名称</param>
-        /// <param name="type">类型 1=高手推荐 2=免费专家</param>
-        /// <param name="pageIndex">页码</param>
-        /// <param name="pageSize">页数据量</param>
+        /// <param name="model">彩种Id</param>      
         /// <returns></returns>
-        [HttpGet]
-        public ApiResult<PagedListP<Expert>> GetExpertList(int lType, string playName, int type = 1, int pageIndex = 1, int pageSize = 20)
+        [HttpPost]
+        public ApiResult<PagedListP<Expert>> GetExpertList(ExpertListReqDto model)
         {
             PlanService service = new PlanService();
-            PagedListP<Expert> list = service.GetExpertList(lType, playName, type, pageIndex, pageSize);
+            PagedListP<Expert> list = service.GetExpertList(model.lType, model.playName, model.type, model.pageIndex, model.pageSize);
             return new ApiResult<PagedListP<Expert>>() { Code = 100, Desc = "", Data = list };
         }
 
         /// <summary>
         /// 获取用户近期竞猜记录(返回当前用户是否点阅过该记录)
         /// </summary>
-        /// <param name="model"></param>
+        /// <param name="model">lType:彩种Id playName:玩法名称 type:类型 1=高手推荐 2=免费专家 pageIndex:页码 pageSize:页数据量</param>
         /// <returns></returns>
-        [HttpGet]
+        [HttpPost]
         public ApiResult<PagedListP<AchievementModel>> GetUserLastPlay(LastPlayReqDto model)
         {
             PlanService service = new PlanService();
