@@ -66,7 +66,7 @@ namespace Qiuxun.C8.Api.Controllers
         /// </summary>
         /// <param name="img">Base64格式字符串</param>
         /// <returns>返回小图URL地址,大图地址去掉_Min即可</returns>
-        [HttpPost]
+        [HttpGet]
         public ApiResult<string> SaveImg(string img)
         {
             var result = new ApiResult<string>();

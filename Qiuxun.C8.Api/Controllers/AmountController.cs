@@ -86,7 +86,7 @@ namespace Qiuxun.C8.Api.Controllers
         /// <param name="money">提取的金额</param>
         /// <param name="userId">当前登录用户</param>
         /// <returns></returns>
-        [HttpPost]
+        [HttpGet]
         public ApiResult AddExtractCash(int backId, int money, int userId)
         {
             var result = new ApiResult();
