@@ -1,4 +1,5 @@
 ﻿using System.Web.Http;
+using Qiuxun.C8.Api.Model;
 using Qiuxun.C8.Api.Public;
 using Qiuxun.C8.Api.Service.Api;
 using Qiuxun.C8.Api.Service.Auth;
@@ -109,6 +110,37 @@ namespace Qiuxun.C8.Api.Controllers
         }
 
         /// <summary>
+        /// 找回密码
+        /// </summary>
+        /// <param name="reqDto"></param>
+        /// <returns></returns>
+        [HttpPost, AllowAnonymous]
+        public ApiResult ForgotPassword(ForgotPasswordReqDto reqDto)
+        {
+            #region 验证参数
+            if (reqDto == null)
+                throw new ApiException(11000, "参数验证失败");
+            //验证码验证
+            var smsService = new SmsService();
+            smsService.ValidateSmsCode(new SmsCodeValidateDto()
+            {
+                Phone = reqDto.Phone,
+                Code = reqDto.Code,
+                Type = 1
+            });
+
+            if (string.IsNullOrWhiteSpace(reqDto.Phone))
+                throw new ApiException(11000, "参数Phone验证失败");
+            if (string.IsNullOrWhiteSpace(reqDto.Password))
+                throw new ApiException(11000, "参数Password验证失败");
+            if (ValidateUtil.IsValidPassword(reqDto.Password))
+                throw new ApiException(11000, "密码包含非法字符");
+            #endregion
+
+            return userInfoService.ForgotPassword(reqDto);
+        }
+
+        /// <summary>
         /// 登出
         /// </summary>
         /// <returns></returns>
@@ -121,11 +153,38 @@ namespace Qiuxun.C8.Api.Controllers
             return new ApiResult();
         }
 
-
-        [HttpGet]
-        public ApiResult GetUserInfo()
+        /// <summary>
+        /// 删除用户账户
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet, AllowAnonymous]
+        public ApiResult DeleteAccount(string phone)
         {
-            return new ApiResult(100, "获取成功");
+            #region 验证参数
+            if (string.IsNullOrWhiteSpace(phone))
+                throw new ApiException(11000, "参数Phone验证失败");
+
+            if (!ValidateUtil.IsValidMobile(phone))
+                throw new ApiException(50000, "手机号不正确");
+            #endregion
+
+            return userInfoService.DeleteAccount(phone);
+        }
+
+        /// <summary>
+        /// 获取当前登录的用户信息
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ApiResult<UserInfo> GetUserInfo()
+        {
+
+            var data = userInfoService.GetFullUserInfoByMobile(UserInfo.UserAccount);
+
+            return new ApiResult<UserInfo>()
+            {
+                Data = data
+            };
         }
     }
 }

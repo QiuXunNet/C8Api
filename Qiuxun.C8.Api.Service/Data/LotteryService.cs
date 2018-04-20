@@ -65,5 +65,50 @@ namespace Qiuxun.C8.Api.Service.Data
                 Data = resDto
             };
         }
+
+        /// <summary>
+        /// 获取首页彩种信息列表
+        /// </summary>
+        /// <param name="lotteryTypePId">彩种分类Id</param>
+        /// <returns></returns>
+        public ApiResult<List<IndexLotteryInfoResDto>> GetIndexLotteryList(int lotteryTypePId)
+        {
+            var lotteryList = GetLotteryTypeList(lotteryTypePId);
+
+
+            var resDto = new List<IndexLotteryInfoResDto>();
+
+
+            lotteryList.ForEach(x =>
+            {
+                var info = new IndexLotteryInfoResDto()
+                {
+                    LType = x.lType,
+                    LTypeName = Util.GetLotteryTypeName(x.lType),
+                };
+
+                var lastLotteryRecord = GetLotteryRecord(x.lType);
+                if (lastLotteryRecord != null)
+                {
+                    info.OpenNum = lastLotteryRecord.Num;
+                    info.Issue = lastLotteryRecord.Issue;
+                    info.OpenTime = lastLotteryRecord.ShowOpenTime;
+                }
+                info.Logo = Util.GetLotteryIconUrl(x.lType);
+                resDto.Add(info);
+            });
+
+            return new ApiResult<List<IndexLotteryInfoResDto>>()
+            {
+                Data = resDto
+            };
+
+        }
+
+        public LotteryRecord GetLotteryRecord(int ltype)
+        {
+            string sql = "select top(1)* from LotteryRecord where lType = " + ltype + " order by Id desc";
+            return Util.ReaderToModel<LotteryRecord>(sql);
+        }
     }
 }

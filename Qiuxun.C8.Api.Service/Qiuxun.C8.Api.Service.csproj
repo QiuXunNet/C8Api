@@ -165,10 +165,12 @@
     <Compile Include="Common\ToolsHelper.cs" />
     <Compile Include="Common\WebLogHandleErrorAttribute.cs" />
     <Compile Include="Data\AmountService.cs" />
+    <Compile Include="Data\LeaderboardService.cs" />
     <Compile Include="Data\LotteryService.cs" />
     <Compile Include="Data\PersonalService.cs" />
     <Compile Include="Data\PlanService.cs" />
     <Compile Include="Data\RechargeService.cs" />
+    <Compile Include="Data\RecordService.cs" />
     <Compile Include="Data\TalkingService.cs" />
     <Compile Include="Data\ResourceManagementService.cs" />
     <Compile Include="Data\SmsService.cs" />
@@ -180,6 +182,8 @@
     <Compile Include="Dtos\Plan\Request\ExpertSearchListReqDto.cs" />
     <Compile Include="Dtos\Plan\Request\HasSubBetReqDto.cs" />
     <Compile Include="Dtos\Plan\Request\LastPlayReqDto.cs" />
+    <Compile Include="Dtos\LotteryRecordRseDto.cs" />
+    <Compile Include="Dtos\Leaderboard\RankIntegralResDto.cs" />
     <Compile Include="Dtos\Talk\AddBlackReqDto.cs" />
     <Compile Include="Dtos\Talk\BlackListResDto.cs" />
     <Compile Include="Dtos\Talk\ChatRoomResDto.cs" />
