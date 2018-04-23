@@ -69,6 +69,8 @@ namespace Qiuxun.C8.Api.Controllers
         [HttpGet]
         public ApiResult<string> SaveImg(string img)
         {
+            img = img.Replace("data:image/jpeg;base64,", "");
+
             var result = new ApiResult<string>();
 
             var xPath = "/Upload/TalkingImg/";
