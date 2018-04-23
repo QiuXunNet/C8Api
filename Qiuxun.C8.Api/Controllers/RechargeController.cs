@@ -195,7 +195,7 @@ namespace Qiuxun.C8.Api.Controllers
             ZFBResDto model = new ZFBResDto();
 
             Dictionary<string, string> sPara = new Dictionary<string, string>();
-            Boolean verifyResult = AlipaySignature.RSACheckV1(inputPara, model.AlipayPublicKey, model.CharSet, model.SignType, false);
+            Boolean verifyResult = AlipaySignature.RSACheckV1(inputPara, alipay_public_key, charset, sign_type, false);
             return verifyResult;
         }
 
