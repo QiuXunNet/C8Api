@@ -10,8 +10,8 @@ namespace Qiuxun.C8.Api.Service.Dtos.Personal
     {
         public int Number { get; set; }//粉丝人数
         public int Rank { get; set; }//排名
-        public int Followed_UserId { get; set; }//关注ID
-        public string Name { get; set; }//昵称
-        public string HeadPath { get; set; }//头像
+        public int FollowedUserId { get; set; }//关注ID
+        public string NickName { get; set; }//昵称
+        public string Avater { get; set; }//头像
     }
 }

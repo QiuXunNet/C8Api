@@ -48,10 +48,21 @@ namespace Qiuxun.C8.Api.Controllers
         /// </summary>
         /// <param name="parentId">彩种分类Id</param>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet, AllowAnonymous]
         public ApiResult<List<IndexLotteryInfoResDto>> GetIndexLotteryList(int parentId)
         {
             return lotteryService.GetIndexLotteryList(parentId);
+        }
+
+        /// <summary>
+        /// 获取彩种开奖信息
+        /// </summary>
+        /// <param name="lType"></param>
+        /// <returns></returns>
+        [HttpGet, AllowAnonymous]
+        public ApiResult<IndexLotteryInfoResDto> GetLotteryInfo(int lType)
+        {
+            return lotteryService.GetLotteryInfo(lType);
         }
 
         /// <summary>
@@ -98,7 +109,7 @@ namespace Qiuxun.C8.Api.Controllers
 
             if (!sendResult) return new ApiResult(10005, "发送失败，请稍后重试");
 
-            return new ApiResult();
+            return new ApiResult(100, "发送成功");
         }
 
         /// <summary>

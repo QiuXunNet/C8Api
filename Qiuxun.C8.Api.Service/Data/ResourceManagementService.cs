@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Net.Http;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Hosting;
 using System.Web.Http;
+using Qiuxun.C8.Api.Model;
 using Qiuxun.C8.Api.Public;
 using Qiuxun.C8.Api.Service.Common;
 using Qiuxun.C8.Api.Service.Dtos;
@@ -71,6 +73,26 @@ namespace Qiuxun.C8.Api.Service.Data
 
             result.Data = resDto;
             return result;
+        }
+
+        /// <summary>
+        /// 获取资源
+        /// </summary>
+        /// <param name="type">资源类型</param>
+        /// <param name="fkId">关联Id</param>
+        /// <returns></returns>
+        public List<ResourceMapping> GetResources(int type, long fkId)
+        {
+            string thumbSql = @"SELECT * FROM ResourceMapping WHERE [Type]=@type and [FKId]=@FKId ";
+            SqlParameter[] parameters =
+            {
+                new SqlParameter("@type",SqlDbType.Int),
+                new SqlParameter("@FKId",SqlDbType.BigInt),
+            };
+            parameters[0].Value = type;
+            parameters[1].Value = fkId;
+
+            return Util.ReaderToList<ResourceMapping>(thumbSql, parameters) ?? new List<ResourceMapping>();
         }
     }
 }

@@ -32,24 +32,21 @@ namespace Qiuxun.C8.Api.Service.Data
             {
                 if (!Crypter.CheckPassword(reqDto.Password, accountInfo.Password))
                 {
-                    if (Tool.GetMD5(reqDto.Password) != accountInfo.Password)
-                    {
-                        throw new ApiException(15023, "用户名不存在或密码错误");
-                    }
-                    //throw new ApiException(15023, "用户名不存在或密码错误");
+                    throw new ApiException(15023, "用户名不存在或密码错误");
                 }
-
-
-                //if (HashHelper.Encrypt(HashCryptoType.MD5, loginPassword, "") != accountInfo.Password)
-                //{
-                //    throw new ApiException(15023, "用户名不存在或密码错误");
-                //}
+            }
+            else
+            {
+                if (Tool.GetMD5(reqDto.Password) != accountInfo.Password)
+                {
+                    throw new ApiException(15023, "用户名不存在或密码错误");
+                }
             }
 
             string webHost = ConfigurationManager.AppSettings["webHost"];
-            string avater = string.IsNullOrWhiteSpace(accountInfo.Headpath)
+            string avater = string.IsNullOrWhiteSpace(accountInfo.Avater)
                 ? string.Format("{0}/images/default_avater.png", webHost)
-                : accountInfo.Headpath;
+                : accountInfo.Avater;
 
             LoginResDto resDto = new LoginResDto()
             {
@@ -57,7 +54,7 @@ namespace Qiuxun.C8.Api.Service.Data
                 Avater = avater,
                 UserId = accountInfo.Id,
                 Mobile = accountInfo.Mobile,
-                NickName = accountInfo.Name
+                NickName = accountInfo.NickName
             };
 
             #region 下发登录token
@@ -67,7 +64,7 @@ namespace Qiuxun.C8.Api.Service.Data
                 UserId = accountInfo.Id,
                 UserAccount = accountInfo.Mobile,
                 UserStatus = (int)accountInfo.State,
-                UserName = accountInfo.Name,
+                UserName = accountInfo.NickName,
                 IsTemp = false,
                 Avater = avater
             };
@@ -95,12 +92,16 @@ namespace Qiuxun.C8.Api.Service.Data
             var userInfo = Util.GetEntityById<UserInfo>((int)userId);
             if (userInfo.Password.StartsWith("$2y"))
             {
-                if (!Crypter.CheckPassword(reqDto.OldPassowd, userInfo.Password))
+                if (!Crypter.CheckPassword(reqDto.OldPassword, userInfo.Password))
                 {
-                    if (Tool.GetMD5(reqDto.Password) != userInfo.Password)
-                    {
-                        throw new ApiException(15023, "旧密码未通过验证");
-                    }
+                    return new ApiResult(15023, "旧密码未通过验证");
+                }
+            }
+            else
+            {
+                if (Tool.GetMD5(reqDto.OldPassword) != userInfo.Password)
+                {
+                    return new ApiResult(15023, "旧密码未通过验证");
                 }
             }
 
@@ -129,6 +130,11 @@ namespace Qiuxun.C8.Api.Service.Data
         /// <returns></returns>
         public ApiResult ForgotPassword(ForgotPasswordReqDto reqDto)
         {
+            var user = GetUserInfoByMobile(reqDto.Phone);
+
+            if (user == null)
+                throw new ApiException(40000, "账户不存在或未注册");
+
             string password = Tool.GetMD5(reqDto.Password);
 
             string sql = "update dbo.userInfo set [Password]=@Password where Mobile=@mobile";
@@ -141,7 +147,7 @@ namespace Qiuxun.C8.Api.Service.Data
 
             if (count < 1)
             {
-                return new ApiResult(11001, "设置失败");
+                return new ApiResult(11001, "找回密码失败");
             }
 
             return new ApiResult();
@@ -159,7 +165,7 @@ namespace Qiuxun.C8.Api.Service.Data
 
             int result = SqlHelper.ExecuteNonQuery(sql, new SqlParameter("@Mobile", phone));
 
-            if (result > 0) return new ApiResult(40000, "删除失败");
+            if (result < 1) return new ApiResult(40000, "删除失败");
 
             return new ApiResult();
         }
@@ -171,7 +177,7 @@ namespace Qiuxun.C8.Api.Service.Data
         /// <returns></returns>
         public UserInfo GetUserInfoByMobile(string account)
         {
-            string sql = "select top(1) * from dbo.UserInfo where Mobile = @mobile ";
+            string sql = "select top(1) *,Name as NickName from dbo.UserInfo where Mobile = @mobile ";
 
             var list = Util.ReaderToList<UserInfo>(sql, new SqlParameter("@Mobile", account));
 
@@ -224,7 +230,7 @@ namespace Qiuxun.C8.Api.Service.Data
         /// <returns></returns>
         public UserInfo GetFullUserInfoByMobile(string account)
         {
-            string sql = @"select top(1) * from dbo.UserInfo a 
+            string sql = @"select top(1) a.*,isnull(b.RPath,'') as Avater,a.Name as NickName from dbo.UserInfo a 
         left join dbo.ResourceMapping b on b.FkId=a.Id and b.[Type]=@ResourceType
         where a.Mobile = @mobile ";
 
@@ -280,10 +286,10 @@ namespace Qiuxun.C8.Api.Service.Data
                     {
                         //受邀奖励
                         int myReward = GetRadomReward(3);
-                        AddCoinReward(userId, myReward, 6, (int)inviteUser.Id);
+                        AddCoinReward(userId, myReward, 6, (int)inviteUser.Id, 1);
                         //邀请奖励
                         int upReward = GetRadomReward(1);
-                        AddCoinReward((int)inviteUser.Id, upReward, 7, userId);
+                        AddCoinReward((int)inviteUser.Id, upReward, 7, userId, 1);
                         //添加邀请任务记录
                         AddUserTask((int)dto.InviteCode.Value, 105);
 
@@ -295,7 +301,7 @@ namespace Qiuxun.C8.Api.Service.Data
                             if (superUser != null)
                             {
                                 int superReward = GetRadomReward(2);
-                                AddCoinReward((int)superUser.Id, superReward, 7, (int)inviteUser.Id);
+                                AddCoinReward((int)superUser.Id, superReward, 7, (int)inviteUser.Id, userId);
                             }
                         }
                     }
@@ -390,7 +396,8 @@ namespace Qiuxun.C8.Api.Service.Data
         /// <param name="coin"></param>
         /// <param name="type"></param>
         /// <param name="otherId"></param>
-        public void AddCoinReward(int id, int coin, int type, int otherId)
+        /// <param name="state"></param>
+        public void AddCoinReward(int id, int coin, int type, int otherId, int state)
         {
             try
             {
@@ -398,15 +405,16 @@ namespace Qiuxun.C8.Api.Service.Data
                 StringBuilder strSql = new StringBuilder();
 
                 strSql.Append("update UserInfo set Coin+=@Coin where Id =@UserId;");
-                strSql.Append(@"insert into CoinRecord(lType, UserId, OtherId, Type, [Money], SubTime)
-                             values(0, @UserId, @OtherId, @Type, @Coin, getdate());");
+                strSql.Append(@"insert into CoinRecord(lType, UserId, OtherId, Type, [Money],[State], SubTime)
+                             values(0, @UserId, @OtherId, @Type, @Coin,@State, getdate());");
 
                 var parameters = new[]
                 {
                     new SqlParameter("@UserId",id),
                     new SqlParameter("@OrderId",otherId),
                     new SqlParameter("@Type",type),
-                    new SqlParameter("@Money",coin)
+                    new SqlParameter("@Money",coin),
+                    new SqlParameter("@State",state)
                 };
 
                 SqlHelper.ExecuteTransaction(strSql.ToString(), parameters);

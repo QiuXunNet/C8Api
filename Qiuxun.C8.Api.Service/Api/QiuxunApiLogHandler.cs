@@ -92,7 +92,7 @@ namespace Qiuxun.C8.Api.Service.Api
                     RequestHelper.WriteWebRequestLog(log, str);
                     return message;
                 }
-                RequestHelper.WriteAllWebRequestLog(log);
+                RequestHelper.WriteWebRequestLog(log, str);
                 return message;
             });
         }

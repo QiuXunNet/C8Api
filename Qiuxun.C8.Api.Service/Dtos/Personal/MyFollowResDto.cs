@@ -7,82 +7,70 @@ namespace Qiuxun.C8.Api.Service.Dtos.Personal
     [Serializable]
     public class MyFollowResDto
     {
-        public MyFollowResDto()
-        { }
-        #region Model
-        private long _id;
-        private long _userid;
-        private long _followed_userid;
-        private int _status;
-        private DateTime _followtime;
-        private string _nickname;
-        private string _autograph;
-        private string _headpath;
         /// <summary>
         /// 
         /// </summary>
         public long Id
         {
-            set { _id = value; }
-            get { return _id; }
+            set;
+            get;
         }
         /// <summary>
         /// 
         /// </summary>
         public long UserId
         {
-            set { _userid = value; }
-            get { return _userid; }
+            set;
+            get;
         }
         /// <summary>
         /// 
         /// </summary>
-        public long Followed_UserId
+        public long FollowedUserId
         {
-            set { _followed_userid = value; }
-            get { return _followed_userid; }
+            set;
+            get;
         }
         /// <summary>
         /// 
         /// </summary>
         public int Status
         {
-            set { _status = value; }
-            get { return _status; }
+            set;
+            get;
         }
         /// <summary>
         /// 
         /// </summary>
         public DateTime FollowTime
         {
-            set { _followtime = value; }
-            get { return _followtime; }
+            set;
+            get;
         }
         /// <summary>
         /// 
         /// </summary>
         public string NickName
         {
-            set { _nickname = value; }
-            get { return _nickname; }
+            set;
+            get;
         }
         /// <summary>
         /// 
         /// </summary>
         public string Autograph
         {
-            set { _autograph = value; }
-            get { return _autograph; }
+            set;
+            get;
         }
         /// <summary>
         /// 
         /// </summary>
-        public string HeadPath
+        public string Avater
         {
-            set { _headpath = value; }
-            get { return _headpath; }
+            set;
+            get;
         }
-        #endregion Model
 
     }
 }

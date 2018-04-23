@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Qiuxun.C8.Api.Model;
 using Qiuxun.C8.Api.Public;
+using Qiuxun.C8.Api.Service.Caching;
 using Qiuxun.C8.Api.Service.Common;
 using Qiuxun.C8.Api.Service.Dtos;
 
@@ -34,31 +35,56 @@ namespace Qiuxun.C8.Api.Service.Data
         }
 
         /// <summary>
+        /// 获取彩种信息
+        /// </summary>
+        /// <param name="lType"></param>
+        /// <returns></returns>
+        public LotteryType2 GetLotteryType2(int lType)
+        {
+            string sql = "select top 1 * from LotteryType2 where lType = " + lType + " order by Position";
+            return Util.ReaderToModel<LotteryType2>(sql);
+        }
+
+        /// <summary>
         /// 获取玩法列表
         /// </summary>
         /// <param name="ltype"></param>
         /// <returns></returns>
         public ApiResult<List<PlayResDto>> GetPlayList(int? ltype)
         {
-            string sql = "select Id,LType,PlayName from dbo.IntegralRule";
+
+            string memKey = "base_play_name";
+
             if (ltype.HasValue)
             {
-                sql += " where lType=" + ltype.Value;
+                memKey = memKey + "_" + ltype;
             }
+            var resDto = CacheHelper.GetCache<List<PlayResDto>>(memKey);
 
-            var list = Util.ReaderToList<IntegralRule>(sql);
-
-            var resDto = new List<PlayResDto>();
-
-            list.ForEach(x =>
+            if (resDto == null || resDto.Count < 1)
             {
-                resDto.Add(new PlayResDto()
+                string sql = "select Id,LType,PlayName from dbo.IntegralRule";
+                if (ltype.HasValue)
                 {
-                    Id = x.Id,
-                    LType = x.lType,
-                    PlayName = x.PlayName
+                    sql += " where lType=" + ltype.Value;
+                }
+
+                var list = Util.ReaderToList<IntegralRule>(sql);
+
+                resDto = new List<PlayResDto>();
+
+                list.ForEach(x =>
+                {
+                    resDto.Add(new PlayResDto()
+                    {
+                        Id = x.Id,
+                        LType = x.lType,
+                        PlayName = x.PlayName
+                    });
                 });
-            });
+
+                CacheHelper.WriteCache(memKey, resDto);
+            }
 
             return new ApiResult<List<PlayResDto>>()
             {
@@ -103,6 +129,51 @@ namespace Qiuxun.C8.Api.Service.Data
                 Data = resDto
             };
 
+        }
+
+        /// <summary>
+        /// 获取彩种开奖信息
+        /// </summary>
+        /// <param name="lType">彩种Id</param>
+        /// <returns></returns>
+        public ApiResult<IndexLotteryInfoResDto> GetLotteryInfo(int lType)
+        {
+            var lotteryInfo = GetLotteryType2(lType);
+
+            if (lotteryInfo == null)
+                throw new ApiException(40000, "该彩种不存在");
+
+            var info = new IndexLotteryInfoResDto()
+            {
+                LType = lType,
+                LTypeName = Util.GetLotteryTypeName(lType),
+            };
+
+            var lastLotteryRecord = GetLotteryRecord(lotteryInfo.lType);
+            if (lastLotteryRecord != null)
+            {
+                info.OpenNum = lastLotteryRecord.Num;
+                info.Issue = lastLotteryRecord.Issue;
+                info.OpenTime = lastLotteryRecord.ShowOpenTime;
+            }
+            info.Logo = Util.GetLotteryIconUrl(lotteryInfo.lType);
+
+            return new ApiResult<IndexLotteryInfoResDto>()
+            {
+                Data = info
+            };
+        }
+
+        /// <summary>
+        /// 根据新闻彩种分类Id获取开奖信息
+        /// </summary>
+        /// <param name="lType">彩种Id</param>
+        /// <returns></returns>
+        public ApiResult<IndexLotteryInfoResDto> GetLotteryInfoByNewsLType(int lType)
+        {
+            int lotteryType = Util.GetlTypeById(lType);
+
+            return GetLotteryInfo(lotteryType);
         }
 
         public LotteryRecord GetLotteryRecord(int ltype)

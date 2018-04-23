@@ -39,7 +39,7 @@ namespace Qiuxun.C8.Api.Model
         /// <summary>
         /// 头像
         /// </summary>
-        public string HeadPath { get; set; }
+        public string Avater { get; set; }
 
 
     }
