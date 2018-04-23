@@ -13,9 +13,13 @@ namespace Qiuxun.C8.Api.Service.Dtos
         /// </summary>		
         public long Id { get; set; }
         /// <summary>
-        /// 类型ID
+        /// 对应具体彩种Id
+        /// </summary>
+        public int LType { get; set; }
+        /// <summary>
+        /// 彩种类型ID
         /// </summary>		
-        public string TypeName { get; set; }
+        public string LTypeName { get; set; }
         /// <summary>
         /// 排序编号
         /// </summary>		

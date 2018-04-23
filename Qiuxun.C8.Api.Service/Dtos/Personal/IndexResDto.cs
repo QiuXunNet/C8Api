@@ -30,7 +30,7 @@ namespace Qiuxun.C8.Api.Service.Dtos.Personal
         /// <summary>
         /// 昵称
         /// </summary>
-        public string Name
+        public string NickName
         {
             set;
             get;
@@ -118,7 +118,7 @@ namespace Qiuxun.C8.Api.Service.Dtos.Personal
         /// <summary>
         /// 头像地址
         /// </summary>
-        public string Headpath
+        public string Avater
         {
             set;
             get;

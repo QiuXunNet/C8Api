@@ -109,7 +109,7 @@ namespace Qiuxun.C8.Api.Controllers
 
             if (!sendResult) return new ApiResult(10005, "发送失败，请稍后重试");
 
-            return new ApiResult();
+            return new ApiResult(100, "发送成功");
         }
 
         /// <summary>

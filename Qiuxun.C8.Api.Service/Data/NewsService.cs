@@ -31,7 +31,7 @@ namespace Qiuxun.C8.Api.Service.Data
         /// <returns></returns>
         public ApiResult<List<LotteryTypeResDto>> GetLotteryTypeList()
         {
-            var resDto = CacheHelper.GetCache<List<LotteryTypeResDto>>("base_lottery_type");
+            List<LotteryTypeResDto> resDto = CacheHelper.GetCache<List<LotteryTypeResDto>>("base_lottery_type");
             if (resDto == null)
             {
                 var list = Util.GetEntityAll<LotteryType>().OrderBy(x => x.SortCode).ToList();
@@ -39,11 +39,12 @@ namespace Qiuxun.C8.Api.Service.Data
                 resDto = list.Select(x => new LotteryTypeResDto()
                 {
                     Id = x.Id,
-                    TypeName = x.TypeName,
+                    LType = Util.GetlTypeById(x.Id.ToInt32()),
+                    LTypeName = x.TypeName,
                     SortCode = x.SortCode
                 }).ToList();
 
-                CacheHelper.WriteCache("base_lottery_type", list);
+                CacheHelper.WriteCache("base_lottery_type", resDto);
             }
 
             return new ApiResult<List<LotteryTypeResDto>>()
@@ -66,14 +67,14 @@ namespace Qiuxun.C8.Api.Service.Data
             if (resDto == null)
             {
                 string newsTypeSql =
-                    "SELECT TOP 500 [Id],[TypeName],[ShowType],[lType],[SeoSubject],[SeoKeyword],[SeoDescription] FROM [dbo].[NewsType] WHERE [lType]=" +
+                    "SELECT TOP 500 [Id],[TypeName],[ShowType],[lType] FROM [dbo].[NewsType] WHERE [lType]=" +
                     ltype + " AND [Layer]=" + layer + " ORDER BY SortCode ";
                 var list = Util.ReaderToList<NewsType>(newsTypeSql) ?? new List<NewsType>();
 
                 resDto = list.Select(x => new NewsTypeResDto()
                 {
                     Id = x.Id,
-                    LType = x.LType,
+                    LType = Util.GetlTypeById((int)x.LType),
                     Layer = x.Layer,
                     LTypeName = x.LTypeName,
                     ParentId = x.ParentId,
@@ -137,7 +138,7 @@ order by a.LotteryNumber desc";
 
             string sql = @"SELECT * FROM ( 
 SELECT row_number() over(order by SortCode ASC, ReleaseTime DESC ) as rowNumber,
-[Id],[FullHead],[SortCode],[Thumb],[ReleaseTime],[ThumbStyle],(SELECT COUNT(1) FROM [dbo].[Comment] WHERE [ArticleId]=a.Id and RefCommentId=0) as CommentCount
+[Id],[FullHead],[SortCode],[Thumb],TypeId,[ReleaseTime],[ThumbStyle],(SELECT COUNT(1) FROM [dbo].[Comment] WHERE [ArticleId]=a.Id and RefCommentId=0) as CommentCount
 FROM [dbo].[News] a
 WHERE [TypeId]=@TypeId and DeleteMark=0 and EnabledMark=1 ) T
 WHERE rowNumber BETWEEN @Start AND @End";
@@ -243,8 +244,9 @@ WHERE [TypeId]=@TypeId and DeleteMark=0 and EnabledMark=1 ";
             //获取新闻实体
 
             string sql = @"SELECT 
-[Id],[FullHead],[SortCode],[Thumb],[ReleaseTime],[ThumbStyle],(SELECT COUNT(1) FROM [dbo].[Comment] WHERE [ArticleId]=a.Id and RefCommentId=0) as CommentCount
-FROM [dbo].[News]
+[Id],[FullHead],[SortCode],[Thumb],[TypeId],[ReleaseTime],[ThumbStyle],NewsContent,
+(SELECT COUNT(1) FROM [dbo].[Comment] WHERE [ArticleId]=a.Id and RefCommentId=0) as CommentCount
+FROM [dbo].[News] a
 WHERE [Id]=@Id and DeleteMark=0 and EnabledMark=1 ";
             SqlParameter[] parameters =
             {
@@ -284,8 +286,8 @@ ORDER BY SortCode,Id";
                 new SqlParameter("@TypeId",SqlDbType.BigInt),
                 new SqlParameter("@CurrentId",SqlDbType.Int),
             };
-            parameters[0].Value = model.TypeId;
-            parameters[1].Value = id;
+            preParameters[0].Value = model.TypeId;
+            preParameters[1].Value = id;
             var preview = Util.ReaderToList<PrevNewsInfo>(preSql, preParameters);
 
             if (preview != null && preview.Count > 0)
@@ -295,7 +297,7 @@ ORDER BY SortCode,Id";
 
             //查询下一篇
             string nextsql = @"SELECT TOP 1
-[Id],[FullHead],[SortCode],[Thumb],[ReleaseTime],[ThumbStyle]
+[Id],[FullHead] as Title
 FROM [dbo].[News] 
 WHERE [TypeId]=@TypeId AND [Id] < @CurrentId 
 ORDER BY SortCode desc,Id DESC";
@@ -407,6 +409,6 @@ ORDER BY ModifyDate DESC,SortCode ASC ";
             };
         }
 
-       
+
     }
 }

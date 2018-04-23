@@ -15,7 +15,7 @@ namespace Qiuxun.C8.Api.Service.Common
     {
         private const string _httpContext_key = "MS_HttpContext";
         private const string _remoteEndpointMessage = "System.ServiceModel.Channels.RemoteEndpointMessageProperty";
-        private static readonly string host = ConfigurationManager.AppSettings["apiHost"];
+        private static readonly string host = ConfigurationManager.AppSettings["api_Host"];
         public const string Key_EprepareSetCookie = "eprepare-set-cookie";
 
         public static bool AddProperty<T>(this HttpRequestMessage request, T item, string key = "")

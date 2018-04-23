@@ -355,7 +355,7 @@ namespace Qiuxun.C8.Api.Service
         }
 
 
-        public static void WriteWebRequestLog(RequestLog log, string ResponseData)
+        public static void WriteWebRequestLog(RequestLog log)
         {
             WebApiRequestLogEntity entity = new WebApiRequestLogEntity
             {
@@ -390,11 +390,10 @@ namespace Qiuxun.C8.Api.Service
                 UserAgent = log.UserAgent,
                 UserName = log.UserName,
                 AppName = "C8",
-                ModelName = "所有Web请求",
+                ModelName = "Api请求日志",
                 Level = 1,
                 IsFake = log.IsFake,
                 GenerateTime = log.GenerateTime,
-                ResponseData = ResponseData,
                 Province = log.Province,
                 City = log.City,
                 District = log.District,
@@ -409,7 +408,68 @@ namespace Qiuxun.C8.Api.Service
             {
                 //TODO:api请求日志持久化
 
-                LogHelper.InfoFormat("请求日志：\r\n{0}", entity.ToJsonString());
+                LogHelper.InfoFormat("API请求日志：\r\n{0}", entity.ToJsonString());
+            }
+            catch (Exception exception)
+            {
+                LogHelper.Error("", exception);
+            }
+        }
+        public static void WriteWebRequestLog(RequestLog log, string responseData)
+        {
+            WebApiRequestLogEntity entity = new WebApiRequestLogEntity
+            {
+
+                ApiDesc = log.ApiDesc,
+                ApiStatus = log.ApiStatus.HasValue ? log.ApiStatus.Value : 0,
+                ClientHeight = log.ClientHeight,
+                ClientIp = log.ClientIp,
+                ClientIpHttp = log.ClientIpHttp,
+                ClientNetType = log.ClientNetType,
+                ClientType = log.ClientType,
+                ClientVersion = log.ClientVersion,
+                ClientWidth = log.ClientWidth,
+                Content = log.ApiDescDetail,
+                CustomerGuid = log.CustomerGuid.HasValue ? log.CustomerGuid.Value : Guid.Empty,
+                CustomerId = log.CustomerId.HasValue ? log.CustomerId.Value : 0,
+                ElapsedMilliseconds = log.ElapsedMilliseconds,
+                HttpMethod = log.HttpMethod,
+                HttpStatus = log.HttpStatus,
+                Imei = log.Imei,
+                InterfaceVersion = log.InterfaceVersion,
+                Lat = log.Lat,
+                Lng = log.Lng,
+                LocationType = log.LocationType,
+                OtherHeader = log.OtherHeader,
+                RequestCookie = log.RequestCookie,
+                RequestData = log.RequestData,
+                RequestTime = log.RequestTime,
+                ResponseCookie = log.ResponseCookie,
+                Route = log.Route,
+                ServerName = log.ServerName,
+                UserAgent = log.UserAgent,
+                UserName = log.UserName,
+                AppName = "C8",
+                ModelName = "Api请求日志",
+                Level = 1,
+                IsFake = log.IsFake,
+                GenerateTime = log.GenerateTime,
+                ResponseData = responseData,
+                Province = log.Province,
+                City = log.City,
+                District = log.District,
+                ProvinceCode = log.ProvinceCode,
+                DistrictCode = log.DistrictCode,
+                CityCode = log.CityCode,
+                Id = log.Id
+
+            };
+
+            try
+            {
+                //TODO:api请求日志持久化
+
+                LogHelper.InfoFormat("API请求日志：\r\n{0}", entity.ToJsonString());
             }
             catch (Exception exception)
             {

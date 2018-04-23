@@ -36,7 +36,7 @@ namespace Qiuxun.C8.Api.Model
         /// <summary>
         /// 昵称
         /// </summary>
-        public string Name
+        public string NickName
         {
             set;
             get;
@@ -124,7 +124,7 @@ namespace Qiuxun.C8.Api.Model
         /// <summary>
         /// 头像地址
         /// </summary>
-        public string Headpath
+        public string Avater
         {
             set;
             get;

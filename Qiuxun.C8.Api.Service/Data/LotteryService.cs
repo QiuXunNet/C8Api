@@ -145,7 +145,7 @@ namespace Qiuxun.C8.Api.Service.Data
 
             var info = new IndexLotteryInfoResDto()
             {
-                LType = lotteryInfo.lType,
+                LType = lType,
                 LTypeName = Util.GetLotteryTypeName(lType),
             };
 

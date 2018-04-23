@@ -1,6 +1,7 @@
 ﻿using System;
 using Memcached.Client;
 using Newtonsoft.Json;
+using Qiuxun.C8.Api.Service.Common;
 using Qiuxun.C8.Caching;
 
 namespace Qiuxun.C8.Api.Service.Caching
@@ -71,14 +72,15 @@ namespace Qiuxun.C8.Api.Service.Caching
             try
             {
                 string json = memcachedClient.Get(key).ToString();
+                //LogHelper.InfoFormat("key:{0}，value:{1}", key, json);
 
                 return json.FromJsonString<T>();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return default(T);
             }
         }
-        
+
     }
 }

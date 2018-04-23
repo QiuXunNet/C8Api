@@ -44,9 +44,9 @@ namespace Qiuxun.C8.Api.Service.Data
             }
 
             string webHost = ConfigurationManager.AppSettings["webHost"];
-            string avater = string.IsNullOrWhiteSpace(accountInfo.Headpath)
+            string avater = string.IsNullOrWhiteSpace(accountInfo.Avater)
                 ? string.Format("{0}/images/default_avater.png", webHost)
-                : accountInfo.Headpath;
+                : accountInfo.Avater;
 
             LoginResDto resDto = new LoginResDto()
             {
@@ -54,7 +54,7 @@ namespace Qiuxun.C8.Api.Service.Data
                 Avater = avater,
                 UserId = accountInfo.Id,
                 Mobile = accountInfo.Mobile,
-                NickName = accountInfo.Name
+                NickName = accountInfo.NickName
             };
 
             #region 下发登录token
@@ -64,7 +64,7 @@ namespace Qiuxun.C8.Api.Service.Data
                 UserId = accountInfo.Id,
                 UserAccount = accountInfo.Mobile,
                 UserStatus = (int)accountInfo.State,
-                UserName = accountInfo.Name,
+                UserName = accountInfo.NickName,
                 IsTemp = false,
                 Avater = avater
             };
@@ -177,7 +177,7 @@ namespace Qiuxun.C8.Api.Service.Data
         /// <returns></returns>
         public UserInfo GetUserInfoByMobile(string account)
         {
-            string sql = "select top(1) * from dbo.UserInfo where Mobile = @mobile ";
+            string sql = "select top(1) *,Name as NickName from dbo.UserInfo where Mobile = @mobile ";
 
             var list = Util.ReaderToList<UserInfo>(sql, new SqlParameter("@Mobile", account));
 
@@ -230,7 +230,7 @@ namespace Qiuxun.C8.Api.Service.Data
         /// <returns></returns>
         public UserInfo GetFullUserInfoByMobile(string account)
         {
-            string sql = @"select top(1) * from dbo.UserInfo a 
+            string sql = @"select top(1) a.*,isnull(b.RPath,'') as Avater,a.Name as NickName from dbo.UserInfo a 
         left join dbo.ResourceMapping b on b.FkId=a.Id and b.[Type]=@ResourceType
         where a.Mobile = @mobile ";
 

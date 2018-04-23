@@ -26,7 +26,7 @@ namespace Qiuxun.C8.Api.Service.Dtos.Personal
         /// <summary>
         /// 
         /// </summary>
-        public long Followed_UserId
+        public long FollowedUserId
         {
             set;
             get;
@@ -66,7 +66,7 @@ namespace Qiuxun.C8.Api.Service.Dtos.Personal
         /// <summary>
         /// 
         /// </summary>
-        public string HeadPath
+        public string Avater
         {
             set;
             get;

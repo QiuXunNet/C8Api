@@ -27,7 +27,7 @@ namespace Qiuxun.C8.Api.Service.Data
         public IndexResDto GetPersonalIndexData(long userId)
         {
 
-            string usersql = @"select (select count(1)from Follow where UserId=u.Id and Status=1)as Follow,(select count(1)from Follow where Followed_UserId=u.Id and Status=1)as Fans, r.RPath as Headpath,u.* from UserInfo  u 
+            string usersql = @"select (select count(1)from Follow where UserId=u.Id and Status=1)as Follow,(select count(1)from Follow where Followed_UserId=u.Id and Status=1)as Fans, r.RPath as Avater,u.Name as NickName,u.* from UserInfo  u 
                               left  JOIN (select RPath,FkId from ResourceMapping where Type = @Type)  r 
                               on u.Id=r.FkId  where u.Id=@userId ";
             SqlParameter[] sp = new SqlParameter[] { new SqlParameter("@userId", userId), new SqlParameter("@Type", (int)ResourceTypeEnum.用户头像) };
@@ -48,7 +48,7 @@ namespace Qiuxun.C8.Api.Service.Data
         public static UserInfo GetUser(long userId)
         {
 
-            string usersql = @"select (select count(1)from Follow where UserId=u.Id and Status=1)as follow,(select count(1)from Follow where Followed_UserId=u.Id and Status=1)as fans, r.RPath as Headpath,u.* from UserInfo  u 
+            string usersql = @"select (select count(1)from Follow where UserId=u.Id and Status=1)as follow,(select count(1)from Follow where Followed_UserId=u.Id and Status=1)as fans, r.RPath as Avater,u.Name as NickName,u.* from UserInfo  u 
                               left  JOIN (select RPath,FkId from ResourceMapping where Type = @Type)  r 
                               on u.Id=r.FkId  where u.Id=@userId ";
 
@@ -224,7 +224,7 @@ namespace Qiuxun.C8.Api.Service.Data
         /// </summary>
         public ApiResult<List<FansResDto>> GetFansBangList(int typeId, string type, int pageIndex, int pageSize)
         {
-             string strsql = string.Format(@"select  * from ( select top 100 row_number() over(order by count(1) desc  ) as Rank, count(1)as Number,Followed_UserId,Name,isnull(RPath,'/images/default_avater.png') as HeadPath
+             string strsql = string.Format(@"select  * from ( select top 100 row_number() over(order by count(1) desc  ) as Rank, count(1)as Number,Followed_UserId,Name as NickName,isnull(RPath,'/images/default_avater.png') as Avater
                                              from Follow f 
                                              left join UserInfo u on f.Followed_UserId=u.id
                                              left join ResourceMapping r on (r.FkId=f.Followed_UserId and r.Type=@ResourceType)
@@ -1016,7 +1016,7 @@ namespace Qiuxun.C8.Api.Service.Data
         /// </summary>
         public ApiResult<FansResDto> GetMyFanBangRank(string type,long userId)
         {
-            string strsql = string.Format(@" select  * from ( select top 100 row_number() over(order by count(1) desc  ) as Rank, count(1)as Number,Followed_UserId,Name,isnull(RPath,'/images/default_avater.png') as HeadPath
+            string strsql = string.Format(@" select  * from ( select top 100 row_number() over(order by count(1) desc  ) as Rank, count(1)as Number,Followed_UserId,Name as NickName,isnull(RPath,'/images/default_avater.png') as Avater
                              from Follow f 
                              left join UserInfo u on f.Followed_UserId=u.id
                              left join ResourceMapping r on (r.FkId=f.Followed_UserId and r.Type=@ResourceType)
@@ -1039,11 +1039,11 @@ namespace Qiuxun.C8.Api.Service.Data
                 int number = Convert.ToInt32(SqlHelper.ExecuteScalar(countsql));
 
                 IndexResDto user = GetPersonalIndexData(userId);
-                fansbangs.Followed_UserId = Convert.ToInt32(user.Id);
-                fansbangs.Name = user.Name;
+                fansbangs.FollowedUserId = Convert.ToInt32(user.Id);
+                fansbangs.NickName = user.NickName;
                 fansbangs.Rank = 0;
                 fansbangs.Number = number;
-                fansbangs.HeadPath = user.Headpath;
+                fansbangs.Avater = user.Avater;
                 fansbang = fansbangs;
             }
 
@@ -1087,7 +1087,7 @@ namespace Qiuxun.C8.Api.Service.Data
             string strsql = @"SELECT  a.* ,
                                     ISNULL(b.Name, '') AS NickName ,
                                     ISNULL(b.Autograph, '') AS Autograph ,
-                                    ISNULL(c.RPath, '') AS HeadPath ,
+                                    ISNULL(c.RPath, '') AS Avater ,
                                     ( SELECT    COUNT(1)
                                       FROM      Follow
                                       WHERE     UserId = @Followed_UserId
@@ -1118,7 +1118,7 @@ namespace Qiuxun.C8.Api.Service.Data
             string strsql = @"SELECT a.* ,
                                     ISNULL(b.Name, '') AS NickName ,
                                     ISNULL(b.Autograph, '') AS Autograph ,
-                                    ISNULL(c.RPath, '') AS HeadPath
+                                    ISNULL(c.RPath, '') AS Avater
                             FROM    Follow AS a
                                     LEFT JOIN UserInfo b ON b.Id = a.Followed_UserId
                                     LEFT JOIN ResourceMapping c ON c.FkId = a.Followed_UserId AND c.Type = @Type

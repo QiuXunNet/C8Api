@@ -19,9 +19,9 @@ namespace Qiuxun.C8.Api.Service.Extension
                 {
                     UserId = accountInfo.Id,
                     UserAccount = accountInfo.Mobile,
-                    UserName = accountInfo.Name,
+                    UserName = accountInfo.NickName,
                     UserStatus = accountInfo.State,
-                    Avater = accountInfo.Headpath,
+                    Avater = accountInfo.Avater,
 
                 };
                 info = info2;

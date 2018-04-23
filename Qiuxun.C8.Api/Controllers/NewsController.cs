@@ -120,14 +120,14 @@ namespace Qiuxun.C8.Api.Controllers
         /// <summary>
         /// 获取新闻列表
         /// </summary>
-        /// <param name="ltype">新闻彩种Id</param>
+        /// <param name="newsTypeId">新闻彩种Id</param>
         /// <param name="pageIndex">当前页面</param>
         /// <param name="pageSize">页码</param>
         /// <returns></returns>
         [HttpGet, AllowAnonymous]
-        public ApiResult<PagedListDto<NewsListResDto>> GetNewsList(int ltype, int pageIndex = 1, int pageSize = 20)
+        public ApiResult<PagedListDto<NewsListResDto>> GetNewsList(int newsTypeId, int pageIndex = 1, int pageSize = 20)
         {
-            return newsService.GetNewsList(ltype, pageIndex, pageSize);
+            return newsService.GetNewsList(newsTypeId, pageIndex, pageSize);
         }
 
         /// <summary>
@@ -160,7 +160,7 @@ namespace Qiuxun.C8.Api.Controllers
         /// <param name="count">查询推荐数量，可空，默认=10</param>
         /// <returns></returns>
         [HttpGet, AllowAnonymous]
-        public ApiResult GetRecommendGalleryList(int id, int count = 10)
+        public ApiResult<List<RecommendGalleryResDto>> GetRecommendGalleryList(int id, int count = 10)
         {
             return newsService.GetRecommendGalleryList(id, count);
         }
@@ -182,10 +182,10 @@ namespace Qiuxun.C8.Api.Controllers
         /// <param name="newsTypeId">新闻栏目Id</param>
         /// <returns></returns>
         [HttpGet, AllowAnonymous]
-        public ApiResult GetRecommendNewsList(int newsTypeId)
+        public ApiResult<List<NewsListResDto>> GetRecommendNewsList(int newsTypeId)
         {
             return newsService.GetRecommendNewsList(newsTypeId);
         }
-        
+
     }
 }

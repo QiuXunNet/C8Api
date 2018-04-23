@@ -333,9 +333,9 @@ namespace Qiuxun.C8.Api.Service.Data
                 UserInfo u = PersonalService.GetUser(uid);
 
                 ExpertSearchModel e = new ExpertSearchModel();
-                e.Avater = u.Headpath;
+                e.Avater = u.Avater;
                 e.UserId = (int)uid;
-                e.Name = u.Name;
+                e.Name = u.NickName;
                 e.lType = lType;
                 e.isFollow = 0;
                 if (list.Count > 0)
