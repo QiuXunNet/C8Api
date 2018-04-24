@@ -70,10 +70,35 @@ namespace Qiuxun.C8.Api.Service.Dtos
         /// <summary>
         /// 关联评论对象
         /// </summary>
-        public CommentResDto ParentComment { get; set; }
+        public ParentCommentResDto ParentComment { get; set; }
         /// <summary>
         /// 评论图片Url
         /// </summary>
         public List<string> Pictures { get; set; }
+    }
+
+    /// <summary>
+    /// 上级评论实体
+    /// </summary>
+    public class ParentCommentResDto
+    {
+        public long Id { get; set; }
+
+
+        /// <summary>
+        /// 评论人Id
+        /// </summary>
+        public long UserId { get; set; }
+
+        /// <summary>
+        /// 评论内容
+        /// </summary>		
+        public string Content { get; set; }
+
+
+        /// <summary>
+        /// 昵称
+        /// </summary>
+        public string NickName { get; set; }
     }
 }

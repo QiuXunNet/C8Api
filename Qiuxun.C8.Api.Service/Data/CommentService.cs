@@ -245,6 +245,7 @@ from Comment a
         {
             string sql = @"select Top " + pageSize + @" a.*,isnull(b.Name,'') as NickName,isnull(c.RPath,'') as Avater 
 ,(select count(1) from Comment where PId = a.Id ) as ReplayCount
+,(select count(1) from LikeRecord where [Status]=1 and [Type]=a.[Type] and CommentId=a.Id) as StartCount
 from Comment a
   left join UserInfo b on b.Id = a.UserId
   left join ResourceMapping c on c.FkId = a.UserId and c.Type = @ResourceType
@@ -282,6 +283,8 @@ from Comment a
                 UserId = x.UserId,
                 SubTime = x.SubTime,
                 RefCommentId = x.RefCommentId,
+                ParentComment = GetParentComment(x.PId),
+                StarCount = x.StarCount,
                 ReplayCount = x.ReplayCount,
                 Pictures = resourceService.GetResources(resouceType, x.Id)
                     .Select(n => n.RPath).ToList()
@@ -307,6 +310,7 @@ from Comment a
             string sql = "select top " + pageSize + @" a.*,isnull(b.Name,'') as NickName,isnull(c.RPath,'') as Avater 
 ,(select count(1) from LikeRecord where [Status]=1 and [Type]=a.[Type] and CommentId=a.Id and UserId=@UserId) as CurrentUserLikes 
 ,(select count(1) from Comment where PId = a.Id ) as ReplayCount
+,(select count(1) from LikeRecord where [Status]=1 and [Type]=a.[Type] and CommentId=a.Id) as StartCount
 from Comment a
   left join UserInfo b on b.Id = a.UserId
   left join ResourceMapping c on c.FkId = a.UserId and c.Type = @ResourceType
@@ -326,7 +330,7 @@ from Comment a
                 new SqlParameter("@RefCommentId",id),
                 new SqlParameter("@Type",type),
             };
-            
+
             var list = Util.ReaderToList<Comment>(sql, parameters);
 
             string webHost = ConfigurationManager.AppSettings["webHost"];
@@ -341,13 +345,42 @@ from Comment a
                 NickName = x.NickName,
                 PId = x.PId,
                 RefCommentId = x.RefCommentId,
-                ReplayCount = x.ReplayCount
+                ReplayCount = x.ReplayCount,
+                StarCount = x.StarCount,
+                ParentComment = GetParentComment(x.PId)
             }).ToList();
 
             return new ApiResult<List<CommentResDto>>()
             {
                 Data = pageData
             };
+        }
+
+        /// <summary>
+        /// 获取评论信息
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        private ParentCommentResDto GetParentComment(long id)
+        {
+            string sql = @"select a.Id,a.UserId,a.[Content],isnull(b.Name,'') as NickName
+ from Comment a
+left join UserInfo b on b.Id=a.UserId
+where  a.Id=@Id and a.IsDeleted = 0";
+            var parameters = new[]
+           {
+                new SqlParameter("@Id",id),
+            };
+
+            var list = Util.ReaderToList<ParentCommentResDto>(sql, parameters);
+
+
+            if (list != null && list.Any())
+            {
+                return list.FirstOrDefault();
+            }
+
+            return null;
         }
 
 
@@ -391,19 +424,8 @@ from Comment a
                         //添加点赞
                         //SqlHelper.ExecuteTransaction();
                         string insert = @"INSERT INTO [dbo].[LikeRecord]
-           ([CommentId]
-           ,[UserId]
-           ,[CreateTime]
-           ,[Status]
-           ,[UpdateTime]
-           ,[Type])
-     VALUES
-           (@CommentId
-           ,@UserId
-           ,GETDATE()
-           ,1
-           ,GETDATE()
-           ,@Type);
+           ([CommentId],[UserId],[CreateTime],[Status],[UpdateTime],[Type])
+     VALUES(@CommentId,@UserId,GETDATE(),1,GETDATE(),@Type);
         UPDATE [dbo].[Comment] SET [StarCount]+=1 WHERE Id=@CommentId;";
 
                         var insertParameters = new[]

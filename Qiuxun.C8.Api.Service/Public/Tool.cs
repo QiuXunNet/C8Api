@@ -187,7 +187,7 @@ namespace Qiuxun.C8.Api.Public
 
             string[] imgArray = imgString.Split(';');
 
-            if (imgArray.Length < 2) throw new ApiException(40000, "图片格式不正确");
+            if (imgArray.Length < 2) throw new ApiException(50000, "没有图片数据");
 
             byte[] arr = Convert.FromBase64String(imgArray[1]);
             using (MemoryStream ms = new MemoryStream(arr))
@@ -219,7 +219,7 @@ namespace Qiuxun.C8.Api.Public
                 }
                 else
                 {
-                    throw new ApiException(400, "不支持的文件格式");
+                    throw new ApiException(50000, "不支持的文件格式");
                 }
 
 

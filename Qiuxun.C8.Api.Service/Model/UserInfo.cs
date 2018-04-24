@@ -13,8 +13,7 @@ namespace Qiuxun.C8.Api.Model
     /// 日 期：2018年3月20日
     /// 描 述：用户信息类
     /// </summary>	
-    [Serializable]
-    public partial class UserInfo
+    public class UserInfo
     {
 
         /// <summary>

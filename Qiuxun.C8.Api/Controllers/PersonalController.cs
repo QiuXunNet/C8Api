@@ -38,7 +38,7 @@ namespace Qiuxun.C8.Api.Controllers
                 return new ApiResult<IndexResDto>(60000, "登录超时，需要重新登录");
             }
 
-            return new ApiResult<IndexResDto>() { Code = 100, Desc = "", Data = resDto };
+            return new ApiResult<IndexResDto>() {  Data = resDto };
         }
 
         /// <summary>
@@ -117,33 +117,33 @@ namespace Qiuxun.C8.Api.Controllers
         /// <summary>
         /// 取消关注
         /// </summary>
-        /// <param name="followed_userId">关注的会员Id</param>
+        /// <param name="followedUserId">关注的会员Id</param>
         /// <returns>取消结果</returns>
         [HttpGet]
-        public ApiResult UnFollow(long followed_userId)
+        public ApiResult UnFollow(long followedUserId)
         {
-            if (followed_userId <= 0)
+            if (followedUserId <= 0)
             {
                 return new ApiResult(60009, "已关注的会员ID不正确");
             }
             PersonalService service = new PersonalService();
-            return service.UnFollow(followed_userId, this.UserInfo.UserId);
+            return service.UnFollow(followedUserId, this.UserInfo.UserId);
         }
 
         /// <summary>
         /// 关注
         /// </summary>
-        /// <param name="followed_userId">关注的会员Id</param>
+        /// <param name="followedUserId">关注的会员Id</param>
         /// <returns>关注结果</returns>
         [HttpGet]
-        public ApiResult IFollow(long followed_userId)
+        public ApiResult IFollow(long followedUserId)
         {
-            if (followed_userId <= 0)
+            if (followedUserId <= 0)
             {
                 return new ApiResult(60009, "已关注的会员ID不正确");
             }
             PersonalService service = new PersonalService();
-            return service.IFollow(followed_userId, this.UserInfo.UserId);
+            return service.IFollow(followedUserId, this.UserInfo.UserId);
         }
 
         /// <summary>

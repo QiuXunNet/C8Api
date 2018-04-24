@@ -54,8 +54,13 @@
     <Compile Include="BaseControllerTest.cs" />
     <Compile Include="Controllers\NewsControllerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Public\UtilTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Qiuxun.C8.Api.Service\Qiuxun.C8.Api.Service.csproj">
+      <Project>{82FEC6A4-6E60-4211-83ED-A3D488163867}</Project>
+      <Name>Qiuxun.C8.Api.Service</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Qiuxun.C8.Api\Qiuxun.C8.Api.csproj">
       <Project>{C52DF61F-2E6E-4AC9-9B80-CFA2C41986F1}</Project>
       <Name>Qiuxun.C8.Api</Name>

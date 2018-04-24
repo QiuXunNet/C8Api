@@ -121,8 +121,8 @@ namespace Qiuxun.C8.Api.Controllers
         /// 获取新闻列表
         /// </summary>
         /// <param name="newsTypeId">新闻彩种Id</param>
-        /// <param name="pageIndex">当前页面</param>
-        /// <param name="pageSize">页码</param>
+        /// <param name="pageIndex">页码</param>
+        /// <param name="pageSize">每页显示条数</param>
         /// <returns></returns>
         [HttpGet, AllowAnonymous]
         public ApiResult<PagedListDto<NewsListResDto>> GetNewsList(int newsTypeId, int pageIndex = 1, int pageSize = 20)
