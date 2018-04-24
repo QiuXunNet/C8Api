@@ -29,6 +29,16 @@ namespace Qiuxun.C8.Api.Service.Common
             Loger.InfoFormat(format, args);
         }
 
+        public static void Debug(string message)
+        {
+            Loger.Debug(message);
+        }
+
+        public static void DebugFormat(string format, params object[] args)
+        {
+            Loger.DebugFormat(format, args);
+        }
+
         public static void Error(string message)
         {
             Loger.Error(message);
@@ -38,6 +48,7 @@ namespace Qiuxun.C8.Api.Service.Common
         {
             Loger.Error(message, ex);
         }
+
 
         public static void Error(string message, int code, Exception ex)
         {

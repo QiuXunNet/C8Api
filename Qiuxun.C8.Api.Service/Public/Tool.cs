@@ -23,13 +23,13 @@ namespace Qiuxun.C8.Api.Public
         public static string GetMD5(string myString)
         {
             MD5 md5 = new MD5CryptoServiceProvider();
-            byte[] fromData = System.Text.Encoding.Unicode.GetBytes(myString);
+            byte[] fromData = Encoding.UTF8.GetBytes(myString);
             byte[] targetData = md5.ComputeHash(fromData);
             string byte2String = null;
 
             for (int i = 0; i < targetData.Length; i++)
             {
-                byte2String += targetData[i].ToString("x");
+                byte2String += targetData[i].ToString("x2");
             }
 
             return byte2String;
@@ -176,17 +176,20 @@ namespace Qiuxun.C8.Api.Public
         /// <summary>
         /// 截取data:image/jpeg;base64,提取图片，并保存图片
         /// </summary>
-        /// <param name="file_name"></param>
-        /// <param name="img_string">base64的字符串</param>
+        /// <param name="fileName"></param>
+        /// <param name="imgString">base64的字符串</param>
         /// <param name="error">错误的图片格式</param>
         /// <returns>路径 + 图片的名称</returns>
-        public static Phonto SaveImage(string file_name, string img_string, ref string error)
+        public static Phonto SaveImage(string fileName, string imgString, ref string error)
         {
             //try
             //{
 
-            string[] img_array = img_string.Split(',');
-            byte[] arr = Convert.FromBase64String(img_array[1]);
+            string[] imgArray = imgString.Split(';');
+
+            if (imgArray.Length < 2) throw new ApiException(40000, "图片格式不正确");
+
+            byte[] arr = Convert.FromBase64String(imgArray[1]);
             using (MemoryStream ms = new MemoryStream(arr))
             {
                 if (ms.Length > 4194304)
@@ -195,28 +198,35 @@ namespace Qiuxun.C8.Api.Public
                 }
 
                 Bitmap bmp = new Bitmap(ms);
-                if (!Directory.Exists(file_name))
-                    Directory.CreateDirectory(file_name);
-                if (img_array[0].ToLower() == "data:image/jpeg;base64")
+                if (!Directory.Exists(fileName))
+                    Directory.CreateDirectory(fileName);
+                string extensionName = "";
+                string imgName = Guid.NewGuid().ToString().Replace('-', 'p').Substring(4);
+                if (imgArray[0].ToLower() == "data:image/jpeg")
                 {
                     //bmp.Save(file_name + ".jpg");
-                    return SetImg(file_name, Guid.NewGuid().ToString().Replace('-', 'p').Substring(4), "jpg", arr);
+                    extensionName = "jpg";
                 }
-                else if (img_array[0].ToLower() == "data:image/png;base64")
+                else if (imgArray[0].ToLower() == "data:image/png")
                 {
                     //bmp.Save(file_name + ".png");
-                    return SetImg(file_name, Guid.NewGuid().ToString().Replace('-', 'p').Substring(4), "png", arr);
+                    extensionName = "png";
                 }
-                else if (img_array[0].ToLower() == "data:image/gif;base64")
+                else if (imgArray[0].ToLower() == "data:image/gif")
                 {
                     //bmp.Save(file_name + ".gif");
-
-                    return SetImg(file_name, Guid.NewGuid().ToString().Replace('-', 'p').Substring(4), "gif", arr);
+                    extensionName = "gif";
                 }
                 else
                 {
                     throw new ApiException(400, "不支持的文件格式");
                 }
+
+
+
+                //callb.Save();
+
+                return SetImg(fileName, imgName, extensionName, "Min", bmp, arr);
             }
             //}
             //catch (Exception ex)
@@ -227,22 +237,42 @@ namespace Qiuxun.C8.Api.Public
         }
         #endregion
         #region 保存图片路径及设置名称
+
         /// <summary>
         /// 保存到文件路径 
         /// </summary>
-        /// <param name="ImgName">保存的文件名称</param>
+        /// <param name="path"></param>
+        /// <param name="imgName">保存的文件名称</param>
         /// <param name="suffix">后缀名</param>
+        /// <param name="thumbMark">缩略图标识</param>
         /// <param name="arr">base64</param>
+        /// <param name="thumbWidth">缩率图宽度</param>
+        /// <param name="thumbHeight">缩率图高度</param>
         /// <returns>图片的路径</returns>
-        public static Phonto SetImg(string path, string ImgName, string suffix, byte[] arr)
+        public static Phonto SetImg(string path, string imgName, string suffix, string thumbMark, Bitmap bitmap, byte[] arr, int thumbWidth = 100, int thumbHeight = 100)
         {
 
             Phonto p = new Phonto();
-            System.IO.File.WriteAllBytes(path + ImgName + "." + suffix + "", arr);
+            System.IO.File.WriteAllBytes(path + imgName + "." + suffix + "", arr);
+
+            //保存缩率图
+            if (thumbWidth == 0 && thumbHeight == 0)
+            {
+                thumbWidth = bitmap.Width;
+                thumbHeight = bitmap.Height;
+            }
+            if (bitmap.Width > bitmap.Height)
+            {
+                thumbHeight = thumbWidth * bitmap.Width / bitmap.Height;
+            }
+            var thumb = bitmap.GetThumbnailImage(thumbWidth, thumbHeight, () => false, IntPtr.Zero);
+            string thumbPath = path + imgName + "_" + thumbMark + "." + suffix;
+            thumb.Save(thumbPath);
+
             p.Extension = "." + suffix;
-            p.RPath = path + ImgName + "." + suffix + "";
+            p.RPath = thumbPath;
             p.RSize = arr.Length;
-            p.ImgName = ImgName;
+            p.ImgName = imgName;
             return p;
         }
         #endregion

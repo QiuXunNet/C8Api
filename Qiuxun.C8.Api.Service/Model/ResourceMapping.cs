@@ -40,7 +40,7 @@ namespace Qiuxun.C8.Api.Model
         /// </summary>
         public DateTime CreateTime { get; set; }
         /// <summary>
-        /// 资源类型 1=文章缩略图
+        /// 资源类型 1=文章缩略图 2=用户头像 3=评论图
         /// </summary>
         public int Type { get; set; }
         /// <summary>

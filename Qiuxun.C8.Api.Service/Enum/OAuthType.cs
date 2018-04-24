@@ -6,11 +6,26 @@ using System.Threading.Tasks;
 
 namespace Qiuxun.C8.Api.Service.Enum
 {
+    /// <summary>
+    /// 授权类型
+    /// </summary>
     public enum OauthType
     {
-        Alipay = 4,
+        /// <summary>
+        /// QQ
+        /// </summary>
         QQ = 1,
+        /// <summary>
+        /// 微信
+        /// </summary>
+        Weixin = 2,
+        /// <summary>
+        /// 微博
+        /// </summary>
         Weibo = 3,
-        Weixin = 2
+        /// <summary>
+        /// 支付宝
+        /// </summary>
+        Alipay = 4,
     }
 }
