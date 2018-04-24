@@ -222,6 +222,7 @@
     <Compile Include="Dtos\Talk\TalkNotesResDto.cs" />
     <Compile Include="Dtos\Talk\UserStateResDto.cs" />
     <Compile Include="Dtos\ValidateCaptchaReqDto.cs" />
+    <Compile Include="Dtos\VisitRecordReqDto.cs" />
     <Compile Include="Dtos\WXResDto.cs" />
     <Compile Include="Dtos\ZFBResDto.cs" />
     <Compile Include="Dtos\SmsSendLog.cs" />

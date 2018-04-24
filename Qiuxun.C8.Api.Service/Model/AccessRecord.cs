@@ -28,7 +28,6 @@ namespace Qiuxun.C8.Api.Model
         /// <summary>
         /// 访问时间
         /// </summary>
-        [JsonIgnore]
         public DateTime AccessTime { get; set; }
         /// <summary>
         /// 访问日期
@@ -43,11 +42,7 @@ namespace Qiuxun.C8.Api.Model
         /// 访问者头像
         /// </summary>
         public string Avater { get; set; }
-
-        public string VisitTimeStr
-        {
-            get { return AccessTime.ToString("MM-dd HH:mm"); }
-        }
+       
 
         public string ModuleName {
             get
