@@ -324,7 +324,7 @@ namespace Qiuxun.C8.Api.Controllers
         /// 获取屏蔽字
         /// </summary>
         /// <returns>被屏蔽的关键字字符串</returns>
-        [HttpGet]
+        [HttpGet][AllowAnonymous]
         public ApiResult<string> GetSensitiveWordsList()
         {
             var result = new ApiResult<string>();
