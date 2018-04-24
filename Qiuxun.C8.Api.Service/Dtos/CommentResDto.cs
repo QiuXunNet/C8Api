@@ -71,5 +71,9 @@ namespace Qiuxun.C8.Api.Service.Dtos
         /// 关联评论对象
         /// </summary>
         public CommentResDto ParentComment { get; set; }
+        /// <summary>
+        /// 评论图片Url
+        /// </summary>
+        public List<string> Pictures { get; set; }
     }
 }

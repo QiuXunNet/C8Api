@@ -80,7 +80,8 @@ namespace Qiuxun.C8.Api.Service.Data
                     ParentId = x.ParentId,
                     ShowType = x.ShowType,
                     SortCode = x.SortCode,
-                    TypeName = x.TypeName
+                    TypeName = x.TypeName,
+                    GroupType = GetGroupType(x.LType, x.TypeName)
                 }).ToList();
 
                 CacheHelper.WriteCache(memKey, resDto);
@@ -90,6 +91,24 @@ namespace Qiuxun.C8.Api.Service.Data
             {
                 Data = resDto
             };
+        }
+
+        /// <summary>
+        /// 处理六合彩特殊栏目分组
+        /// </summary>
+        /// <param name="ltype"></param>
+        /// <param name="newsTypeName"></param>
+        /// <returns></returns>
+        private int GetGroupType(long ltype, string newsTypeName)
+        {
+            if (ltype != 5) return 0;
+
+            if (newsTypeName == "看图解码" || newsTypeName == "幸运彩图"
+                || newsTypeName == "精选彩图" || newsTypeName == "香港图库")
+            {
+                return 1;
+            }
+            return 0;
         }
 
         /// <summary>

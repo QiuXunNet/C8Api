@@ -30,6 +30,10 @@ namespace Qiuxun.C8.Api.Controllers
                 Downurl = ""
             };
 
+            //VersionService service = new VersionService();
+            //var version = new InkeyVersion(this.RequestInfo.ClientVersion);
+            //var checkVerDto = service.CheckVersion(version, this.RequestInfo.ClientType, this.RequestInfo.ClientSourceId, CommonStr.OrgAppName);
+
             return new ApiResult<CheckerResDto>()
             {
                 Data = resDto

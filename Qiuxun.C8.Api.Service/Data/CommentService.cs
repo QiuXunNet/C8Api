@@ -23,13 +23,14 @@ namespace Qiuxun.C8.Api.Service.Data
     /// </summary>
     public class CommentService
     {
+        ResourceManagementService resourceService = new ResourceManagementService();
         /// <summary>
         /// 发表评论
         /// </summary>
         /// <param name="reqDto"></param>
         /// <param name="user"></param>
         /// <returns></returns>
-        public ApiResult Publish(CommentReqDto reqDto, IdentityInfo user)
+        public ApiResult<CommentResDto> Publish(CommentReqDto reqDto, IdentityInfo user)
         {
             #region step1.黑名单和禁言验证
             //step1.黑名单和禁言验证
@@ -41,7 +42,7 @@ namespace Qiuxun.C8.Api.Service.Data
 
             if (obj != null && Convert.ToInt32(obj) > 0)
             {
-                return new ApiResult(10001, "你已被禁言或拉黑");
+                throw new ApiException(10001, "你已被禁言或拉黑");
             }
             #endregion
 
@@ -57,7 +58,7 @@ namespace Qiuxun.C8.Api.Service.Data
                 {
                     //查询计划
                     var model = Util.GetEntityById<BettingRecord>(reqDto.Id);
-                    if (model == null) return new ApiResult(400, "计划已不存在或已删除");
+                    if (model == null) throw new ApiException(400, "计划已不存在或已删除");
 
                     refId = model.Id;
                     //refCommentId=
@@ -66,7 +67,7 @@ namespace Qiuxun.C8.Api.Service.Data
                 {
                     //查询文章
                     var model = Util.GetEntityById<News>(reqDto.Id);
-                    if (model == null) return new ApiResult(400, "资讯不存在或已删除");
+                    if (model == null) throw new ApiException(400, "资讯不存在或已删除");
                     refId = model.Id;
                 }
             }
@@ -74,7 +75,7 @@ namespace Qiuxun.C8.Api.Service.Data
             {
                 //查询评论
                 var model = Util.GetEntityById<Comment>(reqDto.Id);
-                if (model == null) return new ApiResult(400, "评论不存在或已删除");
+                if (model == null) throw new ApiException(400, "评论不存在或已删除");
                 refId = model.Id;
                 pid = model.Id;
 
@@ -106,7 +107,7 @@ namespace Qiuxun.C8.Api.Service.Data
            ([PId],[UserId],[Content],[SubTime],[Type],[ArticleId]
            ,[StarCount],[IsDeleted],[RefCommentId])
      VALUES(@PId,@UserId,@Content,GETDATE()
-           ,@Type,@ArticleId,0,0,@RefCommentId);";
+           ,@Type,@ArticleId,0,0,@RefCommentId);SELECT IDENT_CURRENT('Comment')";
 
             SqlParameter[] parameters ={
                 new SqlParameter("@PID",pid),
@@ -116,15 +117,59 @@ namespace Qiuxun.C8.Api.Service.Data
                 new SqlParameter("@ArticleId",refId),
                 new SqlParameter("@RefCommentId",refCommentId),
               };
-            int row = SqlHelper.ExecuteNonQuery(sql, parameters);
+            int row = SqlHelper.ExecuteScalar(sql, parameters).ToInt32();
             if (row <= 0)
             {
-                return new ApiResult(500, "服务器繁忙");
+                throw new ApiException(50000, "服务器繁忙");
             }
+
+            //添加评论图资源关联
+            resourceService.InsertResources((int)ResourceTypeEnum.评论图, row, reqDto.Pictures);
 
             #endregion
 
-            return new ApiResult();
+            #region 获取评论实体
+            string getSql =
+                @"select top 1 a.*,isnull(b.Name,'') as NickName,isnull(c.RPath,'') as Avater
+,0 as CurrentUserLikes,0 as ReplayCount 
+from Comment a
+  left join UserInfo b on b.Id = a.UserId
+  left join ResourceMapping c on c.FkId = a.UserId and c.Type = @ResourceType
+  where a.IsDeleted = 0 and a.Id=@Id";
+            var getParameters = new[]
+            {
+                new SqlParameter("@Id",row),
+                new SqlParameter("@ResourceType",(int)ResourceTypeEnum.评论图),
+            };
+
+            var list = Util.ReaderToList<Comment>(getSql, getParameters);
+            string webHost = ConfigurationManager.AppSettings["webHost"];
+            string defaultAvater = string.Format("{0}/images/default_avater.png", webHost);
+            int resouceType = (int)ResourceTypeEnum.评论图;
+            var resDto = list.Select(x => new CommentResDto()
+            {
+                Id = x.Id,
+                ArticleId = x.ArticleId,
+                Avater = string.IsNullOrWhiteSpace(x.Avater) ? defaultAvater : x.Avater,
+                Content = x.Content,
+                IsLike = x.CurrentUserLikes > 0,
+                NickName = x.NickName,
+                PId = x.PId,
+                RefCommentId = x.RefCommentId,
+                ReplayCount = x.ReplayCount,
+                UserId = x.UserId,
+                Pictures = resourceService.GetResources(resouceType, x.Id)
+                    .Select(n => n.RPath).ToList()
+            }).FirstOrDefault();
+
+
+
+            #endregion
+
+            return new ApiResult<CommentResDto>()
+            {
+                Data = resDto
+            };
         }
 
         /// <summary>
@@ -163,6 +208,7 @@ from Comment a
             var list = Util.ReaderToList<Comment>(sql, parameters);
             string webHost = ConfigurationManager.AppSettings["webHost"];
             string defaultAvater = string.Format("{0}/images/default_avater.png", webHost);
+            int resouceType = (int)ResourceTypeEnum.评论图;
             var data = list.Select(x => new CommentResDto()
             {
                 Id = x.Id,
@@ -173,7 +219,11 @@ from Comment a
                 NickName = x.NickName,
                 PId = x.PId,
                 RefCommentId = x.RefCommentId,
-                ReplayCount = x.ReplayCount
+                ReplayCount = x.ReplayCount,
+                UserId = x.UserId,
+                SubTime = x.SubTime,
+                Pictures = resourceService.GetResources(resouceType, x.Id)
+                    .Select(n => n.RPath).ToList()
             }).ToList();
 
             return new ApiResult<List<CommentResDto>>()
@@ -218,6 +268,8 @@ from Comment a
 
             string webHost = ConfigurationManager.AppSettings["webHost"];
             string defaultAvater = string.Format("{0}/images/default_avater.png", webHost);
+            int resouceType = (int)ResourceTypeEnum.评论图;
+
             var pageData = list.Select(x => new CommentResDto()
             {
                 Id = x.Id,
@@ -227,8 +279,12 @@ from Comment a
                 IsLike = x.CurrentUserLikes > 0,
                 NickName = x.NickName,
                 PId = x.PId,
+                UserId = x.UserId,
+                SubTime = x.SubTime,
                 RefCommentId = x.RefCommentId,
-                ReplayCount = x.ReplayCount
+                ReplayCount = x.ReplayCount,
+                Pictures = resourceService.GetResources(resouceType, x.Id)
+                    .Select(n => n.RPath).ToList()
             }).ToList();
 
             return new ApiResult<List<CommentResDto>>()
@@ -248,7 +304,7 @@ from Comment a
         /// <returns></returns>
         public ApiResult<List<CommentResDto>> GetReplayList(int id, int type, int lastId, int pageSize, long userId)
         {
-            string sql = "select top " + pageSize + @"a.*,isnull(b.Name,'') as NickName,isnull(c.RPath,'') as Avater 
+            string sql = "select top " + pageSize + @" a.*,isnull(b.Name,'') as NickName,isnull(c.RPath,'') as Avater 
 ,(select count(1) from LikeRecord where [Status]=1 and [Type]=a.[Type] and CommentId=a.Id and UserId=@UserId) as CurrentUserLikes 
 ,(select count(1) from Comment where PId = a.Id ) as ReplayCount
 from Comment a
@@ -268,8 +324,9 @@ from Comment a
                 new SqlParameter("@UserId",userId),
                 new SqlParameter("@ResourceType",(int)ResourceTypeEnum.用户头像),
                 new SqlParameter("@RefCommentId",id),
+                new SqlParameter("@Type",type),
             };
-
+            
             var list = Util.ReaderToList<Comment>(sql, parameters);
 
             string webHost = ConfigurationManager.AppSettings["webHost"];

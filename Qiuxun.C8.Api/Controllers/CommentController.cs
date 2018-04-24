@@ -26,7 +26,7 @@ namespace Qiuxun.C8.Api.Controllers
         /// <param name="reqDto">请求参数类。Id:评论对象的Id，[计划Id,文章Id，评论Id]；CommentType：评论类型 1=一级评论 2=回复；Content:内容;Type：类型 1=计划 2=文章</param>
         /// <returns></returns>
         [HttpPost]
-        public ApiResult Publish(CommentReqDto reqDto)
+        public ApiResult<CommentResDto> Publish(CommentReqDto reqDto)
         {
             #region 验证
             if (reqDto == null)
@@ -89,7 +89,7 @@ namespace Qiuxun.C8.Api.Controllers
             int pageSize = 20)
         {
             long userId = UserInfo != null ? UserInfo.UserId : 0;
-            return commentService.GetReplayList(id, lastId, type, pageSize, userId);
+            return commentService.GetReplayList(id, type, lastId, pageSize, userId);
         }
 
         /// <summary>
@@ -103,7 +103,10 @@ namespace Qiuxun.C8.Api.Controllers
                 return new ApiResult(40000, "验证参数失败");
 
             if (reqDto.Type != 1 && reqDto.Type != 2)
-                return new ApiResult(50000, "超出业务范围");
+                return new ApiResult(40000, "超出业务范围");
+
+            if (reqDto.OperationType != 1 && reqDto.OperationType != 2)
+                return new ApiResult(40000, "超出业务范围");
 
             return commentService.ClickLike(reqDto.Id, reqDto.OperationType, reqDto.Type, UserInfo.UserId);
         }

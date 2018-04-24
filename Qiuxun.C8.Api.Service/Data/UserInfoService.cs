@@ -94,14 +94,14 @@ namespace Qiuxun.C8.Api.Service.Data
             {
                 if (!Crypter.CheckPassword(reqDto.OldPassword, userInfo.Password))
                 {
-                    return new ApiResult(15023, "旧密码未通过验证");
+                    return new ApiResult(15023, "旧密码不正确");
                 }
             }
             else
             {
                 if (Tool.GetMD5(reqDto.OldPassword) != userInfo.Password)
                 {
-                    return new ApiResult(15023, "旧密码未通过验证");
+                    return new ApiResult(15023, "旧密码不正确");
                 }
             }
 

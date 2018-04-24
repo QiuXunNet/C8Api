@@ -31,7 +31,7 @@ namespace Qiuxun.C8.Api.Service.Dtos
         /// </summary>
         public string File { get; set; }
         /// <summary>
-        /// 资源类型，1=文章资源 2=用户头像，可空
+        /// 资源类型，1=文章资源 2=用户头像 3=评论图片，可空
         /// </summary>
         public int? Type { get; set; }
     }

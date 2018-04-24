@@ -42,5 +42,9 @@ namespace Qiuxun.C8.Api.Service.Dtos
         /// 文章显示方式 1=普通文章 2=图库
         /// </summary>
         public int ShowType { get; set; }
+        /// <summary>
+        /// 仅用于六合彩 1=香港正版图库 0=免费资料
+        /// </summary>
+        public int GroupType { get; set; }
     }
 }

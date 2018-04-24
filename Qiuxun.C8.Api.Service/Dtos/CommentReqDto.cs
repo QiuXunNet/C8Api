@@ -27,5 +27,9 @@ namespace Qiuxun.C8.Api.Service.Dtos
         /// 类型 1=计划 2=文章
         /// </summary>
         public int Type { get; set; }
+        /// <summary>
+        /// 评论图片
+        /// </summary>
+        public List<long> Pictures { get; set; }
     }
 }
