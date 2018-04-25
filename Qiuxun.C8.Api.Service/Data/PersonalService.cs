@@ -13,6 +13,7 @@ using Qiuxun.C8.Api.Model;
 using Qiuxun.C8.Api.Service.Common.Paging;
 using System.Collections;
 using Qiuxun.C8.Api.Model.News;
+using Qiuxun.C8.Api.Service.Model;
 
 namespace Qiuxun.C8.Api.Service.Data
 {
@@ -27,7 +28,9 @@ namespace Qiuxun.C8.Api.Service.Data
         public IndexResDto GetPersonalIndexData(long userId)
         {
 
-            string usersql = @"select (select count(1)from Follow where UserId=u.Id and Status=1)as Follow,(select count(1)from Follow where Followed_UserId=u.Id and Status=1)as Fans, r.RPath as Avater,u.Name as NickName,u.* from UserInfo  u 
+            string usersql = @"select (select count(1)from Follow where UserId=u.Id and Status=1)as Follow,
+(select count(1)from Follow where Followed_UserId=u.Id and Status=1)as Fans, 
+r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u 
                               left  JOIN (select RPath,FkId from ResourceMapping where Type = @Type)  r 
                               on u.Id=r.FkId  where u.Id=@userId ";
             SqlParameter[] sp = new SqlParameter[] { new SqlParameter("@userId", userId), new SqlParameter("@Type", (int)ResourceTypeEnum.用户头像) };
@@ -222,9 +225,9 @@ namespace Qiuxun.C8.Api.Service.Data
         /// <summary>
         /// 粉丝榜数据 只取前100条
         /// </summary>
-        public ApiResult<List<FansResDto>> GetFansBangList(int typeId, string type, int pageIndex, int pageSize)
+        public ApiResult<List<FansResDto>> GetFansBangList(string type, int pageIndex, int pageSize)
         {
-             string strsql = string.Format(@"select  * from ( select top 100 row_number() over(order by count(1) desc  ) as Rank, count(1)as Number,Followed_UserId,Name as NickName,isnull(RPath,'/images/default_avater.png') as Avater
+            string strsql = string.Format(@"select  * from ( select top 100 row_number() over(order by count(1) desc  ) as Rank, count(1)as Number,Followed_UserId,Name as NickName,isnull(RPath,'/images/default_avater.png') as Avater
                                              from Follow f 
                                              left join UserInfo u on f.Followed_UserId=u.id
                                              left join ResourceMapping r on (r.FkId=f.Followed_UserId and r.Type=@ResourceType)
@@ -234,7 +237,7 @@ namespace Qiuxun.C8.Api.Service.Data
                                             WHERE Rank BETWEEN @Start AND @End", Tool.GetTimeWhere("FollowTime", type));
 
 
-                SqlParameter[] sp = new SqlParameter[] {
+            SqlParameter[] sp = new SqlParameter[] {
                         new SqlParameter("@ResourceType",(int)ResourceTypeEnum.用户头像),
                         new SqlParameter("@Start", (pageIndex - 1) * pageSize + 1),
                         new SqlParameter("@End", pageSize * pageIndex)
@@ -242,8 +245,6 @@ namespace Qiuxun.C8.Api.Service.Data
             var list = Util.ReaderToList<FansResDto>(strsql, sp) ?? new List<FansResDto>();
             return new ApiResult<List<FansResDto>>()
             {
-                Code = 100,
-                Desc = typeId.ToString(),
                 Data = list
             };
         }
@@ -251,11 +252,40 @@ namespace Qiuxun.C8.Api.Service.Data
         /// <summary>
         /// 进入他人主页是否关注（调用同时插入一条访问记录）
         /// </summary>
-        public ApiResult<HasFollowResDto> UserCenterGetHasFollow(long id, long userId)
+        public ApiResult<HasFollowResDto> GetHasFollow(long id, long userId)
         {
+
             HasFollowResDto resdto = new HasFollowResDto();
-            resdto.Followed = false;
-            resdto.ShowFollow = false;
+            if (id == userId)
+            {
+                resdto.Followed = false;
+                resdto.ShowFollow = false;
+                return new ApiResult<HasFollowResDto>() { Data = resdto };
+            }
+
+
+
+            //查询是否存在当前用户对受访人的已关注记录 Status=1:已关注
+            string sql = "select count(1) from [dbo].[Follow] where [Status]=1 and [UserId]=" + userId +
+                         " and [Followed_UserId]=" + id;
+
+            object obj = SqlHelper.ExecuteScalar(sql);
+
+            resdto.Followed = obj != null && Convert.ToInt32(obj) > 0;
+            resdto.ShowFollow = true;
+
+            return new ApiResult<HasFollowResDto>() { Data = resdto };
+        }
+
+        /// <summary>
+        /// 添加他人的个人中心访问记录
+        /// </summary>
+        /// <param name="id">受访人UserId</param>
+        /// <param name="userId">访问人用户Id</param>
+        /// <param name="module">访问模块编码</param>
+        /// <returns></returns>
+        public ApiResult AddVisitRecord(long id, long userId, int module = 1)
+        {
             if (id != userId)
             {
                 string visitSql = @"
@@ -275,21 +305,15 @@ namespace Qiuxun.C8.Api.Service.Data
                 {
                     new SqlParameter("@UserId", userId),
                     new SqlParameter("@RespondentsUserId", id),
-                    new SqlParameter("@Module", 1) //默认访问主页
+                    new SqlParameter("@Module", module) //默认访问主页
                 };
 
-                SqlHelper.ExecuteNonQuery(visitSql, sqlParameter);
+                int result = SqlHelper.ExecuteNonQuery(visitSql, sqlParameter);
 
-                //查询是否存在当前用户对受访人的已关注记录 Status=1:已关注
-                string sql = "select count(1) from [dbo].[Follow] where [Status]=1 and [UserId]=" + userId +
-                             " and [Followed_UserId]=" + id;
-
-                object obj = SqlHelper.ExecuteScalar(sql);
-
-                resdto.Followed = obj != null && Convert.ToInt32(obj) > 0;
-                resdto.ShowFollow = true;
+                if (result < 1) return new ApiResult(50000, "添加访问记录失败");
             }
-            return new ApiResult<HasFollowResDto>() { Code = 100, Desc = "", Data = resdto };
+
+            return new ApiResult();
         }
 
         /// <summary>
@@ -517,7 +541,7 @@ namespace Qiuxun.C8.Api.Service.Data
             }
             else if (type == 3)//赚钱 只看任务奖励
             {
-                
+
                 strstate = "8";
                 strsql = @"select * from ( select row_number() over (order by Id) as rowNumber, * from ComeOutRecord
                              where UserId = @UserId and Type in(" + strstate + @")  
@@ -528,6 +552,11 @@ namespace Qiuxun.C8.Api.Service.Data
             }
 
             string countsql = @" select count(1) from ComeOutRecord where UserId=@UserId and Type in(" + strstate + @")";
+
+            if (type == 1)
+            {
+                countsql += "  and State=3";
+            }
 
             SqlParameter[] sp = new SqlParameter[] {
                     new SqlParameter("@UserId",userId),
@@ -596,7 +625,7 @@ namespace Qiuxun.C8.Api.Service.Data
 	                                  group by l.Issue,Num,l.SubTime
 	                                  )t
 	                                  where   rowNumber BETWEEN {2} AND {3}  ", userId, lType, pager.StartIndex, pager.EndIndex);
-                                                countsql = string.Format(@"	  select count(distinct Issue)from BettingRecord  
+                countsql = string.Format(@"	  select count(distinct Issue)from BettingRecord  
 	                                     where UserId={0} and lType={1} and WinState in(3,4)", userId, lType);
             }
             else
@@ -647,7 +676,7 @@ namespace Qiuxun.C8.Api.Service.Data
         }
 
         /// <summary>
-        /// 获取竞猜数据
+        /// 获取我的参与竞猜数据
         /// </summary>
         public PagedListP<BetModel> GetBet(int pId, int pageIndex, int pageSize, long userId)
         {
@@ -662,7 +691,7 @@ namespace Qiuxun.C8.Api.Service.Data
                       where PId = @PId 
                 )t
                 WHERE rowNumber BETWEEN @Start AND @End";
-                            string countsql = @"select count(1) from LotteryType2 where PId=@PId ";
+            string countsql = @"select count(1) from LotteryType2 where PId=@PId ";
             SqlParameter[] sp = new SqlParameter[]
             {
                         new SqlParameter("@PId",pId),
@@ -679,7 +708,7 @@ namespace Qiuxun.C8.Api.Service.Data
 
             pager.PageData.ForEach(x =>
             {
-                x.LotteryIcon = Util.GetLotteryIcon(x.lType);
+                x.LotteryIcon = Util.GetLotteryIconUrl(x.lType);
             });
             return pager;
         }
@@ -938,7 +967,7 @@ namespace Qiuxun.C8.Api.Service.Data
         /// 获取计划列表
         /// </summary>
         public PagedListP<BettingRecord> GetPlan(long uid, int ltype, int winState, int pageIndex, int pageSize, long userId)
-        {            
+        {
             string winStateWhere = "";
             int start = pageSize * (pageIndex - 1) + 1;
             int end = pageSize * pageIndex;
@@ -979,6 +1008,7 @@ namespace Qiuxun.C8.Api.Service.Data
 
             List<BettingRecord> list = Util.ReaderToList<BettingRecord>(sql, sqlParameters);
 
+
             string countSql = string.Format(@"SELECT count(1) FROM ( SELECT  distinct lType,Issue  FROM [dbo].[BettingRecord] 
                                 WHERE UserId = {0}{1}{2} ) tt", uid, ltypeWhere, winStateWhere);
             object obj = SqlHelper.ExecuteScalar(countSql);
@@ -1014,7 +1044,7 @@ namespace Qiuxun.C8.Api.Service.Data
         /// <summary>
         /// 获取当前用户在粉丝榜的排名数据
         /// </summary>
-        public ApiResult<FansResDto> GetMyFanBangRank(string type,long userId)
+        public ApiResult<FansResDto> GetMyFanBangRank(string type, long userId)
         {
             string strsql = string.Format(@" select  * from ( select top 100 row_number() over(order by count(1) desc  ) as Rank, count(1)as Number,Followed_UserId,Name as NickName,isnull(RPath,'/images/default_avater.png') as Avater
                              from Follow f 
@@ -1068,9 +1098,9 @@ namespace Qiuxun.C8.Api.Service.Data
 
             return new ApiResult<InvitationRegResDto>()
             {
-                Code=100,
-                Desc="",
-                Data=irmodel
+                Code = 100,
+                Desc = "",
+                Data = irmodel
             };
         }
 
@@ -1118,7 +1148,8 @@ namespace Qiuxun.C8.Api.Service.Data
             string strsql = @"SELECT a.* ,
                                     ISNULL(b.Name, '') AS NickName ,
                                     ISNULL(b.Autograph, '') AS Autograph ,
-                                    ISNULL(c.RPath, '') AS Avater
+                                    ISNULL(c.RPath, '') AS Avater,
+                                    a.Followed_UserId as FollowedUserId
                             FROM    Follow AS a
                                     LEFT JOIN UserInfo b ON b.Id = a.Followed_UserId
                                     LEFT JOIN ResourceMapping c ON c.FkId = a.Followed_UserId AND c.Type = @Type
@@ -1149,7 +1180,7 @@ namespace Qiuxun.C8.Api.Service.Data
                 tm.Coin = item.Coin;
                 tm.Count = item.Count;
                 tm.SubTime = item.SubTime;
-                tm.CompletedCount = GetCompletedCount(item.Code,userId);
+                tm.CompletedCount = GetCompletedCount(item.Code, userId);
                 list.Add(tm);
             }
             return list;
@@ -1158,7 +1189,7 @@ namespace Qiuxun.C8.Api.Service.Data
         /// <summary>
         /// 获取任务完成数量
         /// </summary>
-        private int GetCompletedCount(int taskid,long userId)
+        private int GetCompletedCount(int taskid, long userId)
         {
             int result = 0;
 

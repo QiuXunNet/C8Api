@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Qiuxun.C8.Api.Model
+namespace Qiuxun.C8.Api.Service.Model
 {
     /// <summary>
     /// 排行榜
     /// </summary>
-    [Serializable]
     public class RankingList
     {
         /// <summary>

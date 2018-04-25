@@ -19,22 +19,21 @@ namespace Qiuxun.C8.Api.Model
         public int WinState { get; set; }
         public int Score { get; set; }
         public int UserId { get; set; }
-        [JsonIgnore]
         public DateTime SubTime { get; set; }
-
-        public string LogoIndex
+        /// <summary>
+        /// Logo Url
+        /// </summary>
+        public string Logo
         {
-            get { return Util.GetLotteryIcon(lType); }
+            get { return Util.GetLotteryIconUrl(lType); }
         }
-
-        public string LotteryTypeName
+        /// <summary>
+        /// 彩种名称
+        /// </summary>
+        public string LTypeName
         {
             get { return Util.GetLotteryTypeName(lType); }
         }
-
-        public string TimeStr
-        {
-            get { return SubTime.ToString("MM-dd HH:mm"); }
-        }
+        
     }
 }

@@ -48,8 +48,17 @@ namespace Qiuxun.C8.Api.Service.Data
 
             string rpath = url + filePath + photo.ImgName + "_Min" + photo.Extension;
 
-            string strsql = @"insert into ResourceMapping(Extension, RPath, Title, SortCode, CreateTime, Type, FkId, RSize) 
-                                   values(@Extension, @RPath, @Title, 1, getdate(), @Type, @FkId, @RSize);select @@identity";
+
+            StringBuilder strSql = new StringBuilder();
+
+            if (type == (int)ResourceTypeEnum.用户头像)
+            {
+                strSql.Append("delete from dbo.ResourceMapping where [Type]=@Type and FkId=@FkId;");
+            }
+
+            strSql.Append(@"insert into ResourceMapping(Extension, RPath, Title, SortCode, CreateTime, Type, FkId, RSize) 
+                                   values(@Extension, @RPath, @Title, 1, getdate(), @Type, @FkId, @RSize);select @@identity");
+
             SqlParameter[] sp = new SqlParameter[] {
                     new SqlParameter("@FkId",createUserId),
                     new SqlParameter("@Type",type),
@@ -60,7 +69,7 @@ namespace Qiuxun.C8.Api.Service.Data
 
                     };
 
-            object data = SqlHelper.ExecuteScalar(strsql, sp);
+            object data = SqlHelper.ExecuteScalar(strSql.ToString(), sp);
             if (data == null)
                 throw new ApiException(40000, "保存资源失败");
 

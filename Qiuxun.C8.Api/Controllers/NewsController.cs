@@ -107,7 +107,7 @@ namespace Qiuxun.C8.Api.Controllers
                 Id = 0,
                 Logo = string.Format("{0}/images/icon_info_04.png", WebHost),
                 Type = 3,
-                Url = ""
+                Url = string.Format("{0}/News/LotteryTime", WebHost)
             });
 
             return new ApiResult<List<NavigationResDto>>()

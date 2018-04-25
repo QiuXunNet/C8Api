@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Qiuxun.C8.Api.Model
+﻿namespace Qiuxun.C8.Api.Service.Model
 {
     /// <summary>
     /// 分成配置
     /// Author:LHS
     /// Date:2018年4月5日
     /// </summary>
-    [Serializable]
     public class CommissionSetting
     {
         /// <summary>

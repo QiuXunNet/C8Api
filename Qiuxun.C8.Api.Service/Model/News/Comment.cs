@@ -39,10 +39,7 @@ namespace Qiuxun.C8.Api.Model.News
         /// 创建时间
         /// </summary>		
         public DateTime SubTime { get; set; }
-
-        public string SubTimeStr {
-            get { return SubTime.ToString("yyyy-MM-dd HH:mm"); }
-        }
+        
         /// <summary>
         /// 更改时间
         /// </summary>		
