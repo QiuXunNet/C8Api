@@ -185,7 +185,8 @@ from Comment a
             string sql =
                 "select top " + count + @"  a.*,isnull(b.Name,'') as NickName,isnull(c.RPath,'') as Avater,
 (select count(1) from LikeRecord where [Status]=1 and [Type]=a.[Type] and CommentId=a.Id and UserId=@UserId) as CurrentUserLikes,
-(select count(1) from Comment where PId = a.Id ) as ReplayCount 
+(select count(1) from Comment where PId = a.Id ) as ReplayCount ,
+(select count(1) from LikeRecord where [Status]=1 and [Type]=a.[Type] and CommentId=a.Id) as StartCount
 from Comment a
   left join UserInfo b on b.Id = a.UserId
   left join ResourceMapping c on c.FkId = a.UserId and c.Type = @ResourceType
@@ -222,6 +223,7 @@ from Comment a
                 ReplayCount = x.ReplayCount,
                 UserId = x.UserId,
                 SubTime = x.SubTime,
+                StarCount = x.StarCount,
                 Pictures = resourceService.GetResources(resouceType, x.Id)
                     .Select(n => n.RPath).ToList()
             }).ToList();

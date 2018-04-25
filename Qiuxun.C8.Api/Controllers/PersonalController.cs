@@ -235,9 +235,9 @@ namespace Qiuxun.C8.Api.Controllers
         {
             #region 校验
 
-            if(reqDto==null)
-                return new ApiResult(40000,"验证参数失败");
-            
+            if (reqDto == null)
+                return new ApiResult(40000, "验证参数失败");
+
             #endregion
 
             PersonalService service = new PersonalService();
@@ -273,7 +273,7 @@ namespace Qiuxun.C8.Api.Controllers
         {
             PersonalService service = new PersonalService();
             PagedListP<Comment> resDto = service.GetDenamic(uid, pageIndex, pageSize, this.UserInfo.UserId);
-            
+
 
             return new ApiResult<PagedListP<Comment>>() { Data = resDto };
         }
@@ -348,16 +348,16 @@ namespace Qiuxun.C8.Api.Controllers
         /// <summary>
         /// 获取竞猜数据
         /// </summary>
-        /// <param name="PId">父级ID</param>
+        /// <param name="pid">彩种分类Id</param>
         /// <param name="pageIndex">页码</param>
         /// <param name="pageSize">页数据量</param>
         /// <returns></returns>
         [HttpGet]
-        public ApiResult<PagedListP<BetModel>> GetBet(int PId = 0, int pageIndex = 1, int pageSize = 20)
+        public ApiResult<PagedListP<BetModel>> GetBet(int pid = 0, int pageIndex = 1, int pageSize = 20)
         {
             PersonalService service = new PersonalService();
-            PagedListP<BetModel> resDto = service.GetBet(PId, pageIndex, pageSize, this.UserInfo.UserId);
-            return new ApiResult<PagedListP<BetModel>>() { Code = 100, Desc = "", Data = resDto };
+            PagedListP<BetModel> resDto = service.GetBet(pid, pageIndex, pageSize, this.UserInfo.UserId);
+            return new ApiResult<PagedListP<BetModel>>() { Data = resDto };
         }
 
         /// <summary>
@@ -373,7 +373,7 @@ namespace Qiuxun.C8.Api.Controllers
         {
             PersonalService service = new PersonalService();
             PagedListP<AchievementModel> resDto = service.GetMyBet(lType, PlayName, pageIndex, pageSize, this.UserInfo.UserId);
-            return new ApiResult<PagedListP<AchievementModel>>() { Code = 100, Desc = "", Data = resDto };
+            return new ApiResult<PagedListP<AchievementModel>>() { Data = resDto };
         }
 
         /// <summary>
@@ -384,7 +384,7 @@ namespace Qiuxun.C8.Api.Controllers
         /// <param name="pageSize">页数据量</param>
         /// <returns></returns>
         [HttpGet]
-        public ApiResult<PagedListP<ComeOutRecordModel>> GetRecordList(int Type, int pageIndex, int pageSize)
+        public ApiResult<PagedListP<ComeOutRecordModel>> GetRecordList(int Type, int pageIndex=1, int pageSize=20)
         {
             PersonalService service = new PersonalService();
             PagedListP<ComeOutRecordModel> resDto = service.GetRecordList(Type, pageIndex, pageSize, this.UserInfo.UserId);
@@ -410,7 +410,7 @@ namespace Qiuxun.C8.Api.Controllers
         /// <param name="pageSize">页数据量</param>
         /// <returns></returns>
         [HttpGet]
-        public ApiResult<PagedListP<ComeOutRecordModel>> GetMyCommissionList(int Type, int pageIndex, int pageSize)
+        public ApiResult<PagedListP<ComeOutRecordModel>> GetMyCommissionList(int Type, int pageIndex=1, int pageSize=20)
         {
             PersonalService service = new PersonalService();
             PagedListP<ComeOutRecordModel> resDto = service.GetMyCommissionList(Type, pageIndex, pageSize, this.UserInfo.UserId);

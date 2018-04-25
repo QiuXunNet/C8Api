@@ -10,6 +10,7 @@ using System.Data.SqlClient;
 using Qiuxun.C8.Caching;
 using Qiuxun.C8.Api.Service.Caching;
 using Qiuxun.C8.Api.Service.Enum;
+using Qiuxun.C8.Api.Service.Model;
 
 namespace Qiuxun.C8.Api.Service.Data
 {

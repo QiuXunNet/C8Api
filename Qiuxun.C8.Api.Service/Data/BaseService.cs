@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Qiuxun.C8.Api.Model;
 using Qiuxun.C8.Api.Public;
 using Qiuxun.C8.Api.Service.Caching;
+using Qiuxun.C8.Api.Service.Model;
 using Qiuxun.C8.Caching;
 
 namespace Qiuxun.C8.Api.Service.Data

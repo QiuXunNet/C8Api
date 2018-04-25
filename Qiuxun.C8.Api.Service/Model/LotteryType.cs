@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Qiuxun.C8.Api.Model
+namespace Qiuxun.C8.Api.Service.Model
 {
     /// <summary>
     /// 版 本 1.0
@@ -13,7 +9,6 @@ namespace Qiuxun.C8.Api.Model
     /// 日 期：2018年3月8日
     /// 描述：彩种分类实体
     /// </summary>
-    [Serializable]
     public class LotteryType
     {
         /// <summary>

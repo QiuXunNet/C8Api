@@ -8,6 +8,7 @@ using Qiuxun.C8.Api.Public;
 using Qiuxun.C8.Api.Service.Caching;
 using Qiuxun.C8.Api.Service.Common;
 using Qiuxun.C8.Api.Service.Dtos;
+using Qiuxun.C8.Api.Service.Model;
 
 namespace Qiuxun.C8.Api.Service.Data
 {

@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Qiuxun.C8.Api.Model
+namespace Qiuxun.C8.Api.Service.Model
 {
     /// <summary>
     ///赚钱任务 实体

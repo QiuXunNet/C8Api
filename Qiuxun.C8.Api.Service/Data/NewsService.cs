@@ -15,6 +15,8 @@ using Qiuxun.C8.Api.Service.Common;
 using Qiuxun.C8.Api.Service.Common.Paging;
 using Qiuxun.C8.Api.Service.Dtos;
 using Qiuxun.C8.Api.Service.Enum;
+using Qiuxun.C8.Api.Service.Model;
+using Qiuxun.C8.Api.Service.Model.News;
 using Qiuxun.C8.Caching;
 
 namespace Qiuxun.C8.Api.Service.Data

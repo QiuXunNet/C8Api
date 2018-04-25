@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Qiuxun.C8.Api.Model.News
+namespace Qiuxun.C8.Api.Service.Model.News
 {
     /// <summary>
     /// 版 本 1.0
@@ -9,7 +9,6 @@ namespace Qiuxun.C8.Api.Model.News
     /// 日 期：2018年3月8日
     /// 描述：新闻类型实体类
     /// </summary>
-    [Serializable]
     public class NewsType
     {
         /// <summary>

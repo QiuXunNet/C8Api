@@ -701,7 +701,7 @@ namespace Qiuxun.C8.Api.Service.Data
 
             pager.PageData.ForEach(x =>
             {
-                x.LotteryIcon = Util.GetLotteryIcon(x.lType);
+                x.LotteryIcon = Util.GetLotteryIconUrl(x.lType);
             });
             return pager;
         }
@@ -1000,7 +1000,7 @@ namespace Qiuxun.C8.Api.Service.Data
                 };
 
             List<BettingRecord> list = Util.ReaderToList<BettingRecord>(sql, sqlParameters);
-            
+
 
             string countSql = string.Format(@"SELECT count(1) FROM ( SELECT  distinct lType,Issue  FROM [dbo].[BettingRecord] 
                                 WHERE UserId = {0}{1}{2} ) tt", uid, ltypeWhere, winStateWhere);

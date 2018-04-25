@@ -14,6 +14,7 @@ using Qiuxun.C8.Api.Service.Common;
 using Qiuxun.C8.Api.Service.Dtos;
 using Qiuxun.C8.Api.Service.Enum;
 using Qiuxun.C8.Api.Service.Extension;
+using Qiuxun.C8.Api.Service.Model;
 
 namespace Qiuxun.C8.Api.Service.Data
 {

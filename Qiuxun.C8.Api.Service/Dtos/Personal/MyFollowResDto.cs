@@ -4,7 +4,6 @@ namespace Qiuxun.C8.Api.Service.Dtos.Personal
     /// <summary>
     /// MyFollowResDto:实体类(属性说明自动提取数据库字段的描述信息)
     /// </summary>
-    [Serializable]
     public class MyFollowResDto
     {
         /// <summary>
