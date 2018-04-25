@@ -551,6 +551,11 @@ namespace Qiuxun.C8.Api.Service.Data
 
             string countsql = @" select count(1) from ComeOutRecord where UserId=@UserId and Type in(" + strstate + @")";
 
+            if (type == 1)
+            {
+                countsql += "  and State=3";
+            }
+
             SqlParameter[] sp = new SqlParameter[] {
                     new SqlParameter("@UserId",userId),
                     new SqlParameter("@Start",pager.StartIndex),
@@ -1141,7 +1146,8 @@ namespace Qiuxun.C8.Api.Service.Data
             string strsql = @"SELECT a.* ,
                                     ISNULL(b.Name, '') AS NickName ,
                                     ISNULL(b.Autograph, '') AS Autograph ,
-                                    ISNULL(c.RPath, '') AS Avater
+                                    ISNULL(c.RPath, '') AS Avater,
+                                    a.Followed_UserId as FollowedUserId
                             FROM    Follow AS a
                                     LEFT JOIN UserInfo b ON b.Id = a.Followed_UserId
                                     LEFT JOIN ResourceMapping c ON c.FkId = a.Followed_UserId AND c.Type = @Type
