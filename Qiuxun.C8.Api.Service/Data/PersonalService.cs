@@ -28,7 +28,9 @@ namespace Qiuxun.C8.Api.Service.Data
         public IndexResDto GetPersonalIndexData(long userId)
         {
 
-            string usersql = @"select (select count(1)from Follow where UserId=u.Id and Status=1)as Follow,(select count(1)from Follow where Followed_UserId=u.Id and Status=1)as Fans, r.RPath as Avater,u.Name as NickName,u.* from UserInfo  u 
+            string usersql = @"select (select count(1)from Follow where UserId=u.Id and Status=1)as Follow,
+(select count(1)from Follow where Followed_UserId=u.Id and Status=1)as Fans, 
+r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u 
                               left  JOIN (select RPath,FkId from ResourceMapping where Type = @Type)  r 
                               on u.Id=r.FkId  where u.Id=@userId ";
             SqlParameter[] sp = new SqlParameter[] { new SqlParameter("@userId", userId), new SqlParameter("@Type", (int)ResourceTypeEnum.用户头像) };
