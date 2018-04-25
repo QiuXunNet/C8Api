@@ -54,7 +54,20 @@ namespace Qiuxun.C8.Api.Service.Data
 
             SqlParameter[] sp = new SqlParameter[] { new SqlParameter("@UserId", userId) };
             List<UserStateResDto> list = Util.ReaderToList<UserStateResDto>(usersql, sp);
-            return list.FirstOrDefault();
+            var model = list.FirstOrDefault();
+
+            //获取积分大于100分且排在第一未的彩种
+            usersql = @"select top(1) tab.Name from (
+	                        select sum(br.Score) as Score , lt.Name from BettingRecord br
+	                        left join LotteryType2 lt on br.lType= lt.lType
+	                        where br.UserId = @UserId
+	                        group by lt.Name
+                        ) as tab 
+                        where tab.Score>=100
+                        order by score desc";
+
+            model.MasterLottery = Convert.ToString(SqlHelper.ExecuteScalar(usersql, sp)).Replace("(PC蛋蛋)","");
+            return model;
         }
 
         /// <summary>
@@ -63,8 +76,8 @@ namespace Qiuxun.C8.Api.Service.Data
         /// <param name="model"></param>
         public bool AddMessage(TalkNotesReqDto model)
         {
-            string regsql = @"insert into TalkNotes (Content,UserId,UserName,PhotoImg,SendTime,RoomId,MsgTypeChild,Status,Guid,IsAdmin)
-                                values (@Content,@UserId,@UserName,@PhotoImg,@SendTime,@RoomId,@MsgTypeChild,@Status,@Guid,@IsAdmin);";
+            string regsql = @"insert into TalkNotes (Content,UserId,UserName,PhotoImg,SendTime,RoomId,MsgTypeChild,Status,Guid,IsAdmin,MasterLottery)
+                                values (@Content,@UserId,@UserName,@PhotoImg,@SendTime,@RoomId,@MsgTypeChild,@Status,@Guid,@IsAdmin,@MasterLottery);";
             SqlParameter[] regsp = new SqlParameter[] {
                     new SqlParameter("@Content",model.Content),
                     new SqlParameter("@UserId",model.UserId),
@@ -75,7 +88,8 @@ namespace Qiuxun.C8.Api.Service.Data
                     new SqlParameter("@MsgTypeChild",model.MsgTypeChild),
                     new SqlParameter("@Status",1),
                     new SqlParameter("@Guid",model.Guid),
-                    new SqlParameter("@IsAdmin",model.IsAdmin)
+                    new SqlParameter("@IsAdmin",model.IsAdmin),
+                    new SqlParameter("@MasterLottery",model.MasterLottery??"")
                  };
 
             var i = SqlHelper.ExecuteNonQuery(regsql, regsp);

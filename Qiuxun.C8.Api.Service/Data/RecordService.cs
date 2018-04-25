@@ -24,7 +24,6 @@ namespace Qiuxun.C8.Api.Service.Data
                         select row_number()over(order by Issue desc) as rownumber,lType,Issue,Num 
                         from LotteryRecord 
                         where lType=@lType and SubTime > @BeginTime and SubTime < @EndTime 
-                        order by Issue desc
                         ) tab where tab.rownumber between (@PageIndex - 1)*@PageSize and @PageIndex*@PageSize";
                     
                 sqlCount = "select count(*) from LotteryRecord where lType=@lType and SubTime > @BeginTime and SubTime < @EndTime ";
@@ -35,7 +34,6 @@ namespace Qiuxun.C8.Api.Service.Data
                         select row_number()over(order by Issue desc) as rownumber,lType,Issue,Num 
                         from LotteryRecord 
                         where lType=@lType and SubTime > @BeginTime
-                        order by Issue desc
                         ) tab where tab.rownumber between (@PageIndex - 1)*@PageSize and @PageIndex*@PageSize";
 
                 sqlCount = "select count(*) from LotteryRecord where lType=@lType and SubTime > @BeginTime ";

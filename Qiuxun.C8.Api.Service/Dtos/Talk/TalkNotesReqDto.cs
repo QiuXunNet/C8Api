@@ -47,5 +47,10 @@ namespace Qiuxun.C8.Api.Service.Dtos
         /// 是否是管理员
         /// </summary>
         public bool IsAdmin { get; set; }
+
+        /// <summary>
+        /// 积分最高的彩种名称
+        /// </summary>
+        public string MasterLottery { get; set; }
     }
 }
