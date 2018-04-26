@@ -249,7 +249,7 @@ namespace Qiuxun.C8.Api.Controllers
         /// </summary>
         /// <param name="uid">用户Id，若用户Id为0时，则查询当前登录用户计划列表</param>
         /// <param name="ltype">彩种类型Id</param>
-        /// <param name="winState">开奖状态</param>
+        /// <param name="winState">开奖状态 1=未开奖 2=已开奖</param>
         /// <param name="pageIndex">页码</param>
         /// <param name="pageSize">页数据量</param>
         /// <returns></returns>

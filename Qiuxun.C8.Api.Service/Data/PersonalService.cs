@@ -973,12 +973,12 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
             int end = pageSize * pageIndex;
             if (winState > 0)
             {
-                if (winState == 2)
+                if (winState == 1)
                 {
                     //未开奖
                     winStateWhere = " AND WinState=1";
                 }
-                else if (winState == 1)
+                else if (winState == 2)
                 {
                     //已开奖
                     winStateWhere = " AND WinState in(3,4)";
