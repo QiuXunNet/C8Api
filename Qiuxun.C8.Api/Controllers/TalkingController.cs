@@ -1,4 +1,5 @@
 ﻿using Qiuxun.C8.Api.Service.Api;
+using Qiuxun.C8.Api.Service.Caching;
 using Qiuxun.C8.Api.Service.Common;
 using Qiuxun.C8.Api.Service.Data;
 using Qiuxun.C8.Api.Service.Dtos;
@@ -49,15 +50,14 @@ namespace Qiuxun.C8.Api.Controllers
         }
 
         /// <summary>
-        /// 根据用户Id获取用户状态
+        /// 根据用户Id获取用户状态[ChatBlack:聊天是是否拉黑 1：拉黑 0：正常][IsChatAD:是否是聊天室管理员][MasterLottery:积分最高的彩种名称(空则说明没有)]
         /// </summary>
-        /// <param name="userId">用户Id</param>
-        /// <returns>[UserId:用户Id][ChatBlack:聊天是是否拉黑 1：拉黑 0：正常][IsChatAD:是否是聊天室管理员]</returns>
+        /// <returns>[UserId:用户Id]</returns>
         [HttpGet]
-        public ApiResult<UserStateResDto> GetUserState(int userId)
+        public ApiResult<UserStateResDto> GetUserState()
         {
             var result = new ApiResult<UserStateResDto>();
-            result.Data = _service.GetUserState(userId);
+            result.Data = _service.GetUserState((int)this.UserInfo.UserId);
             return result;
         }
              
@@ -327,8 +327,20 @@ namespace Qiuxun.C8.Api.Controllers
         [HttpGet][AllowAnonymous]
         public ApiResult<string> GetSensitiveWordsList()
         {
+            var str = "";
+            if (CacheHelper.GetCache("GetSensitiveWordsList") == null)
+            {                
+                str = _service.GetSensitiveWordsList();
+
+                CacheHelper.AddCache("GetSensitiveWordsList", str, DateTime.Now.AddHours(2));
+            }
+            else
+            {
+                str = CacheHelper.GetCache("GetSensitiveWordsList").ToString();
+            }
+
             var result = new ApiResult<string>();
-            result.Data = _service.GetSensitiveWordsList();
+            result.Data = str;
             return result;
         }
     }

@@ -28,6 +28,7 @@ namespace Qiuxun.C8.Api.Controllers
         /// <param name="pageSize">默认20[不必填]</param>
         /// <returns></returns>
         [HttpGet]
+        [AllowAnonymous]
         public ApiResult<PagedList<LotteryRecordRseDto>> GetRecordList(int lType,int pageIndex = 1,int pageSize=20)
         {
             var totalCount = 0;
@@ -63,6 +64,7 @@ namespace Qiuxun.C8.Api.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
+        [AllowAnonymous]
         public ApiResult<List<dynamic>> GetQueryDate()
         {
             var strs = Util.GetQueryDate();
@@ -85,6 +87,7 @@ namespace Qiuxun.C8.Api.Controllers
         /// <param name="lType">彩种类型</param>
         /// <returns></returns>
         [HttpGet]
+        [AllowAnonymous]
         public ApiResult<string> GetLotteryTypeName(int lType)
         {
             var result = new ApiResult<string>();

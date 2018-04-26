@@ -15,7 +15,7 @@ using Qiuxun.C8.Api.Service.Dtos;
 namespace Qiuxun.C8.Api.Controllers
 {
     /// <summary>
-    /// 
+    /// 排行榜接口
     /// </summary>
     public class LeaderboardController : QiuxunApiController
     {
@@ -121,7 +121,6 @@ namespace Qiuxun.C8.Api.Controllers
         /// <param name="queryType">榜单类型 day week month all</param>
         /// <param name="RType">4:盈利榜   9:打赏榜</param>
         /// <param name="lType">小彩种类型</param>
-        /// <param name="userId">用户Id</param>
         /// <returns></returns>
         [HttpGet]
         public ApiResult<RankIntegralResDto> GetMyProfitReward(string queryType, int RType, int lType)
