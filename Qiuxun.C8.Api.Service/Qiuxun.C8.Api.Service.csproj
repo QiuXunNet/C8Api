@@ -165,6 +165,7 @@
     <Compile Include="Common\ToolsHelper.cs" />
     <Compile Include="Common\WebLogHandleErrorAttribute.cs" />
     <Compile Include="Data\AmountService.cs" />
+    <Compile Include="Data\FriendshipLinksService.cs" />
     <Compile Include="Data\LeaderboardService.cs" />
     <Compile Include="Data\BaseService.cs" />
     <Compile Include="Data\CommentService.cs" />

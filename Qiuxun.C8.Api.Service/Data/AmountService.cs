@@ -38,7 +38,7 @@ namespace Qiuxun.C8.Api.Service.Data
             string regsql = "";
             if (rows > 0)
             {
-                regsql = @"update bankinfo set BankAccount=@BankAccount,BankName=@BankName,SubTime=@SubTime where UserId=@UserId";
+                regsql = @"update bankinfo set BankAccount=@BankAccount,BankName=@BankName,SubTime=@SubTime,TrueName=@TrueName where UserId=@UserId";
             }
             else
             {
@@ -82,11 +82,11 @@ namespace Qiuxun.C8.Api.Service.Data
         /// <summary>
         /// 添加提现记录
         /// </summary>
-        /// <param name="backId">银行卡Id</param>
+        /// <param name="bankId">银行卡Id</param>
         /// <param name="money">提现金额</param>
         /// <param name="userId">当前登录人Id</param>
         /// <returns></returns>
-        public void AddExtractCash(int backId, int money,int userId)
+        public void AddExtractCash(int bankId, int money,int userId)
         {
             //插入提现记录语句
             string sql = @"insert into ComeOutRecord (UserId,OrderId,Money,Type,SubTime,PayType,State) 
@@ -97,7 +97,7 @@ namespace Qiuxun.C8.Api.Service.Data
 
             SqlParameter[] regsp = new SqlParameter[] {
                             new SqlParameter("@UserId",userId),
-                            new SqlParameter("@OrderId",backId),
+                            new SqlParameter("@OrderId",bankId),
                             new SqlParameter("@Money",money)
                         };
 

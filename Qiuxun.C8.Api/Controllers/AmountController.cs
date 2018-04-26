@@ -82,12 +82,12 @@ namespace Qiuxun.C8.Api.Controllers
         /// <summary>
         /// 添加提现记录
         /// </summary>
-        /// <param name="backId">银行信息ID</param>
+        /// <param name="bankId">银行信息ID</param>
         /// <param name="money">提取的金额</param>
         /// <param name="userId">当前登录用户</param>
         /// <returns></returns>
         [HttpGet]
-        public ApiResult AddExtractCash(int backId, int money, int userId)
+        public ApiResult AddExtractCash(int bankId, int money, int userId)
         {
             var result = new ApiResult();
 
@@ -103,7 +103,7 @@ namespace Qiuxun.C8.Api.Controllers
                 }
                 else
                 {
-                    _service.AddExtractCash(backId, money, userId);
+                    _service.AddExtractCash(bankId, money, userId);
                 }
             }
             return result;
