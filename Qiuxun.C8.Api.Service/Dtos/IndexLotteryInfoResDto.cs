@@ -39,5 +39,10 @@ namespace Qiuxun.C8.Api.Service.Dtos
         /// 开奖号码别名
         /// </summary>
         public string OpenNumAlias { get; set; }
+
+        /// <summary>
+        /// 当前期号
+        /// </summary>
+        public string CurrentIssue { get; set; }
     }
 }

@@ -1110,8 +1110,9 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
         /// <param name="pageIndex"></param>
         /// <param name="pageSize"></param>
         /// <param name="userId"></param>
+        /// <param name="lastId">上次拉取的Id最小值</param>
         /// <returns></returns>
-        public PagedListP<MyFanResDto> GetMyFans(int pageIndex, int pageSize, long userId)
+        public PagedListP<MyFanResDto> GetMyFans(int pageIndex, int pageSize, long userId, int lastId)
         {
             int total = 0;
             string strsql = @"SELECT  a.* ,
@@ -1130,6 +1131,12 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
                                                                    AND c.Type = @Type
                             WHERE   a.Followed_UserId = @Followed_UserId
                                     AND a.Status = 1";
+            if (lastId > 0)
+            {
+                strsql += " AND a.Id < " + lastId;
+            }
+
+            strsql += " ORDER BY Id DESC";
             SqlParameter[] sp = new SqlParameter[] {
                 new SqlParameter("@Followed_UserId",userId),
                 new SqlParameter("@Type",(int)ResourceTypeEnum.用户头像),
@@ -1142,7 +1149,7 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
         /// <summary>
         /// 获取我的关注列表
         /// </summary>
-        public PagedListP<MyFollowResDto> GetMyFollow(int pageIndex, int pageSize, long userId)
+        public PagedListP<MyFollowResDto> GetMyFollow(int pageIndex, int pageSize, long userId, int lastId)
         {
             int total = 0;
             string strsql = @"SELECT a.* ,
@@ -1154,6 +1161,13 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
                                     LEFT JOIN UserInfo b ON b.Id = a.Followed_UserId
                                     LEFT JOIN ResourceMapping c ON c.FkId = a.Followed_UserId AND c.Type = @Type
                             WHERE   a.UserId = @UserId AND a.Status = 1";
+
+            if (lastId > 0)
+            {
+                strsql += " AND a.Id < " + lastId;
+            }
+
+            strsql += " ORDER BY Id DESC";
             SqlParameter[] sp = new SqlParameter[] {
                 new SqlParameter("@UserId",userId),
                 new SqlParameter("@Type",(int)ResourceTypeEnum.用户头像)
