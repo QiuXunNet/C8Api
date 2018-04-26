@@ -105,16 +105,15 @@ namespace Qiuxun.C8.Api.Controllers
         /// 获取我的关注列表(分页)
         /// </summary>
         /// <param name="lastId">最后一次拉取Id</param>
-        /// <param name="pageIndex">页码</param>
         /// <param name="pageSize">每页数据量</param>
         /// <returns>分页集合</returns>
         [HttpGet]
-        public ApiResult<PagedListP<MyFollowResDto>> GetMyFollow(int lastId = 0, int pageIndex = 1, int pageSize = 10)
+        public ApiResult<List<MyFollowResDto>> GetMyFollow(int lastId = 0, int pageSize = 10)
         {
 
             PersonalService service = new PersonalService();
-            PagedListP<MyFollowResDto> resDto = service.GetMyFollow(pageIndex, pageSize, this.UserInfo.UserId, lastId);
-            return new ApiResult<PagedListP<MyFollowResDto>>() { Code = 100, Desc = "", Data = resDto };
+            var resDto = service.GetMyFollow(pageSize, this.UserInfo.UserId, lastId);
+            return new ApiResult<List<MyFollowResDto>>() {Data = resDto };
         }
 
         /// <summary>
@@ -153,16 +152,15 @@ namespace Qiuxun.C8.Api.Controllers
         /// 获取我的粉丝列表(分页)
         /// </summary>
         /// <param name="lastId">上次拉取的Id最小值</param>
-        /// <param name="pageIndex">页码</param>
         /// <param name="pageSize">每页数据量</param>
         /// <returns>分页集合</returns>
         [HttpGet]
-        public ApiResult<PagedListP<MyFanResDto>> GetMyFans(int lastId = 0, int pageIndex = 1, int pageSize = 10)
+        public ApiResult<List<MyFanResDto>> GetMyFans(int lastId = 0, int pageSize = 10)
         {
 
             PersonalService service = new PersonalService();
-            PagedListP<MyFanResDto> resDto = service.GetMyFans(pageIndex, pageSize, this.UserInfo.UserId, lastId);
-            return new ApiResult<PagedListP<MyFanResDto>>() { Code = 100, Desc = "", Data = resDto };
+            List<MyFanResDto> resDto = service.GetMyFans(pageSize, this.UserInfo.UserId, lastId);
+            return new ApiResult<List<MyFanResDto>>() {Data = resDto };
         }
 
         /// <summary>

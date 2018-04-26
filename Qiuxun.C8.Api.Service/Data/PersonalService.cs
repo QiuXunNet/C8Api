@@ -1107,14 +1107,12 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
         /// <summary>
         /// 获取的粉丝列表
         /// </summary>
-        /// <param name="pageIndex"></param>
         /// <param name="pageSize"></param>
         /// <param name="userId"></param>
         /// <param name="lastId">上次拉取的Id最小值</param>
         /// <returns></returns>
-        public PagedListP<MyFanResDto> GetMyFans(int pageIndex, int pageSize, long userId, int lastId)
+        public List<MyFanResDto> GetMyFans( int pageSize, long userId, int lastId)
         {
-            int total = 0;
             string strsql = @"SELECT  a.* ,
                                     ISNULL(b.Name, '') AS NickName ,
                                     ISNULL(b.Autograph, '') AS Autograph ,
@@ -1141,18 +1139,16 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
                 new SqlParameter("@Followed_UserId",userId),
                 new SqlParameter("@Type",(int)ResourceTypeEnum.用户头像),
             };
-            List<MyFanResDto> list = ToolsHelper.QueryPage<MyFanResDto>(pageIndex, pageSize, "", strsql, "Id", "DESC", ref total, false, false, sp);
-            PagedListP<MyFanResDto> pager = new PagedListP<MyFanResDto>(pageIndex, pageSize, total, list);
-            return pager;
+            var list = Util.ReaderToList<MyFanResDto>(strsql, sp);
+            return list;
         }
 
         /// <summary>
         /// 获取我的关注列表
         /// </summary>
-        public PagedListP<MyFollowResDto> GetMyFollow(int pageIndex, int pageSize, long userId, int lastId)
+        public List<MyFollowResDto> GetMyFollow(int pageSize, long userId, int lastId)
         {
-            int total = 0;
-            string strsql = @"SELECT a.* ,
+            string strsql = string.Format(@"SELECT Top {0} a.* ,
                                     ISNULL(b.Name, '') AS NickName ,
                                     ISNULL(b.Autograph, '') AS Autograph ,
                                     ISNULL(c.RPath, '') AS Avater,
@@ -1160,7 +1156,7 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
                             FROM    Follow AS a
                                     LEFT JOIN UserInfo b ON b.Id = a.Followed_UserId
                                     LEFT JOIN ResourceMapping c ON c.FkId = a.Followed_UserId AND c.Type = @Type
-                            WHERE   a.UserId = @UserId AND a.Status = 1";
+                            WHERE   a.UserId = @UserId AND a.Status = 1", pageSize);
 
             if (lastId > 0)
             {
@@ -1172,9 +1168,9 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
                 new SqlParameter("@UserId",userId),
                 new SqlParameter("@Type",(int)ResourceTypeEnum.用户头像)
             };
-            List<MyFollowResDto> list = ToolsHelper.QueryPage<MyFollowResDto>(pageIndex, pageSize, "", strsql, "Id", "DESC", ref total, false, false, sp);
-            PagedListP<MyFollowResDto> pager = new PagedListP<MyFollowResDto>(pageIndex, pageSize, total, list);
-            return pager;
+            var result = Util.ReaderToList<MyFollowResDto>(strsql, sp);
+
+            return result;
         }
 
         /// <summary>
