@@ -39,6 +39,25 @@ namespace Qiuxun.C8.Api.Service.Data
         /// </summary>
         public ApiResult Bet(int lType, string currentIssue, string betInfo, long userId)
         {
+
+            #region 校验
+            //获取当前状态
+            string time = Util.GetOpenRemainingTime(lType);
+            if (time == "正在开奖")
+            {
+                return new ApiResult(400, "发帖失败，当期已封盘");
+            }
+
+            //校验当前这期是否已开奖
+            string isOpenSql = "select count(1) from dbo.LotteryRecord where lType=" + lType + " and Issue=@Issue";
+            object obj = SqlHelper.ExecuteScalar(isOpenSql, new SqlParameter("@Issue", currentIssue));
+            if (obj != null && Convert.ToInt32(obj) > 0)
+            {
+                return new ApiResult(400, "发帖失败，当期已封盘");
+            }
+
+            #endregion
+
             //数据清理
             string sql = "delete from BettingRecord where UserId=" + userId + " and lType =" + lType + " and Issue=@Issue";
             SqlHelper.ExecuteNonQuery(sql, new SqlParameter("@Issue", currentIssue));

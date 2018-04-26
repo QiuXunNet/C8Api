@@ -121,6 +121,7 @@ namespace Qiuxun.C8.Api.Service.Data
                     info.Issue = lastLotteryRecord.Issue;
                     info.OpenTime = lastLotteryRecord.ShowOpenTime;
                     info.OpenNumAlias = Util.GetShowInfo(lastLotteryRecord.lType, lastLotteryRecord.Num);
+                    info.CurrentIssue = Util.GetCurrentIssue(x.lType);
                 }
                 info.Logo = Util.GetLotteryIconUrl(x.lType);
                 resDto.Add(info);
@@ -158,6 +159,7 @@ namespace Qiuxun.C8.Api.Service.Data
                 info.Issue = lastLotteryRecord.Issue;
                 info.OpenTime = lastLotteryRecord.ShowOpenTime;
                 info.OpenNumAlias = Util.GetShowInfo(lastLotteryRecord.lType, lastLotteryRecord.Num);
+                info.CurrentIssue = Util.GetCurrentIssue(lType);
             }
             info.Logo = Util.GetLotteryIconUrl(lotteryInfo.lType);
 
