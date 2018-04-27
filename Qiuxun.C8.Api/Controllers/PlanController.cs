@@ -7,6 +7,7 @@ using Qiuxun.C8.Api.Service.Data;
 using Qiuxun.C8.Api.Service.Dtos.Plan.Request;
 using System.Collections.Generic;
 using System.Web.Http;
+using Qiuxun.C8.Api.Service.Model;
 
 namespace Qiuxun.C8.Api.Controllers
 {
