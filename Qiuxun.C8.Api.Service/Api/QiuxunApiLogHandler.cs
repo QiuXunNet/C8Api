@@ -51,7 +51,7 @@ namespace Qiuxun.C8.Api.Service.Api
                     QiuxunLogResult result = content.Value as QiuxunLogResult;
                     if (result != null)
                     {
-                        log.ApiStatus = new int?(result.LogCode);
+                        log.ApiStatus = result.LogCode;
                         log.ApiDesc = result.LogDesc;
                         log.ApiDescDetail = result.LogDescDetail;
                     }
@@ -60,7 +60,7 @@ namespace Qiuxun.C8.Api.Service.Api
                         ApiResult result2 = content.Value as ApiResult;
                         if (result2 != null)
                         {
-                            log.ApiStatus = new int?(result2.Code);
+                            log.ApiStatus = result2.Code;
                             log.ApiDesc = result2.Desc;
                             if (((property != null) && property.IsRecordResponseData) && (result2.Code == 100))
                             {

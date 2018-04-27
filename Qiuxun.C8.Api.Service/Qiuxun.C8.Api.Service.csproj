@@ -175,6 +175,7 @@
     <Compile Include="Data\PlanService.cs" />
     <Compile Include="Data\RechargeService.cs" />
     <Compile Include="Data\RecordService.cs" />
+    <Compile Include="Data\RequestLogService.cs" />
     <Compile Include="Data\TalkingService.cs" />
     <Compile Include="Data\ResourceManagementService.cs" />
     <Compile Include="Data\SmsService.cs" />

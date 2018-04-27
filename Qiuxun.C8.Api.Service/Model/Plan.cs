@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
-namespace Qiuxun.C8.Api.Model
+namespace Qiuxun.C8.Api.Service.Model
 {
     public class Plan
     {
@@ -181,13 +178,19 @@ namespace Qiuxun.C8.Api.Model
 
                     #endregion
                 }
-               
+
 
 
                 return result;
             }
         }
-
-
+        /// <summary>
+        /// 开奖号码
+        /// </summary>
+        public string OpenNum { get; set; }
+        /// <summary>
+        /// 开奖时间
+        /// </summary>
+        public DateTime OpenTime { get; set; }
     }
 }

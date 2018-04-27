@@ -350,7 +350,7 @@ namespace Qiuxun.C8.Api.Service
             }
             catch (Exception exception)
             {
-                LogHelper.Error("", exception);
+                LogHelper.Error("请求日志持久化异常", exception);
             }
         }
 
@@ -412,7 +412,7 @@ namespace Qiuxun.C8.Api.Service
             }
             catch (Exception exception)
             {
-                LogHelper.Error("", exception);
+                LogHelper.Error("请求日志持久化异常", exception);
             }
         }
         public static void WriteWebRequestLog(RequestLog log, string responseData)
@@ -421,7 +421,7 @@ namespace Qiuxun.C8.Api.Service
             {
 
                 ApiDesc = log.ApiDesc,
-                ApiStatus = log.ApiStatus.HasValue ? log.ApiStatus.Value : 0,
+                ApiStatus = log.ApiStatus ?? 0,
                 ClientHeight = log.ClientHeight,
                 ClientIp = log.ClientIp,
                 ClientIpHttp = log.ClientIpHttp,
@@ -430,8 +430,8 @@ namespace Qiuxun.C8.Api.Service
                 ClientVersion = log.ClientVersion,
                 ClientWidth = log.ClientWidth,
                 Content = log.ApiDescDetail,
-                CustomerGuid = log.CustomerGuid.HasValue ? log.CustomerGuid.Value : Guid.Empty,
-                CustomerId = log.CustomerId.HasValue ? log.CustomerId.Value : 0,
+                CustomerGuid = log.CustomerGuid ?? Guid.Empty,
+                CustomerId = log.CustomerId ?? 0,
                 ElapsedMilliseconds = log.ElapsedMilliseconds,
                 HttpMethod = log.HttpMethod,
                 HttpStatus = log.HttpStatus,
@@ -473,7 +473,7 @@ namespace Qiuxun.C8.Api.Service
             }
             catch (Exception exception)
             {
-                LogHelper.Error("", exception);
+                LogHelper.Error("请求日志持久化异常", exception);
             }
         }
 
