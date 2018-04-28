@@ -192,14 +192,7 @@ namespace Qiuxun.C8.Api.Controllers
         /// <summary>
         /// 添加聊天记录
         /// </summary>
-        /// <param name="Content">聊天内容</param>
-        /// <param name="UserId">发送人</param>
-        /// <param name="UserName">发送人姓名</param>
-        /// <param name="PhotoImg">头像</param>
-        /// <param name="RoomId">所属房间</param>
-        /// <param name="MsgTypeChild">记录类型</param>
-        /// <param name="Guid">消息的唯一标识</param>
-        /// <param name="IsAdmin">是否是管理员</param>
+        /// <param name="model">请求实体</param>
         /// <returns>true:添加成功  false:添加失败</returns>
         [HttpPost]
         public ApiResult<bool> AddMessage(TalkNotesReqDto model)
@@ -227,12 +220,7 @@ namespace Qiuxun.C8.Api.Controllers
         /// <summary>
         /// 管理员删除消息
         /// </summary>
-        /// <param name="Guid">消息的唯一标识</param>
-        /// <param name="UserId">被删除人用户Id</param>
-        /// <param name="UserName">被删除人用户名称</param>
-        /// <param name="RoomId">房间Id</param>
-        /// <param name="ProcessId">操作人Id(当前登录人Id)</param>
-        /// <param name="ProcessName">操作人名称</param>
+        /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
         public ApiResult DelMessage(DelMessageReqDto model)
@@ -245,11 +233,7 @@ namespace Qiuxun.C8.Api.Controllers
         /// <summary>
         /// 管理员删除某人全部消息
         /// </summary>
-        /// <param name="UserId">被删除人用户Id</param>
-        /// <param name="UserName">被删除人用户名称</param>
-        /// <param name="RoomId">房间Id</param>
-        /// <param name="ProcessId">操作人Id(当前登录人Id)</param>
-        /// <param name="ProcessName">操作人名称</param>
+        /// <param name="model">被删除人用户Id</param>
         /// <returns></returns>
         [HttpPost]
         public ApiResult DelMessageAll(DelMessageReqDto model)
@@ -262,11 +246,7 @@ namespace Qiuxun.C8.Api.Controllers
         /// <summary>
         /// 加入黑名单
         /// </summary>
-        /// <param name="UserId">被加入黑名单的人的用户Id</param>
-        /// <param name="UserName">被加入黑名单的人的用户名称</param>
-        /// <param name="RoomId">房间Id</param>
-        /// <param name="ProcessId">操作人Id(当前登录人Id)</param>
-        /// <param name="ProcessName">操作人名称</param>
+        /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
         public ApiResult AddBlackList(AddBlackReqDto model)
@@ -293,7 +273,8 @@ namespace Qiuxun.C8.Api.Controllers
         /// <summary>
         /// 获取拉黑列表
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="roomId">房间Id</param>
+        /// <param name="id">最下面哪天处理记录Id</param>
         /// <returns></returns>
         [HttpGet]
         public ApiResult<List<BlackListResDto>> GetBlackList(string roomId, int id = 0)
@@ -306,11 +287,7 @@ namespace Qiuxun.C8.Api.Controllers
         /// <summary>
         /// 解禁
         /// </summary>
-        /// <param name="UserId">被删除人用户Id</param>
-        /// <param name="UserName">被删除人用户名称</param>
-        /// <param name="RoomId">房间Id</param>
-        /// <param name="ProcessId">操作人Id(当前登录人Id)</param>
-        /// <param name="ProcessName">操作人名称</param>
+        /// <param name="model">被删除人用户Id</param>
         /// <returns></returns>
         [HttpPost]
         public ApiResult RemoveBlackList(DelMessageReqDto model)

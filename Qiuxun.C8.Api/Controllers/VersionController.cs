@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Web.Http;
 using Qiuxun.C8.Api.Service.Api;
 using Qiuxun.C8.Api.Service.Common;
+using Qiuxun.C8.Api.Service.Data;
 using Qiuxun.C8.Api.Service.Dtos;
 using Qiuxun.C8.Api.Service.Enum;
 
@@ -21,22 +22,16 @@ namespace Qiuxun.C8.Api.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet, AllowAnonymous]
-        public ApiResult<CheckerResDto> Checkver()
+        public ApiResult<CheckerResDto> Checkver(string appCode = "C8Api")
         {
-            var resDto = new CheckerResDto()
-            {
-                Status = (int)ClientUpdateStatus.None,
-                Content = "",
-                Downurl = ""
-            };
 
-            //VersionService service = new VersionService();
-            //var version = new InkeyVersion(this.RequestInfo.ClientVersion);
-            //var checkVerDto = service.CheckVersion(version, this.RequestInfo.ClientType, this.RequestInfo.ClientSourceId, CommonStr.OrgAppName);
+            VersionService service = new VersionService();
+            var version = new ApiVersion(this.RequestInfo.ClientVersion);
+            var checkVerDto = service.CheckVersion(version, this.RequestInfo.ClientType, this.RequestInfo.ClientSourceId, appCode);
 
             return new ApiResult<CheckerResDto>()
             {
-                Data = resDto
+                Data = checkVerDto
             };
 
         }

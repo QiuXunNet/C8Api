@@ -13,6 +13,7 @@ using Qiuxun.C8.Api.Model;
 using Qiuxun.C8.Api.Service.Common.Paging;
 using System.Collections;
 using Qiuxun.C8.Api.Model.News;
+using Qiuxun.C8.Api.Service.Dtos;
 using Qiuxun.C8.Api.Service.Model;
 
 namespace Qiuxun.C8.Api.Service.Data
@@ -319,18 +320,18 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
         /// <summary>
         /// 获取我的计划
         /// </summary>
-        public ApiResult<List<LotteryType>> GetMyPlan(long userId)
+        public ApiResult<List<LotteryTypeResDto>> GetMyPlan(long userId)
         {
-            string sql = "SELECT lType as Id FROM [dbo].[BettingRecord] WHERE UserId=" + userId +
+            string sql = "SELECT lType FROM [dbo].[BettingRecord] WHERE UserId=" + userId +
                           " GROUP BY lType";
-            var list = Util.ReaderToList<LotteryType>(sql);
+            var list = Util.ReaderToList<LotteryTypeResDto>(sql);
 
             list.ForEach(x =>
             {
-                x.TypeName = Util.GetLotteryTypeName((int)x.Id);
+                x.LTypeName = Util.GetLotteryTypeName(x.LType);
             });
 
-            return new ApiResult<List<LotteryType>>() { Code = 100, Desc = "", Data = list };
+            return new ApiResult<List<LotteryTypeResDto>>() {  Data = list };
         }
 
         /// <summary>
@@ -350,7 +351,7 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
             object sysMessageCount = SqlHelper.ExecuteScalar(unreadSysMessageCountSql);
             noread.SysMessageCount = ToolsHelper.ObjectToInt(sysMessageCount);
 
-            return new ApiResult<NoReadResDto>() { Code = 100, Desc = "", Data = noread };
+            return new ApiResult<NoReadResDto>() { Data = noread };
         }
 
         /// <summary>
@@ -430,7 +431,7 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
             dto.Txing = Tool.Rmoney(dr.Txing);
             dto.Txleiji = Tool.Rmoney(dr.Txleiji);
             dto.KeTx = Tool.Rmoney(dr.MyYj - dr.Txing - dr.Txleiji - dr.XfYj);
-            return new ApiResult<DrawMoneyResDto>() { Code = 100, Desc = "", Data = dto };
+            return new ApiResult<DrawMoneyResDto>() {  Data = dto };
         }
 
         /// <summary>
@@ -797,7 +798,7 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
             #endregion
 
             #region 查询动态总条数
-            string countSql = "SELECT count(1) FROM Comment WHERE IsDeleted=0 AND UserId=" + uid;
+            string countSql = "SELECT count(1) FROM UserInternalMessage WHERE IsDeleted=0 AND [Type]=2 AND UserId=" + uid;
             object obj = SqlHelper.ExecuteScalar(countSql);
             pager.TotalCount = Convert.ToInt32(obj ?? 0);
             #endregion
@@ -1077,7 +1078,7 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
                 fansbang = fansbangs;
             }
 
-            return new ApiResult<FansResDto>() { Code = 100, Desc = "", Data = fansbang };
+            return new ApiResult<FansResDto>() {  Data = fansbang };
         }
 
         /// <summary>
@@ -1098,8 +1099,6 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
 
             return new ApiResult<InvitationRegResDto>()
             {
-                Code = 100,
-                Desc = "",
                 Data = irmodel
             };
         }

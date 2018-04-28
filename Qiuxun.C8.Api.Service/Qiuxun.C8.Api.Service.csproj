@@ -180,6 +180,7 @@
     <Compile Include="Data\ResourceManagementService.cs" />
     <Compile Include="Data\SmsService.cs" />
     <Compile Include="Data\UserInfoService.cs" />
+    <Compile Include="Data\VersionService.cs" />
     <Compile Include="Dtos\BankInfoResDto.cs" />
     <Compile Include="Dtos\ClickLikeReqDto.cs" />
     <Compile Include="Dtos\Personal\Request\EditUserInfoReqDto.cs" />
@@ -272,6 +273,7 @@
     <Compile Include="Model\BetModel.cs" />
     <Compile Include="Model\BettingRecord.cs" />
     <Compile Include="Model\BettingRecordViewModel.cs" />
+    <Compile Include="Model\ClientSourceVersion.cs" />
     <Compile Include="Model\CoinRate.cs" />
     <Compile Include="Model\ComeOutRecord.cs" />
     <Compile Include="Model\ComeOutRecordModel.cs" />

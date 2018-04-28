@@ -22338,7 +22338,7 @@ namespace Qiuxun.C8.Api.Public
             }
             else if (lType == 5)
             {
-                result = "六合彩";
+                result = "6彩";
             }
             else if (lType == 6)
             {

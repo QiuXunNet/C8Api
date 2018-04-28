@@ -177,9 +177,19 @@ namespace System
             int num;
             if (!string.IsNullOrEmpty(input) && int.TryParse(input, out num))
             {
-                return new int?(num);
+                return num;
             }
             return null;
+        }
+
+        public static int? ToInt32(this string input, int defaultValue)
+        {
+            int num;
+            if (!string.IsNullOrEmpty(input) && int.TryParse(input, out num))
+            {
+                return num;
+            }
+            return defaultValue;
         }
 
         public static long? ToInt64(string value)

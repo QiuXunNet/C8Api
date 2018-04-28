@@ -18,7 +18,7 @@ namespace Qiuxun.C8.Api.Public
         public static readonly string connStr4 = ConfigurationManager.ConnectionStrings["connStr4"] == null ? "" : ConfigurationManager.ConnectionStrings["connStr4"].ConnectionString;
         public static readonly string connStr5 = ConfigurationManager.ConnectionStrings["connStr5"] == null ? "" : ConfigurationManager.ConnectionStrings["connStr5"].ConnectionString;
         public static readonly string connStr6 = ConfigurationManager.ConnectionStrings["connStr6"] == null ? "" : ConfigurationManager.ConnectionStrings["connStr6"].ConnectionString;
-        
+
         public static readonly string connStr11 = ConfigurationManager.ConnectionStrings["connStr11"] == null ? "" : ConfigurationManager.ConnectionStrings["connStr11"].ConnectionString;
         public static readonly string connStr22 = ConfigurationManager.ConnectionStrings["connStr22"] == null ? "" : ConfigurationManager.ConnectionStrings["connStr22"].ConnectionString;
         public static readonly string connStr33 = ConfigurationManager.ConnectionStrings["connStr33"] == null ? "" : ConfigurationManager.ConnectionStrings["connStr33"].ConnectionString;
@@ -29,6 +29,8 @@ namespace Qiuxun.C8.Api.Public
         public static readonly string connStr77 = ConfigurationManager.ConnectionStrings["connStr77"] == null ? "" : ConfigurationManager.ConnectionStrings["connStr77"].ConnectionString;
 
         private static string fenzhanStr = "";
+
+        private static readonly string connSupportStr = ConfigurationManager.ConnectionStrings["connSupportStr"].ConnectionString;
 
         #region 普通
 
@@ -58,7 +60,7 @@ namespace Qiuxun.C8.Api.Public
                     {
                         cmd.Parameters.AddRange(pms);
                     }
-                    
+
                     conn.Open();
                     object obj = cmd.ExecuteScalar();
                     cmd.Parameters.Clear();
@@ -298,6 +300,24 @@ namespace Qiuxun.C8.Api.Public
 
         #endregion
 
+        #region Support使用
+
+
+        //执行insert/delete/update的方法
+        public static int ExecuteNonQueryForSupport(string sql, params SqlParameter[] pms)
+        {
+
+            using (SqlConnection conn = new SqlConnection(connSupportStr))
+            {
+                using (SqlCommand cmd = new SqlCommand(sql, conn))
+                {
+                    if (pms != null) cmd.Parameters.AddRange(pms);
+                    conn.Open();
+                    return cmd.ExecuteNonQuery();
+                }
+            }
+        }
+        #endregion
 
     }
 }

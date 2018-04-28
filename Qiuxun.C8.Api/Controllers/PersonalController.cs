@@ -113,7 +113,7 @@ namespace Qiuxun.C8.Api.Controllers
 
             PersonalService service = new PersonalService();
             var resDto = service.GetMyFollow(pageSize, this.UserInfo.UserId, lastId);
-            return new ApiResult<List<MyFollowResDto>>() {Data = resDto };
+            return new ApiResult<List<MyFollowResDto>>() { Data = resDto };
         }
 
         /// <summary>
@@ -160,7 +160,7 @@ namespace Qiuxun.C8.Api.Controllers
 
             PersonalService service = new PersonalService();
             List<MyFanResDto> resDto = service.GetMyFans(pageSize, this.UserInfo.UserId, lastId);
-            return new ApiResult<List<MyFanResDto>>() {Data = resDto };
+            return new ApiResult<List<MyFanResDto>>() { Data = resDto };
         }
 
         /// <summary>
@@ -258,7 +258,7 @@ namespace Qiuxun.C8.Api.Controllers
         {
             PersonalService service = new PersonalService();
             PagedListP<BettingRecord> resDto = service.GetPlan(uid, ltype, winState, pageIndex, pageSize, this.UserInfo.UserId);
-            return new ApiResult<PagedListP<BettingRecord>>() { Code = 100, Desc = "", Data = resDto };
+            return new ApiResult<PagedListP<BettingRecord>>() { Data = resDto };
         }
 
         /// <summary>
@@ -290,19 +290,19 @@ namespace Qiuxun.C8.Api.Controllers
         {
             PersonalService service = new PersonalService();
             PagedListP<AccessRecord> resDto = service.GetVisitRecord(uid, pageIndex, pageSize, this.UserInfo.UserId);
-            return new ApiResult<PagedListP<AccessRecord>>() { Code = 100, Desc = "", Data = resDto };
+            return new ApiResult<PagedListP<AccessRecord>>() { Data = resDto };
         }
 
-        ///// <summary>
-        ///// 获取我的计划
-        ///// </summary>
-        ///// <returns></returns>
-        //[HttpGet]
-        //public ApiResult<List<LotteryType>> GetMyPlan()
-        //{
-        //    PersonalService service = new PersonalService();
-        //    return service.GetMyPlan(this.UserInfo.UserId);
-        //}
+        /// <summary>
+        /// 获取我的计划彩种筛选列表
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ApiResult<List<LotteryTypeResDto>> GetLotteryListOfMyPlan()
+        {
+            PersonalService service = new PersonalService();
+            return service.GetMyPlan(this.UserInfo.UserId);
+        }
 
         /// <summary>
         /// 获取未读通知消息数量
@@ -327,7 +327,7 @@ namespace Qiuxun.C8.Api.Controllers
         {
             PersonalService service = new PersonalService();
             PagedListP<DynamicMessage> resDto = service.GetCommentNotice(uid, pageIndex, pageSize, this.UserInfo.UserId);
-            return new ApiResult<PagedListP<DynamicMessage>>() { Code = 100, Desc = "", Data = resDto };
+            return new ApiResult<PagedListP<DynamicMessage>>() { Data = resDto };
         }
 
         /// <summary>
@@ -342,7 +342,7 @@ namespace Qiuxun.C8.Api.Controllers
         {
             PersonalService service = new PersonalService();
             PagedListP<SystemMessage> resDto = service.GetSysMessage(uid, pageIndex, pageSize, this.UserInfo.UserId);
-            return new ApiResult<PagedListP<SystemMessage>>() { Code = 100, Desc = "", Data = resDto };
+            return new ApiResult<PagedListP<SystemMessage>>() { Data = resDto };
         }
 
         /// <summary>
@@ -388,7 +388,7 @@ namespace Qiuxun.C8.Api.Controllers
         {
             PersonalService service = new PersonalService();
             PagedListP<ComeOutRecordModel> resDto = service.GetRecordList(Type, pageIndex, pageSize, this.UserInfo.UserId);
-            return new ApiResult<PagedListP<ComeOutRecordModel>>() { Code = 100, Desc = "", Data = resDto };
+            return new ApiResult<PagedListP<ComeOutRecordModel>>() { Data = resDto };
         }
 
         /// <summary>
@@ -414,7 +414,7 @@ namespace Qiuxun.C8.Api.Controllers
         {
             PersonalService service = new PersonalService();
             PagedListP<ComeOutRecordModel> resDto = service.GetMyCommissionList(Type, pageIndex, pageSize, this.UserInfo.UserId);
-            return new ApiResult<PagedListP<ComeOutRecordModel>>() { Code = 100, Desc = "", Data = resDto };
+            return new ApiResult<PagedListP<ComeOutRecordModel>>() { Data = resDto };
         }
     }
 }
