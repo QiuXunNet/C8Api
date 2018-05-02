@@ -30,7 +30,8 @@ namespace Qiuxun.C8.Api.Service.Data
         {
 
             string usersql = @"select (select count(1)from Follow where UserId=u.Id and Status=1)as Follow,
-(select count(1)from Follow where Followed_UserId=u.Id and Status=1)as Fans, 
+(select count(1)from Follow where Followed_UserId=u.Id and Status=1)as Fans,
+(select count(1) from UserCoupon where UserId=u.Id and State=1 and getdate()<EndTime)as UserCoupon,
 r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u 
                               left  JOIN (select RPath,FkId from ResourceMapping where Type = @Type)  r 
                               on u.Id=r.FkId  where u.Id=@userId ";
@@ -331,7 +332,7 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
                 x.LTypeName = Util.GetLotteryTypeName(x.LType);
             });
 
-            return new ApiResult<List<LotteryTypeResDto>>() {  Data = list };
+            return new ApiResult<List<LotteryTypeResDto>>() { Data = list };
         }
 
         /// <summary>
@@ -431,7 +432,7 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
             dto.Txing = Tool.Rmoney(dr.Txing);
             dto.Txleiji = Tool.Rmoney(dr.Txleiji);
             dto.KeTx = Tool.Rmoney(dr.MyYj - dr.Txing - dr.Txleiji - dr.XfYj);
-            return new ApiResult<DrawMoneyResDto>() {  Data = dto };
+            return new ApiResult<DrawMoneyResDto>() { Data = dto };
         }
 
         /// <summary>
@@ -498,6 +499,44 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
                     });
                 }
             }
+            pager.PageData = list;
+            pager.TotalCount = count;
+
+            return pager;
+        }
+
+        /// <summary>
+        /// 获取我的卡券列表
+        /// </summary>
+        public PagedListP<UserCoupon> GetMyUserCouponList(int type, int pageIndex, int pageSize, long userId)
+        {
+            var pager = new PagedListP<UserCoupon>();
+            pager.PageIndex = pageIndex;
+            pager.PageSize = pageSize;
+            string strsql = "";
+            string countsql = "";
+
+            string strwhere = string.Format(" UserId={0}", userId);
+            switch (type)
+            {
+                case 0:
+                    strwhere += " and State=1 and getdate()<EndTime";
+                    break;
+
+                case 1:
+                    strwhere += " and State=2";
+                    break;
+
+                case 2:
+                    strwhere += " and getdate()>EndTime";
+                    break;
+            }
+            strsql = string.Format("select * from UserCoupon where {0} ", strwhere);
+            countsql = string.Format("select count(*) from UserCoupon where {0} ", strwhere);
+
+            List<UserCoupon> list = Util.ReaderToList<UserCoupon>(strsql);
+            int count = Convert.ToInt32(SqlHelper.ExecuteScalar(countsql));
+
             pager.PageData = list;
             pager.TotalCount = count;
 
@@ -1078,7 +1117,7 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
                 fansbang = fansbangs;
             }
 
-            return new ApiResult<FansResDto>() {  Data = fansbang };
+            return new ApiResult<FansResDto>() { Data = fansbang };
         }
 
         /// <summary>
@@ -1110,7 +1149,7 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
         /// <param name="userId"></param>
         /// <param name="lastId">上次拉取的Id最小值</param>
         /// <returns></returns>
-        public List<MyFanResDto> GetMyFans( int pageSize, long userId, int lastId)
+        public List<MyFanResDto> GetMyFans(int pageSize, long userId, int lastId)
         {
             string strsql = @"SELECT  a.* ,
                                     ISNULL(b.Name, '') AS NickName ,

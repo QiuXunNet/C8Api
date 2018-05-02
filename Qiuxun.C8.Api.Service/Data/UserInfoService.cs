@@ -276,6 +276,22 @@ namespace Qiuxun.C8.Api.Service.Data
 
             int userId = Convert.ToInt32(obj);
 
+            var couponModel = GetCoupon("A0001");
+            DateTime beginTime = DateTime.Now;
+            DateTime endTime = DateTime.Now.AddDays(couponModel.ExpiryDate);
+
+            #region 注册时,添加一张查看卷
+            UserCoupon uc = new UserCoupon();
+            uc.UserId = userId;
+            uc.CouponCode = "A0001";
+            uc.PlanId = 0;
+            uc.BeginTime = beginTime;
+            uc.EndTime = endTime;
+            uc.FromType = 1;
+            uc.State = 1;
+            AddUserCoupon(uc);
+            #endregion
+
             //TODO:事务优化处理
             #region 发放邀请注册奖励
             if (dto.InviteCode.HasValue)
@@ -305,6 +321,18 @@ namespace Qiuxun.C8.Api.Service.Data
                                 AddCoinReward((int)superUser.Id, superReward, 7, (int)inviteUser.Id, userId);
                             }
                         }
+
+                        #region 邀请注册时,邀请人添加一张查看卷
+                        UserCoupon uc1 = new UserCoupon();
+                        uc1.UserId = (int)inviteUser.Id;
+                        uc1.CouponCode = "A0001";
+                        uc1.PlanId = 0;
+                        uc1.BeginTime = beginTime;
+                        uc1.EndTime = endTime;
+                        uc1.FromType = 2;
+                        uc1.State = 1;
+                        AddUserCoupon(uc1);
+                        #endregion
                     }
                 }
                 catch (Exception ex)
@@ -471,6 +499,51 @@ namespace Qiuxun.C8.Api.Service.Data
                 throw;
             }
 
+        }
+
+        /// <summary>
+        /// 获取优惠券信息
+        /// </summary>
+        /// <param name="Code"></param>
+        /// <returns></returns>
+        private Coupon GetCoupon(string Code)
+        {
+            string strsql = "select* from[dbo].[Coupon] where Code = @Code";
+            SqlParameter[] sp = new SqlParameter[] {
+                new SqlParameter("@Code",Code)
+
+            };
+            return Util.ReaderToModel<Coupon>(strsql, sp);
+        }
+
+        /// <summary>
+        /// 添加用户优惠券
+        /// </summary>
+        /// <param name="uc"></param>
+        /// <returns></returns>
+        private int AddUserCoupon(UserCoupon uc)
+        {
+            int data = 0;
+            string strsql = @"insert into [UserCoupon](UserId, CouponCode, PlanId, BeginTime, EndTime, FromType, State, SubTime)
+                              values(@UserId, @CouponCode, @PlanId, @BeginTime, @EndTime, @FromType, @State, getdate());";
+            SqlParameter[] sp = new SqlParameter[] {
+                new SqlParameter("@UserId",uc.UserId),
+                new SqlParameter("@CouponCode",uc.CouponCode),
+                new SqlParameter("@PlanId",uc.PlanId),
+                new SqlParameter("@BeginTime",uc.BeginTime),
+                new SqlParameter("@EndTime",uc.EndTime),
+                new SqlParameter("@FromType",uc.FromType),
+                new SqlParameter("@State",uc.State)
+            };
+            try
+            {
+                data = SqlHelper.ExecuteNonQuery(strsql, sp);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            return data;
         }
     }
 

@@ -416,5 +416,22 @@ namespace Qiuxun.C8.Api.Controllers
             PagedListP<ComeOutRecordModel> resDto = service.GetMyCommissionList(Type, pageIndex, pageSize, this.UserInfo.UserId);
             return new ApiResult<PagedListP<ComeOutRecordModel>>() { Data = resDto };
         }
+
+        /// <summary>
+        /// 卡劵数据
+        /// </summary>
+        /// <param name="type">0 未使用 1已使用 2已过期</param>
+        /// <param name="pageIndex">页码</param>
+        /// <param name="pageSize">页数据量</param>
+        /// <returns></returns>
+        [HttpGet]
+        public ApiResult<PagedListP<UserCoupon>> VoucherList(int type, int pageIndex = 1, int pageSize = 20)
+        {
+            long userId = this.UserInfo.UserId;
+
+            PersonalService service = new PersonalService();
+            PagedListP<UserCoupon> resDto = service.GetMyUserCouponList(type, pageIndex, pageSize, userId);
+            return new ApiResult<PagedListP<UserCoupon>>() { Data = resDto };            
+        }
     }
 }

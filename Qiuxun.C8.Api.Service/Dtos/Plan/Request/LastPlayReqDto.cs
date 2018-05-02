@@ -23,5 +23,10 @@ namespace Qiuxun.C8.Api.Service.Dtos.Plan.Request
         /// 玩法名称
         /// </summary>
         public string playName { get; set; }
+
+        /// <summary>
+        /// 支付类型
+        /// </summary>
+        public int? paytype { get; set; }
     }
 }

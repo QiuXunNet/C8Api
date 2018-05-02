@@ -278,6 +278,7 @@
     <Compile Include="Model\ComeOutRecord.cs" />
     <Compile Include="Model\ComeOutRecordModel.cs" />
     <Compile Include="Model\CommissionSetting.cs" />
+    <Compile Include="Model\Coupon.cs" />
     <Compile Include="Model\DrawMoneyModel.cs" />
     <Compile Include="Model\DynamicMessage.cs" />
     <Compile Include="Model\Expert.cs" />
@@ -310,6 +311,7 @@
     <Compile Include="Model\Talk\ProcessingRecords.cs" />
     <Compile Include="Model\Talk\TalkBlackList.cs" />
     <Compile Include="Model\Talk\TalkNotes.cs" />
+    <Compile Include="Model\UserCoupon.cs" />
     <Compile Include="Model\UserInfo.cs" />
     <Compile Include="Model\UserInternalMessage.cs" />
     <Compile Include="Model\UserState.cs" />
