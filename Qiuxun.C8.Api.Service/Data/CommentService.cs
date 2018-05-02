@@ -299,6 +299,21 @@ from Comment a
         }
 
         /// <summary>
+        /// 获取评论数量
+        /// </summary>
+        /// <param name="id">文章Id/计划Id</param>
+        /// <param name="type">类型1=计划 2=文章</param>
+        /// <returns></returns>
+        public int GetCommentCount(int id, int type)
+        {
+            string commentTotalCountSql = "select count(1) from Comment where IsDeleted = 0 and Type=" + type +
+                                          " and ArticleId=" + id;
+            var obj = SqlHelper.ExecuteScalar(commentTotalCountSql);
+
+            return obj.ToInt32();
+        }
+
+        /// <summary>
         /// 获取回复列表
         /// </summary>
         /// <param name="id"></param>

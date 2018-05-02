@@ -524,7 +524,7 @@ namespace Qiuxun.C8.Api.Service.Data
         }
 
         /// <summary>
-        /// 获取用户近期竞猜记录(返回当前用户是否点阅过该记录)
+        /// 获取用户近期竞猜记录【已开奖】(ExtraData 返回当前用户是否点阅过最新一期未开奖的记录)
         /// </summary>
         public PagedListP<AchievementModel> GetUserLastPlay(long uid, int lType, string playName, long userId)
         {

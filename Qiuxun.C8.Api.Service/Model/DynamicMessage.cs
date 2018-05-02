@@ -5,6 +5,10 @@ namespace Qiuxun.C8.Api.Service.Model
     public class DynamicMessage : UserInternalMessage
     {
         /// <summary>
+        /// 关联评论Id
+        /// </summary>
+        public int RefId { get; set; }
+        /// <summary>
         /// 来源用户Id
         /// </summary>
         public int RefUserId { get; set; }
