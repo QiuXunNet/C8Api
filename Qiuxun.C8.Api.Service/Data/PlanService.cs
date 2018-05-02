@@ -146,7 +146,7 @@ namespace Qiuxun.C8.Api.Service.Data
         /// <summary>
         /// 获取该用户最新计划(同时会插入点阅记录，收费专家扣除用户金币数、获得佣金)
         /// </summary>
-        public ApiResult<BettingRecord> GetLastPlay(int lType, long uid, string playName, long userId)
+        public ApiResult<BettingRecord> GetLastPlay(int lType, long uid, string playName, long userId,int paytype = 1)
         {
             if (string.IsNullOrWhiteSpace(playName))
             {
@@ -176,89 +176,106 @@ namespace Qiuxun.C8.Api.Service.Data
                 return new ApiResult<BettingRecord>() { Code = 6003, Desc = "未获取到数据", Data = null };
             }
 
-            //step2:查询用户是否点阅过该帖子。若未点阅过，则校验金币是否充足
-            string readRecordSql = @"select count(1) from ComeOutRecord 
+            //如果是使用金币查看,否则使用查看劵查看
+            if (paytype == 1) 
+            {
+                //step2:查询用户是否点阅过该帖子。若未点阅过，则校验金币是否充足
+                string readRecordSql = @"select count(1) from ComeOutRecord 
                     where [Type]=@Type and UserId=@UserId and OrderId=@Id";
 
-            var readRecordParameter = new[]
-            {
+                var readRecordParameter = new[]
+                {
                     new SqlParameter("@Type", (int) TransactionTypeEnum.点阅),
                     new SqlParameter("@UserId", userId),
                     new SqlParameter("@Id", lastBettingRecord.Id),
                 };
 
-            object objReadRecord = SqlHelper.ExecuteScalar(readRecordSql, readRecordParameter);
+                object objReadRecord = SqlHelper.ExecuteScalar(readRecordSql, readRecordParameter);
 
-            //用户未点阅过该帖子
-            if (objReadRecord == null || Convert.ToInt32(objReadRecord) <= 0)
-            {
-                //step3.1:查询点阅所需金币
-                int totalIntegral = LuoUtil.GetUserIntegral(uid, lType);
-                var setting = GetLotteryCharge().FirstOrDefault(
-                    x => x.MinIntegral <= totalIntegral
-                         && x.MaxIntegral > totalIntegral
-                         && x.LType == lType
-                    );
-
-                int readCoin = 0; //点阅所需金币
-
-                if (setting != null) readCoin = setting.Coin;
-
-                StringBuilder executeSql = new StringBuilder();
-                if (readCoin > 0)
+                //用户未点阅过该帖子
+                if (objReadRecord == null || Convert.ToInt32(objReadRecord) <= 0)
                 {
-                    //step3.2:校验用户金币是否充足
-                    if (user.Coin < readCoin)
+                    //step3.1:查询点阅所需金币
+                    int totalIntegral = LuoUtil.GetUserIntegral(uid, lType);
+                    var setting = GetLotteryCharge().FirstOrDefault(
+                        x => x.MinIntegral <= totalIntegral
+                             && x.MaxIntegral > totalIntegral
+                             && x.LType == lType
+                        );
+
+                    int readCoin = 0; //点阅所需金币
+
+                    if (setting != null) readCoin = setting.Coin;
+
+                    StringBuilder executeSql = new StringBuilder();
+                    if (readCoin > 0)
                     {
-                        //金币不足
-                        return new ApiResult<BettingRecord>() { Code = 6004, Desc = "收费帖子，金币不足", Data = null };
-                    }
-                    else
-                    {
-                        //1.扣除用户金币
-                        executeSql.AppendFormat("update UserInfo set Coin-={0} where Id={1};", readCoin, user.Id);
-                        //2.添加点阅记录
-                        executeSql.AppendFormat(@"INSERT INTO [dbo].[ComeOutRecord]([UserId],[OrderId],[Type] ,[Money],[State],[SubTime])
+                        //step3.2:校验用户金币是否充足
+                        if (user.Coin < readCoin)
+                        {
+                            //金币不足
+                            return new ApiResult<BettingRecord>() { Code = 6004, Desc = "收费帖子，金币不足", Data = null };
+                        }
+                        else
+                        {
+                            //1.扣除用户金币
+                            executeSql.AppendFormat("update UserInfo set Coin-={0} where Id={1};", readCoin, user.Id);
+                            //2.添加点阅记录
+                            executeSql.AppendFormat(@"INSERT INTO [dbo].[ComeOutRecord]([UserId],[OrderId],[Type] ,[Money],[State],[SubTime])
                             VALUES({0},{1},{2},{3}, 1, GETDATE());", user.Id, lastBettingRecord.Id, (int)TransactionTypeEnum.点阅, readCoin);
 
 
-                        //3:查询用户分佣比例
-                        var userRateSetting = GetCommissionSetting().FirstOrDefault(x => x.LType == GetlType(lType) && x.Type == (int)CommissionTypeEnum.点阅佣金);
+                            //3:查询用户分佣比例
+                            var userRateSetting = GetCommissionSetting().FirstOrDefault(x => x.LType == GetlType(lType) && x.Type == (int)CommissionTypeEnum.点阅佣金);
 
-                        if (userRateSetting != null && userRateSetting.Percentage > 0)
-                        {
-                            int commission = (int)(userRateSetting.Percentage * readCoin);
-                            executeSql.AppendFormat("update UserInfo set Money+={0} where Id={1}", commission, uid);
+                            if (userRateSetting != null && userRateSetting.Percentage > 0)
+                            {
+                                int commission = (int)(userRateSetting.Percentage * readCoin);
+                                executeSql.AppendFormat("update UserInfo set Money+={0} where Id={1}", commission, uid);
 
-                            executeSql.AppendFormat(@"INSERT INTO [dbo].[ComeOutRecord]([UserId],[OrderId],[Type] ,[Money],[State],[SubTime])
+                                executeSql.AppendFormat(@"INSERT INTO [dbo].[ComeOutRecord]([UserId],[OrderId],[Type] ,[Money],[State],[SubTime])
                                     VALUES({0},{1},{2},{3}, 1, GETDATE());", user.Id, lastBettingRecord.Id, (int)TransactionTypeEnum.点阅佣金, commission);
+                            }
                         }
                     }
+                    else
+                    {
+                        //免费专家，仅记录点阅记录
+                        executeSql.AppendFormat(@"INSERT INTO [dbo].[ComeOutRecord]([UserId],[OrderId],[Type] ,[Money],[State],[SubTime])
+                                            VALUES({0},{1},{2},{3}, 1, GETDATE());", user.Id, lastBettingRecord.Id, (int)TransactionTypeEnum.点阅, 0);
+                    }
+
+                    try
+                    {
+
+                        SqlHelper.ExecuteTransaction(executeSql.ToString());
+
+                    }
+                    catch (Exception ex)
+                    {
+
+                        LogHelper.WriteLog(string.Format("查看最新帖子异常。帖子Id:{0}，查看人：{1}，异常消息:{2}，异常堆栈：{3}",
+                            lastBettingRecord.Id, user.Id, ex.Message, ex.StackTrace));
+
+                        return new ApiResult<BettingRecord>() { Code = -999, Desc = "数据库错误", Data = null };
+                    }
+
+
+                }
+            }
+            else if(paytype == 2)
+            {
+                int couponNum = GetUserCouponNum(userId);
+                if (couponNum>0)
+                {
+                    UpdateUserCoupon(lastBettingRecord.Id, userId);
                 }
                 else
                 {
-                    //免费专家，仅记录点阅记录
-                    executeSql.AppendFormat(@"INSERT INTO [dbo].[ComeOutRecord]([UserId],[OrderId],[Type] ,[Money],[State],[SubTime])
-                                            VALUES({0},{1},{2},{3}, 1, GETDATE());", user.Id, lastBettingRecord.Id, (int)TransactionTypeEnum.点阅, 0);
+                    return new ApiResult<BettingRecord>() { Code = 6004, Desc = "收费帖子，查看劵不足", Data = null };
                 }
-
-                try
-                {
-
-                    SqlHelper.ExecuteTransaction(executeSql.ToString());
-
-                }
-                catch (Exception ex)
-                {
-
-                    LogHelper.WriteLog(string.Format("查看最新帖子异常。帖子Id:{0}，查看人：{1}，异常消息:{2}，异常堆栈：{3}",
-                        lastBettingRecord.Id, user.Id, ex.Message, ex.StackTrace));
-
-                    return new ApiResult<BettingRecord>() { Code = -999, Desc = "数据库错误", Data = null };
-                }
-
-
             }
+           
             return new ApiResult<BettingRecord>() { Code = 100, Desc = "", Data = lastBettingRecord };
             #endregion
         }
@@ -831,6 +848,34 @@ namespace Qiuxun.C8.Api.Service.Data
             object objIsSub = SqlHelper.ExecuteScalar(isSubSql);
             bool flag = objIsSub != null && Convert.ToInt32(objIsSub) > 0;
             return new ApiResult<bool>() { Code = 100, Desc = "", Data = flag };
+        }
+
+        /// <summary>
+        /// 获取当前用户可用劵数量
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public int GetUserCouponNum(long userId)
+        {
+            string strsql = "select count(*) from[dbo].[UserCoupon] where UserId =" + userId + " and State = 1 and getdate() < EndTime ";
+            return Convert.ToInt32(SqlHelper.ExecuteScalar(strsql));
+        }
+
+        /// <summary>
+        /// 使用卡劵
+        /// </summary>
+        /// <param name="uc"></param>
+        /// <returns></returns>
+        private int UpdateUserCoupon(long planId, long Id)
+        {
+            string strsql = "update [UserCoupon] set PlanId =@PlanId, State = 2, SubTime = getdate() where Id =@Id ";
+            SqlParameter[] sp = new SqlParameter[] {
+                new SqlParameter("@PlanId",planId),
+                new SqlParameter("@Id",Id)
+
+            };
+           
+            return SqlHelper.ExecuteNonQuery(strsql, sp);
         }
     }
 }

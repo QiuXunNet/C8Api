@@ -159,6 +159,11 @@ namespace Qiuxun.C8.Api.Service.Dtos.Personal
         }
 
         public int NoticeCount { get; set; }
+
+        /// <summary>
+        /// 卡券数量
+        /// </summary>
+        public int UserCoupon { get; set; }
     }
 
 

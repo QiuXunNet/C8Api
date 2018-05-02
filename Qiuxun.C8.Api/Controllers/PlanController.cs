@@ -83,7 +83,7 @@ namespace Qiuxun.C8.Api.Controllers
         }
 
         /// <summary>
-        /// 获取该用户最新计划(同时会插入点阅记录，收费专家扣除用户金币数、获得佣金)
+        /// 获取该用户最新计划(同时会插入点阅记录，收费专家扣除用户金币数、获得佣金)[paytype:1金币支付;2查看劵支付]
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -91,7 +91,7 @@ namespace Qiuxun.C8.Api.Controllers
         public ApiResult<BettingRecord> GetLastPlay(LastPlayReqDto model)
         {
             PlanService service = new PlanService();
-            return service.GetLastPlay(model.lType, model.uid, model.playName, UserInfo.UserId);
+            return service.GetLastPlay(model.lType, model.uid, model.playName, UserInfo.UserId,model.paytype??1);
         }
 
         /// <summary>
@@ -246,5 +246,21 @@ namespace Qiuxun.C8.Api.Controllers
             PlanService service = new PlanService();
             return service.AlreadyPostData(lType, this.UserInfo.UserId);
         }
+
+        /// <summary>
+        /// 获取可用查看劵数量
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ApiResult<int> GetUserCouponNum()
+        {
+            PlanService service = new PlanService();
+
+            var result = new ApiResult<int>();
+            result.Data = service.GetUserCouponNum(this.UserInfo.UserId);
+            return result;
+        }
+
+
     }
 }
