@@ -425,7 +425,7 @@ namespace Qiuxun.C8.Api.Controllers
         /// <param name="pageSize">页数据量</param>
         /// <returns></returns>
         [HttpGet]
-        public ApiResult<PagedListP<UserCoupon>> VoucherList(int type, int pageIndex = 1, int pageSize = 20)
+        public ApiResult<PagedListP<UserCoupon>> UserCouponList(int type, int pageIndex = 1, int pageSize = 20)
         {
             long userId = this.UserInfo.UserId;
 
