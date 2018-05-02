@@ -28,6 +28,10 @@ namespace Qiuxun.C8.Api.Model.News
         /// </summary>		
         public int ArticleId { get; set; }
         /// <summary>
+        /// 评论相关用户Id
+        /// </summary>
+        public int ArticleUserId { get; set; }
+        /// <summary>
         /// 点赞数量
         /// </summary>		
         public int StarCount { get; set; }
@@ -39,7 +43,7 @@ namespace Qiuxun.C8.Api.Model.News
         /// 创建时间
         /// </summary>		
         public DateTime SubTime { get; set; }
-        
+
         /// <summary>
         /// 更改时间
         /// </summary>		
@@ -85,7 +89,7 @@ namespace Qiuxun.C8.Api.Model.News
         /// 彩种类型名称
         /// </summary>
         public string LotteryTypeName { get; set; }
-        
+
 
     }
 }

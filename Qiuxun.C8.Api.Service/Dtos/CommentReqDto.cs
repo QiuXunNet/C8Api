@@ -27,6 +27,11 @@ namespace Qiuxun.C8.Api.Service.Dtos
         /// 类型 1=计划 2=文章
         /// </summary>
         public int Type { get; set; }
+
+        /// <summary>
+        /// 被评论相关用户Id
+        /// </summary>
+        public int RefUserId { get; set; } = 0;
         /// <summary>
         /// 评论图片
         /// </summary>
