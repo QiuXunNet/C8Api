@@ -187,15 +187,15 @@ from Comment a
         /// <returns></returns>
         public ApiResult<List<CommentResDto>> GetWonderfulComment(int id, int type, int count, long userId, int articleUserId)
         {
-            string sql = "select top " + count + @"  a.*,isnull(b.Name,'') as NickName,isnull(c.RPath,'') as Avater,
+            string sql = "select top " + count + string.Format(@"  a.*,isnull(b.Name,'') as NickName,isnull(c.RPath,'') as Avater,
 (select count(1) from LikeRecord where [Status]=1 and [Type]=a.[Type] and CommentId=a.Id and UserId=@UserId) as CurrentUserLikes,
 (select count(1) from Comment where PId = a.Id ) as ReplayCount,
 (select count(1) from LikeRecord where [Status]=1 and [Type]=a.[Type] and CommentId=a.Id) as StarCount
 from Comment a
   left join UserInfo b on b.Id = a.UserId
   left join ResourceMapping c on c.FkId = a.UserId and c.Type = @ResourceType
-  where a.IsDeleted = 0 and a.RefCommentId=0  and a.ArticleId = @ArticleId and a.ArticleUserId=@ArticleUserId and a.Type=@Type
-  order by a.StarCount desc";
+  where a.IsDeleted = 0 and a.RefCommentId=0  and a.ArticleId = @ArticleId {0} and a.Type=@Type
+  order by a.StarCount desc", type == 1 ? "and a.ArticleUserId=@ArticleUserId" : "");
             var parameters = new[]
             {
                 new SqlParameter("@UserId",SqlDbType.BigInt),
