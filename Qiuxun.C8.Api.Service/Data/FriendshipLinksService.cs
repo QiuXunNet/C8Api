@@ -108,7 +108,7 @@ namespace Qiuxun.C8.Api.Service.Data
         /// <returns></returns>
         public List<FriendLink> GetFriendLink()
         {
-            var friendLinkList = Util.ReaderToList<FriendLink>("select * from dbo.FriendLink where [Type]=1 ");
+            var friendLinkList = Util.ReaderToList<FriendLink>("select * from dbo.FriendLink where [Type]=1 and state = 0 ");
 
             return friendLinkList;
         }
