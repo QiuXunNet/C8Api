@@ -93,6 +93,23 @@ namespace Qiuxun.C8.Api.Controllers
         }
 
         /// <summary>
+        /// 获取文章或计划的评论数
+        /// </summary>
+        /// <param name="id">文章/计划 Id</param>
+        /// <param name="type">类型 1=计划 2=文章</param>
+        /// <returns></returns>
+        [HttpGet, AllowAnonymous]
+        public ApiResult<int> GetCommentCount(int id, int type)
+        {
+            int count = commentService.GetCommentCount(id, type);
+
+            return new ApiResult<int>()
+            {
+                Data = count
+            };
+        }
+
+        /// <summary>
         /// 点赞
         /// </summary>
         /// <returns></returns>
