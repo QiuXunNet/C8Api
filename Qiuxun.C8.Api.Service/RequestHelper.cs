@@ -14,6 +14,7 @@ using Newtonsoft.Json;
 using Qiuxun.C8.Api.Service.Api.ClintSecurities;
 using Qiuxun.C8.Api.Service.Auth;
 using Qiuxun.C8.Api.Service.Common;
+using Qiuxun.C8.Api.Service.Data;
 using Qiuxun.C8.Api.Service.Enum;
 
 namespace Qiuxun.C8.Api.Service
@@ -38,7 +39,7 @@ namespace Qiuxun.C8.Api.Service
         public const string _token_key = "token";
         private static readonly ILog log4Logger = LogManager.GetLogger(typeof(RequestHelper));
 
-
+        private static readonly RequestLogService logService = new RequestLogService();
         public static RequestInfo BuildRequestInfo(HttpRequestMessage request)
         {
             RequestImeiDto dto;
@@ -298,6 +299,7 @@ namespace Qiuxun.C8.Api.Service
 
         public static void WriteAllWebRequestLog(RequestLog log)
         {
+            #region log4net 实体
             AllWebRequestLogEntity entity = new AllWebRequestLogEntity
             {
                 ApiDesc = log.ApiDesc,
@@ -343,20 +345,24 @@ namespace Qiuxun.C8.Api.Service
                 Id = log.Id
             };
 
+            #endregion
+
             try
             {
-                //TODO:请求日志持久化
-                LogHelper.InfoFormat("请求日志：\r\n{0}", entity.ToJsonString());
+                //TODO:api请求日志持久化
+                //logService.AddRequestLog(log);
+                LogHelper.InfoFormat("API请求日志：\r\n{0}", entity.ToJsonString());
             }
             catch (Exception exception)
             {
-                LogHelper.Error("", exception);
+                LogHelper.Error("请求日志持久化异常\r\n" + log.ToJsonString(), exception);
             }
         }
 
 
         public static void WriteWebRequestLog(RequestLog log)
         {
+            #region log4net 实体
             WebApiRequestLogEntity entity = new WebApiRequestLogEntity
             {
 
@@ -404,24 +410,27 @@ namespace Qiuxun.C8.Api.Service
 
             };
 
+            #endregion
+
             try
             {
                 //TODO:api请求日志持久化
-
+                //logService.AddRequestLog(log);
                 LogHelper.InfoFormat("API请求日志：\r\n{0}", entity.ToJsonString());
             }
             catch (Exception exception)
             {
-                LogHelper.Error("", exception);
+                LogHelper.Error("请求日志持久化异常\r\n" + log.ToJsonString(), exception);
             }
         }
         public static void WriteWebRequestLog(RequestLog log, string responseData)
         {
+            #region Log4net实体
             WebApiRequestLogEntity entity = new WebApiRequestLogEntity
             {
 
                 ApiDesc = log.ApiDesc,
-                ApiStatus = log.ApiStatus.HasValue ? log.ApiStatus.Value : 0,
+                ApiStatus = log.ApiStatus ?? 0,
                 ClientHeight = log.ClientHeight,
                 ClientIp = log.ClientIp,
                 ClientIpHttp = log.ClientIpHttp,
@@ -430,8 +439,8 @@ namespace Qiuxun.C8.Api.Service
                 ClientVersion = log.ClientVersion,
                 ClientWidth = log.ClientWidth,
                 Content = log.ApiDescDetail,
-                CustomerGuid = log.CustomerGuid.HasValue ? log.CustomerGuid.Value : Guid.Empty,
-                CustomerId = log.CustomerId.HasValue ? log.CustomerId.Value : 0,
+                CustomerGuid = log.CustomerGuid ?? Guid.Empty,
+                CustomerId = log.CustomerId ?? 0,
                 ElapsedMilliseconds = log.ElapsedMilliseconds,
                 HttpMethod = log.HttpMethod,
                 HttpStatus = log.HttpStatus,
@@ -464,16 +473,17 @@ namespace Qiuxun.C8.Api.Service
                 Id = log.Id
 
             };
+            #endregion
 
             try
             {
                 //TODO:api请求日志持久化
-
+                //logService.AddRequestLog(log);
                 LogHelper.InfoFormat("API请求日志：\r\n{0}", entity.ToJsonString());
             }
             catch (Exception exception)
             {
-                LogHelper.Error("", exception);
+                LogHelper.Error("请求日志持久化异常\r\n" + log.ToJsonString(), exception);
             }
         }
 

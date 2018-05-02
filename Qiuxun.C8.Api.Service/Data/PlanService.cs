@@ -28,7 +28,12 @@ namespace Qiuxun.C8.Api.Service.Data
             int totalSize = (pageSize + 1) * count;
 
             string totalsql = "select COUNT(1) from ( select row_number() over(order by Id desc) as rownumber,* from [Plan] where lType = " + lType + ") as temp";
-            string sql = "select top " + totalSize + " temp.* from ( select row_number() over(order by Id desc) as rownumber,* from [Plan] where lType = " + lType + ")as temp where rownumber>" + ((pageIndex - 1) * totalSize);
+            string sql =string.Format(@"select top {0} temp.* from ( 
+       select row_number() over(order by a.Id desc,a.Sort) as rownumber,a.*,b.Num as OpenNum,b.SubTime as OpenTime 
+	    from [Plan] a 
+	    left join LotteryRecord b on b.Issue=a.Issue and b.lType=a.lType
+        where a.lType = {1}
+    )as temp where rownumber>{2}", totalSize,lType,  (pageIndex - 1) * totalSize);
             pager.PageData = Util.ReaderToList<Plan>(sql);        //计划列表
             pager.TotalCount = ToolsHelper.ObjectToInt(SqlHelper.ExecuteScalar(totalsql));
             return pager;

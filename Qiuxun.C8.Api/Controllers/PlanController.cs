@@ -7,6 +7,7 @@ using Qiuxun.C8.Api.Service.Data;
 using Qiuxun.C8.Api.Service.Dtos.Plan.Request;
 using System.Collections.Generic;
 using System.Web.Http;
+using Qiuxun.C8.Api.Service.Model;
 
 namespace Qiuxun.C8.Api.Controllers
 {
@@ -27,7 +28,7 @@ namespace Qiuxun.C8.Api.Controllers
         {
             PlanService service = new PlanService();
             PagedListP<Plan> list = service.GetPlanData(lType, pageIndex, pageSize);
-            return new ApiResult<PagedListP<Plan>>() { Code = 100, Desc = "", Data = list };
+            return new ApiResult<PagedListP<Plan>>() { Data = list };
         }
 
         /// <summary>
@@ -103,7 +104,7 @@ namespace Qiuxun.C8.Api.Controllers
         {
             PlanService service = new PlanService();
             PagedListP<Expert> list = service.GetExpertList(model.lType, model.playName, model.type, model.pageIndex, model.pageSize);
-            return new ApiResult<PagedListP<Expert>>() { Code = 100, Desc = "", Data = list };
+            return new ApiResult<PagedListP<Expert>>() {  Data = list };
         }
 
         /// <summary>
@@ -116,7 +117,7 @@ namespace Qiuxun.C8.Api.Controllers
         {
             PlanService service = new PlanService();
             PagedListP<AchievementModel> list = service.GetUserLastPlay(model.uid, model.lType, model.playName, this.UserInfo.UserId);
-            return new ApiResult<PagedListP<AchievementModel>>() { Code = 100, Desc = "", Data = list };
+            return new ApiResult<PagedListP<AchievementModel>>() {  Data = list };
         }
 
         /// <summary>
@@ -194,7 +195,7 @@ namespace Qiuxun.C8.Api.Controllers
         {
             string memberKey = "history_" + this.UserInfo.UserId + "_" + lType;
             List<ExpertSearchModel> historyList = CacheHelper.GetCache<List<ExpertSearchModel>>(memberKey) ?? new List<ExpertSearchModel>();
-            return new ApiResult<List<ExpertSearchModel>>() { Code = 100, Desc = "", Data = historyList };
+            return new ApiResult<List<ExpertSearchModel>>() {  Data = historyList };
         }
 
         /// <summary>

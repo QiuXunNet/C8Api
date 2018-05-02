@@ -105,16 +105,15 @@ namespace Qiuxun.C8.Api.Controllers
         /// 获取我的关注列表(分页)
         /// </summary>
         /// <param name="lastId">最后一次拉取Id</param>
-        /// <param name="pageIndex">页码</param>
         /// <param name="pageSize">每页数据量</param>
         /// <returns>分页集合</returns>
         [HttpGet]
-        public ApiResult<PagedListP<MyFollowResDto>> GetMyFollow(int lastId = 0, int pageIndex = 1, int pageSize = 10)
+        public ApiResult<List<MyFollowResDto>> GetMyFollow(int lastId = 0, int pageSize = 10)
         {
 
             PersonalService service = new PersonalService();
-            PagedListP<MyFollowResDto> resDto = service.GetMyFollow(pageIndex, pageSize, this.UserInfo.UserId, lastId);
-            return new ApiResult<PagedListP<MyFollowResDto>>() { Code = 100, Desc = "", Data = resDto };
+            var resDto = service.GetMyFollow(pageSize, this.UserInfo.UserId, lastId);
+            return new ApiResult<List<MyFollowResDto>>() { Data = resDto };
         }
 
         /// <summary>
@@ -153,16 +152,15 @@ namespace Qiuxun.C8.Api.Controllers
         /// 获取我的粉丝列表(分页)
         /// </summary>
         /// <param name="lastId">上次拉取的Id最小值</param>
-        /// <param name="pageIndex">页码</param>
         /// <param name="pageSize">每页数据量</param>
         /// <returns>分页集合</returns>
         [HttpGet]
-        public ApiResult<PagedListP<MyFanResDto>> GetMyFans(int lastId = 0, int pageIndex = 1, int pageSize = 10)
+        public ApiResult<List<MyFanResDto>> GetMyFans(int lastId = 0, int pageSize = 10)
         {
 
             PersonalService service = new PersonalService();
-            PagedListP<MyFanResDto> resDto = service.GetMyFans(pageIndex, pageSize, this.UserInfo.UserId, lastId);
-            return new ApiResult<PagedListP<MyFanResDto>>() { Code = 100, Desc = "", Data = resDto };
+            List<MyFanResDto> resDto = service.GetMyFans(pageSize, this.UserInfo.UserId, lastId);
+            return new ApiResult<List<MyFanResDto>>() { Data = resDto };
         }
 
         /// <summary>
@@ -251,7 +249,7 @@ namespace Qiuxun.C8.Api.Controllers
         /// </summary>
         /// <param name="uid">用户Id，若用户Id为0时，则查询当前登录用户计划列表</param>
         /// <param name="ltype">彩种类型Id</param>
-        /// <param name="winState">开奖状态</param>
+        /// <param name="winState">开奖状态 1=未开奖 2=已开奖</param>
         /// <param name="pageIndex">页码</param>
         /// <param name="pageSize">页数据量</param>
         /// <returns></returns>
@@ -260,7 +258,7 @@ namespace Qiuxun.C8.Api.Controllers
         {
             PersonalService service = new PersonalService();
             PagedListP<BettingRecord> resDto = service.GetPlan(uid, ltype, winState, pageIndex, pageSize, this.UserInfo.UserId);
-            return new ApiResult<PagedListP<BettingRecord>>() { Code = 100, Desc = "", Data = resDto };
+            return new ApiResult<PagedListP<BettingRecord>>() { Data = resDto };
         }
 
         /// <summary>
@@ -292,19 +290,19 @@ namespace Qiuxun.C8.Api.Controllers
         {
             PersonalService service = new PersonalService();
             PagedListP<AccessRecord> resDto = service.GetVisitRecord(uid, pageIndex, pageSize, this.UserInfo.UserId);
-            return new ApiResult<PagedListP<AccessRecord>>() { Code = 100, Desc = "", Data = resDto };
+            return new ApiResult<PagedListP<AccessRecord>>() { Data = resDto };
         }
 
-        ///// <summary>
-        ///// 获取我的计划
-        ///// </summary>
-        ///// <returns></returns>
-        //[HttpGet]
-        //public ApiResult<List<LotteryType>> GetMyPlan()
-        //{
-        //    PersonalService service = new PersonalService();
-        //    return service.GetMyPlan(this.UserInfo.UserId);
-        //}
+        /// <summary>
+        /// 获取我的计划彩种筛选列表
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ApiResult<List<LotteryTypeResDto>> GetLotteryListOfMyPlan()
+        {
+            PersonalService service = new PersonalService();
+            return service.GetMyPlan(this.UserInfo.UserId);
+        }
 
         /// <summary>
         /// 获取未读通知消息数量
@@ -329,7 +327,7 @@ namespace Qiuxun.C8.Api.Controllers
         {
             PersonalService service = new PersonalService();
             PagedListP<DynamicMessage> resDto = service.GetCommentNotice(uid, pageIndex, pageSize, this.UserInfo.UserId);
-            return new ApiResult<PagedListP<DynamicMessage>>() { Code = 100, Desc = "", Data = resDto };
+            return new ApiResult<PagedListP<DynamicMessage>>() { Data = resDto };
         }
 
         /// <summary>
@@ -344,7 +342,7 @@ namespace Qiuxun.C8.Api.Controllers
         {
             PersonalService service = new PersonalService();
             PagedListP<SystemMessage> resDto = service.GetSysMessage(uid, pageIndex, pageSize, this.UserInfo.UserId);
-            return new ApiResult<PagedListP<SystemMessage>>() { Code = 100, Desc = "", Data = resDto };
+            return new ApiResult<PagedListP<SystemMessage>>() { Data = resDto };
         }
 
         /// <summary>
@@ -390,7 +388,7 @@ namespace Qiuxun.C8.Api.Controllers
         {
             PersonalService service = new PersonalService();
             PagedListP<ComeOutRecordModel> resDto = service.GetRecordList(Type, pageIndex, pageSize, this.UserInfo.UserId);
-            return new ApiResult<PagedListP<ComeOutRecordModel>>() { Code = 100, Desc = "", Data = resDto };
+            return new ApiResult<PagedListP<ComeOutRecordModel>>() { Data = resDto };
         }
 
         /// <summary>
@@ -416,7 +414,7 @@ namespace Qiuxun.C8.Api.Controllers
         {
             PersonalService service = new PersonalService();
             PagedListP<ComeOutRecordModel> resDto = service.GetMyCommissionList(Type, pageIndex, pageSize, this.UserInfo.UserId);
-            return new ApiResult<PagedListP<ComeOutRecordModel>>() { Code = 100, Desc = "", Data = resDto };
+            return new ApiResult<PagedListP<ComeOutRecordModel>>() { Data = resDto };
         }
     }
 }
