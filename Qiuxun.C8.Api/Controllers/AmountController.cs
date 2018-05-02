@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Web;
 using System.Web.Http;
 using Qiuxun.C8.Api.Service.Api;
 using Qiuxun.C8.Api.Service.Common;
@@ -39,22 +40,24 @@ namespace Qiuxun.C8.Api.Controllers
         [HttpGet]
         public ApiResult GetBankList()
         {
+            var imgUrl = "http://" + HttpContext.Current.Request.Url.Host + ":" + HttpContext.Current.Request.Url.Port + "/Images/";
+
             List<dynamic> list = new List<dynamic>();
-            list.Add(new { Abbreviation= "ICBC", Name= "中国工商银行" });
-            list.Add(new { Abbreviation = "BOC", Name = "中国银行" });
-            list.Add(new { Abbreviation = "CCB", Name = "中国建设银行" });
-            list.Add(new { Abbreviation = "ABC", Name = "中国农业银行" });
-            list.Add(new { Abbreviation = "PSBC", Name = "中国邮政储蓄银行" });
-            list.Add(new { Abbreviation = "CEB", Name = "中国光大银行" });
-            list.Add(new { Abbreviation = "COMM", Name = "交通银行" });
-            list.Add(new { Abbreviation = "CMB", Name = "招商银行" });
-            list.Add(new { Abbreviation = "CMBC", Name = "中国民生银行" });
-            list.Add(new { Abbreviation = "CIB", Name = "兴业银行" });
-            list.Add(new { Abbreviation = "CITIC", Name = "中信银行" });
-            list.Add(new { Abbreviation = "GDB", Name = "广发银行" });
-            list.Add(new { Abbreviation = "HXBANK", Name = "华夏银行" });
-            list.Add(new { Abbreviation = "SPDB", Name = "浦发银行" });
-            list.Add(new { Abbreviation = "SPABANK", Name = "平安银行" });
+            list.Add(new { Abbreviation= "ICBC", Name= "中国工商银行" ,BankImg = imgUrl + "ICBC.png" });
+            list.Add(new { Abbreviation = "BOC", Name = "中国银行", BankImg = imgUrl + "BOC.png" });
+            list.Add(new { Abbreviation = "CCB", Name = "中国建设银行", BankImg = imgUrl + "CCB.png" });
+            list.Add(new { Abbreviation = "ABC", Name = "中国农业银行", BankImg = imgUrl + "ABC.png" });
+            list.Add(new { Abbreviation = "PSBC", Name = "中国邮政储蓄银行", BankImg = imgUrl + "PSBC.png" });
+            list.Add(new { Abbreviation = "CEB", Name = "中国光大银行", BankImg = imgUrl + "CEB.png" });
+            list.Add(new { Abbreviation = "COMM", Name = "交通银行", BankImg = imgUrl + "COMM.png" });
+            list.Add(new { Abbreviation = "CMB", Name = "招商银行", BankImg = imgUrl + "CMB.png" });
+            list.Add(new { Abbreviation = "CMBC", Name = "中国民生银行", BankImg = imgUrl + "CMBC.png" });
+            list.Add(new { Abbreviation = "CIB", Name = "兴业银行", BankImg = imgUrl + "CIB.png" });
+            list.Add(new { Abbreviation = "CITIC", Name = "中信银行", BankImg = imgUrl + "CITIC.png" });
+            list.Add(new { Abbreviation = "GDB", Name = "广发银行", BankImg = imgUrl + "GDB.png" });
+            list.Add(new { Abbreviation = "HXBANK", Name = "华夏银行", BankImg = imgUrl + "HXBANK.png" });
+            list.Add(new { Abbreviation = "SPDB", Name = "浦发银行", BankImg = imgUrl + "SPDB.png" });
+            list.Add(new { Abbreviation = "SPABANK", Name = "平安银行", BankImg = imgUrl + "SPABANK.png" });
 
             ApiResult<List<dynamic>> result = new ApiResult<List<dynamic>>();
             result.Data = list;
