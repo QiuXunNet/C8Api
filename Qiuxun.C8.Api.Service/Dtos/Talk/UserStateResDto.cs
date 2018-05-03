@@ -44,22 +44,22 @@ namespace Qiuxun.C8.Api.Service.Dtos
         /// <summary>
         /// 聊天室禁言开始时间
         /// </summary>
-        public DateTime ChatShutBegin { get; set; }
+        public DateTime? ChatShutBegin { get; set; }
 
         /// <summary>
         /// 聊天是禁言结束时间
         /// </summary>
-        public DateTime ChatShutEnd { get; set; }
+        public DateTime? ChatShutEnd { get; set; }
 
         /// <summary>
         /// 评论禁言开始时间
         /// </summary>
-        public DateTime CommentShutBegin { get; set; }
+        public DateTime? CommentShutBegin { get; set; }
 
         /// <summary>
         /// 评论禁言结束时间
         /// </summary>
-        public DateTime CommentShutEnd { get; set; }
+        public DateTime? CommentShutEnd { get; set; }
 
         /// <summary>
         /// 是否是聊天室管理员

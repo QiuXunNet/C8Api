@@ -54,6 +54,11 @@ namespace Qiuxun.C8.Api.Service.Dtos
         public DateTime SendTime { get; set; }
 
         /// <summary>
+        /// 积分最高的彩种名称
+        /// </summary>
+        public string MasterLottery { get; set; }
+
+        /// <summary>
         /// 时间拼接后的字符串
         /// </summary>
         public string SendTimeStr { get; set; }
