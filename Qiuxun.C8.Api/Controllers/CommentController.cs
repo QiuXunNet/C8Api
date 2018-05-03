@@ -49,38 +49,44 @@ namespace Qiuxun.C8.Api.Controllers
         /// <summary>
         /// 获取精彩评论
         /// </summary>
-        /// <param name="id">计划Id或文章Id</param>
+        /// <param name="id">彩种Id或文章Id</param>
         /// <param name="type">类型 1=计划 2=文章</param>
         /// <param name="count">查询数量</param>
+        /// <param name="refUserId">关联用户Id（Type=1时必填）</param>
         /// <returns></returns>
         [HttpGet, AllowAnonymous]
-        public ApiResult<List<CommentResDto>> GetWonderfulComment(int id, int type, int count = 3)
+        public ApiResult<List<CommentResDto>> GetWonderfulComment(int id, int type, int count = 3, int refUserId = 0)
         {
+            if (type != 1 && type != 2 && type != 3)
+                throw new ApiException(40000, "超出业务范围");
             var userId = UserInfo != null ? UserInfo.UserId : 0;
 
-            return commentService.GetWonderfulComment(id, type, count, userId);
+            return commentService.GetWonderfulComment(id, type, count, userId, refUserId);
         }
 
         /// <summary>
         /// 获取评论列表
         /// </summary>
-        /// <param name="id">计划Id或文章Id</param>
-        /// <param name="type">类型 1=计划 2=文章</param>
+        /// <param name="id">文章Id/彩种Id</param>
+        /// <param name="type">类型1=计划 2=文章 </param>
+        /// <param name="refUserId">关联用户Id（Type=1时必填）</param>
         /// <param name="lastId">每页拉取的最有一条Id</param>
         /// <param name="pageSize">页码</param>
         /// <returns></returns>
         [HttpGet, AllowAnonymous]
-        public ApiResult<List<CommentResDto>> GetCommentList(int id, int type, int lastId = 0,
+        public ApiResult<List<CommentResDto>> GetCommentList(int id, int type, int refUserId = 0, int lastId = 0,
             int pageSize = 20)
         {
-            return commentService.GetCommentList(id, lastId, type, pageSize);
+            if (type != 1 && type != 2 && type != 3)
+                throw new ApiException(40000, "超出业务范围");
+            return commentService.GetCommentList(id, lastId, type, pageSize, refUserId);
         }
 
         /// <summary>
         /// 获取回复列表
         /// </summary>
-        /// <param name="id">计划Id或文章Id</param>
-        /// <param name="type">类型 1=计划 2=文章</param>
+        /// <param name="id">评论Id</param>
+        /// <param name="type">类型1=计划 2=文章</param>
         /// <param name="lastId">每页拉取的最有一条Id</param>
         /// <param name="pageSize">页码</param>
         /// <returns></returns>
@@ -95,13 +101,17 @@ namespace Qiuxun.C8.Api.Controllers
         /// <summary>
         /// 获取文章或计划的评论数
         /// </summary>
-        /// <param name="id">文章/计划 Id</param>
-        /// <param name="type">类型 1=计划 2=文章</param>
+        /// <param name="id">文章Id/彩种Id</param>
+        /// <param name="type">类型1=计划 2=文章 </param>
+        /// <param name="refUserId">用户Id（Type=1时必填）</param>
         /// <returns></returns>
         [HttpGet, AllowAnonymous]
-        public ApiResult<int> GetCommentCount(int id, int type)
+        public ApiResult<int> GetCommentCount(int id, int type, int refUserId = 0)
         {
-            int count = commentService.GetCommentCount(id, type);
+            if (type != 1 && type != 2 && type != 3)
+                throw new ApiException(40000, "超出业务范围");
+
+            int count = commentService.GetCommentCount(id, type, refUserId);
 
             return new ApiResult<int>()
             {

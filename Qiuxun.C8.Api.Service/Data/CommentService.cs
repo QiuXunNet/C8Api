@@ -51,16 +51,18 @@ namespace Qiuxun.C8.Api.Service.Data
             long refId = 0;
             long pid = 0;
             long refCommentId = 0;
+            int refUserId = reqDto.RefUserId;
 
             if (reqDto.CommentType == 1)
             {
                 if (reqDto.Type == 1)
                 {
                     //查询计划
-                    var model = Util.GetEntityById<BettingRecord>(reqDto.Id);
-                    if (model == null) throw new ApiException(400, "计划已不存在或已删除");
+                    //var model = Util.GetEntityById<BettingRecord>(reqDto.Id);
+                    //if (model == null) throw new ApiException(400, "计划已不存在或已删除");
 
-                    refId = model.Id;
+                    //id为彩种Id。对计划评论为用户在该彩种的评论
+                    refId = reqDto.Id;
                     //refCommentId=
                 }
                 else if (reqDto.Type == 2)
@@ -83,6 +85,7 @@ namespace Qiuxun.C8.Api.Service.Data
                 {
                     //第N级回复，则关联评论Id=上一级评论关联Id
                     refCommentId = model.RefCommentId;
+                    refUserId = model.UserId;
                 }
                 else
                 {
@@ -105,9 +108,9 @@ namespace Qiuxun.C8.Api.Service.Data
             #region step4.添加评论
             string sql = @"INSERT INTO [dbo].[Comment]
            ([PId],[UserId],[Content],[SubTime],[Type],[ArticleId]
-           ,[StarCount],[IsDeleted],[RefCommentId])
+           ,[StarCount],[IsDeleted],[RefCommentId],[ArticleUserId])
      VALUES(@PId,@UserId,@Content,GETDATE()
-           ,@Type,@ArticleId,0,0,@RefCommentId);SELECT IDENT_CURRENT('Comment')";
+           ,@Type,@ArticleId,0,0,@RefCommentId,@ArticleUserId);SELECT IDENT_CURRENT('Comment')";
 
             SqlParameter[] parameters ={
                 new SqlParameter("@PID",pid),
@@ -116,6 +119,7 @@ namespace Qiuxun.C8.Api.Service.Data
                 new SqlParameter("@Type",reqDto.Type),
                 new SqlParameter("@ArticleId",refId),
                 new SqlParameter("@RefCommentId",refCommentId),
+                new SqlParameter("@ArticleUserId",refUserId),
               };
             int row = SqlHelper.ExecuteScalar(sql, parameters).ToInt32();
             if (row <= 0)
@@ -175,35 +179,37 @@ from Comment a
         /// <summary>
         /// 获取精彩评论
         /// </summary>
-        /// <param name="id">文章Id/计划Id</param>
+        /// <param name="id">文章Id/彩种Id</param>
         /// <param name="type">类型1=计划 2=文章</param>
         /// <param name="count">查询数量</param>
         /// <param name="userId">当前用户Id</param>
+        /// <param name="articleUserId">评论关联用户Id</param>
         /// <returns></returns>
-        public ApiResult<List<CommentResDto>> GetWonderfulComment(int id, int type, int count, long userId)
+        public ApiResult<List<CommentResDto>> GetWonderfulComment(int id, int type, int count, long userId, int articleUserId)
         {
-            string sql =
-                "select top " + count + @"  a.*,isnull(b.Name,'') as NickName,isnull(c.RPath,'') as Avater,
+            string sql = "select top " + count + string.Format(@"  a.*,isnull(b.Name,'') as NickName,isnull(c.RPath,'') as Avater,
 (select count(1) from LikeRecord where [Status]=1 and [Type]=a.[Type] and CommentId=a.Id and UserId=@UserId) as CurrentUserLikes,
 (select count(1) from Comment where PId = a.Id ) as ReplayCount,
 (select count(1) from LikeRecord where [Status]=1 and [Type]=a.[Type] and CommentId=a.Id) as StarCount
 from Comment a
   left join UserInfo b on b.Id = a.UserId
   left join ResourceMapping c on c.FkId = a.UserId and c.Type = @ResourceType
-  where a.IsDeleted = 0 and a.RefCommentId=0  and a.ArticleId = @ArticleId and a.Type=@Type
-  order by a.StarCount desc";
+  where a.IsDeleted = 0 and a.RefCommentId=0  and a.ArticleId = @ArticleId {0} and a.Type=@Type
+  order by a.StarCount desc", type == 1 ? "and a.ArticleUserId=@ArticleUserId" : "");
             var parameters = new[]
             {
                 new SqlParameter("@UserId",SqlDbType.BigInt),
                 new SqlParameter("@ResourceType",SqlDbType.BigInt),
                 new SqlParameter("@ArticleId",SqlDbType.BigInt),
                 new SqlParameter("@Type",SqlDbType.Int),
+                new SqlParameter("@ArticleUserId",SqlDbType.BigInt),
             };
 
             parameters[0].Value = userId;
             parameters[1].Value = (int)ResourceTypeEnum.用户头像;
             parameters[2].Value = id;
             parameters[3].Value = type;
+            parameters[4].Value = articleUserId;
 
 
             var list = Util.ReaderToList<Comment>(sql, parameters);
@@ -238,20 +244,35 @@ from Comment a
         /// <summary>
         /// 获取评论列表
         /// </summary>
-        /// <param name="id">文章Id/计划Id</param>
+        /// <param name="id">文章Id/彩种Id</param>
         /// <param name="lastId">上次拉取的最后一条Id</param>
-        /// <param name="type">类型1=计划 2=文章</param>
+        /// <param name="type">类型1=计划 2=文章 3=该用户所有计划的评论数量</param>
         /// <param name="pageSize"></param>
+        /// <param name="articleUserId">评论关联用户Id</param>
         /// <returns></returns>
-        public ApiResult<List<CommentResDto>> GetCommentList(int id, int lastId, int type, int pageSize)
+        public ApiResult<List<CommentResDto>> GetCommentList(int id, int lastId, int type, int pageSize, int articleUserId)
         {
-            string sql = @"select Top " + pageSize + @" a.*,isnull(b.Name,'') as NickName,isnull(c.RPath,'') as Avater 
+            string sql;
+            if (type == 1)
+            {
+                sql = @"select Top " + pageSize + @" a.*,isnull(b.Name,'') as NickName,isnull(c.RPath,'') as Avater 
 ,(select count(1) from Comment where PId = a.Id ) as ReplayCount
 ,(select count(1) from LikeRecord where [Status]=1 and [Type]=a.[Type] and CommentId=a.Id) as StarCount
 from Comment a
   left join UserInfo b on b.Id = a.UserId
   left join ResourceMapping c on c.FkId = a.UserId and c.Type = @ResourceType
-  where a.ArticleId = @ArticleId and a.IsDeleted = 0 and a.RefCommentId=0 and a.Type=@Type";
+  where a.IsDeleted = 0 and a.RefCommentId=0 and a.Type=@Type and a.ArticleId = @ArticleId and a.ArticleUserId = @ArticleUserId";
+            }
+            else
+            {
+                sql = @"select Top " + pageSize + @" a.*,isnull(b.Name,'') as NickName,isnull(c.RPath,'') as Avater 
+,(select count(1) from Comment where PId = a.Id ) as ReplayCount
+,(select count(1) from LikeRecord where [Status]=1 and [Type]=a.[Type] and CommentId=a.Id) as StarCount
+from Comment a
+  left join UserInfo b on b.Id = a.UserId
+  left join ResourceMapping c on c.FkId = a.UserId and c.Type = @ResourceType
+  where a.IsDeleted = 0 and a.RefCommentId=0 and a.Type=@Type and a.ArticleId = @ArticleId";
+            }
 
             if (lastId > 0)
             {
@@ -265,6 +286,7 @@ from Comment a
                 new SqlParameter("@ResourceType",(int)ResourceTypeEnum.用户头像),
                 new SqlParameter("@ArticleId",id),
                 new SqlParameter("@Type",type),
+                new SqlParameter("@ArticleUserId",articleUserId),
             };
 
             var list = Util.ReaderToList<Comment>(sql, parameters);
@@ -301,13 +323,23 @@ from Comment a
         /// <summary>
         /// 获取评论数量
         /// </summary>
-        /// <param name="id">文章Id/计划Id</param>
+        /// <param name="id">文章Id/计划Id/用户Id</param>
         /// <param name="type">类型1=计划 2=文章</param>
         /// <returns></returns>
-        public int GetCommentCount(int id, int type)
+        public int GetCommentCount(int id, int type, int articleUserId)
         {
-            string commentTotalCountSql = "select count(1) from Comment where IsDeleted = 0 and Type=" + type +
-                                          " and ArticleId=" + id;
+            string commentTotalCountSql;
+            commentTotalCountSql = "select count(1) from Comment where IsDeleted = 0 and Type=" + type +
+                                              " and ArticleId=" + id;
+            if (type == 1)
+            {
+                //该用户所有计划的评论数量
+                commentTotalCountSql += " AND ArticleUserId=" + articleUserId;
+            }
+
+
+
+
             var obj = SqlHelper.ExecuteScalar(commentTotalCountSql);
 
             return obj.ToInt32();
