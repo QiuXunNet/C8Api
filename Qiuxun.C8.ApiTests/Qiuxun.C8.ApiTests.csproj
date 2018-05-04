@@ -69,6 +69,7 @@
     <Compile Include="Controllers\NewsControllerTests.cs" />
     <Compile Include="Controllers\VersionControllerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Public\ApiVersionTest.cs" />
     <Compile Include="Public\UtilTests.cs" />
   </ItemGroup>
   <ItemGroup>

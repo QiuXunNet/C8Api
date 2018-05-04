@@ -700,6 +700,7 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
                     l.Issue = item.Issue;
                     l.Num = item.Num;
                     l.SubTime = Convert.ToDateTime(item.SubTime).ToString("yyyy-MM-dd");
+                    l.lType = item.lType;
                     model.LotteryNum = l;
                     if (listbet.Count() > 0)
                         model.BettingRecord = listbet.Where(x => x.Issue == item.Issue).ToList();
