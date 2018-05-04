@@ -164,6 +164,7 @@
     <Compile Include="Common\ServerRoles.cs" />
     <Compile Include="Common\ToolsHelper.cs" />
     <Compile Include="Common\WebLogHandleErrorAttribute.cs" />
+    <Compile Include="Data\AdvertisementService.cs" />
     <Compile Include="Data\AmountService.cs" />
     <Compile Include="Data\FriendshipLinksService.cs" />
     <Compile Include="Data\LeaderboardService.cs" />
@@ -181,6 +182,7 @@
     <Compile Include="Data\SmsService.cs" />
     <Compile Include="Data\UserInfoService.cs" />
     <Compile Include="Data\VersionService.cs" />
+    <Compile Include="Dtos\AdvertisementResDto.cs" />
     <Compile Include="Dtos\BankInfoResDto.cs" />
     <Compile Include="Dtos\ClickLikeReqDto.cs" />
     <Compile Include="Dtos\Personal\Request\EditUserInfoReqDto.cs" />
@@ -231,6 +233,7 @@
     <Compile Include="Dtos\ZFBResDto.cs" />
     <Compile Include="Dtos\SmsSendLog.cs" />
     <Compile Include="Dtos\UploadFileResDto.cs" />
+    <Compile Include="Enum\AdvertisementLocationType.cs" />
     <Compile Include="Enum\ClientIpType.cs" />
     <Compile Include="Enum\ClientUpdateStatus.cs" />
     <Compile Include="Enum\CommentTypeEnum.cs" />
@@ -270,6 +273,7 @@
     <Compile Include="HashHelper.cs" />
     <Compile Include="Model\AccessRecord.cs" />
     <Compile Include="Model\AchievementModel.cs" />
+    <Compile Include="Model\Advertisement.cs" />
     <Compile Include="Model\BankInfo.cs" />
     <Compile Include="Model\BetModel.cs" />
     <Compile Include="Model\BettingRecord.cs" />

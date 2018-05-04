@@ -33,26 +33,27 @@ namespace Qiuxun.C8.Api.Service.Data
         /// <returns></returns>
         public ApiResult<List<LotteryTypeResDto>> GetLotteryTypeList()
         {
-            List<LotteryTypeResDto> resDto = CacheHelper.GetCache<List<LotteryTypeResDto>>("base_lottery_type");
-            if (resDto == null)
+            List<LotteryType> list = CacheHelper.GetCache<List<LotteryType>>("base_lottery_type");
+            if (list == null)
             {
-                var list = Util.GetEntityAll<LotteryType>().OrderBy(x => x.SortCode).ToList();
+                list = Util.GetEntityAll<LotteryType>().OrderBy(x => x.SortCode).ToList();
 
-                resDto = list.Select(x => new LotteryTypeResDto()
-                {
-                    Id = x.Id,
-                    LType = Util.GetlTypeById(x.Id.ToInt32()),
-                    LTypeName = x.TypeName,
-                    SortCode = x.SortCode
-                }).ToList();
-
-                CacheHelper.WriteCache("base_lottery_type", resDto);
+                CacheHelper.WriteCache("base_lottery_type", list);
             }
+            var resDto = list.Select(x => new LotteryTypeResDto()
+            {
+                Id = x.Id,
+                LType = Util.GetlTypeById(x.Id.ToInt32()),
+                LTypeName = x.TypeName,
+                SortCode = x.SortCode
+            }).ToList();
+
 
             return new ApiResult<List<LotteryTypeResDto>>()
             {
                 Data = resDto
             };
+
         }
 
         /// <summary>
@@ -64,30 +65,33 @@ namespace Qiuxun.C8.Api.Service.Data
         public ApiResult<List<NewsTypeResDto>> GetNewsTypeList(long ltype, int layer = 1)
         {
             string memKey = "base_news_type_" + ltype;
-            var resDto = CacheHelper.GetCache<List<NewsTypeResDto>>(memKey);
 
-            if (resDto == null)
+            var list = CacheHelper.GetCache<List<NewsType>>(memKey);
+
+            if (list == null)
             {
                 string newsTypeSql =
                     "SELECT TOP 500 [Id],[TypeName],[ShowType],[lType] FROM [dbo].[NewsType] WHERE [lType]=" +
                     ltype + " AND [Layer]=" + layer + " ORDER BY SortCode ";
-                var list = Util.ReaderToList<NewsType>(newsTypeSql) ?? new List<NewsType>();
+                list = Util.ReaderToList<NewsType>(newsTypeSql) ?? new List<NewsType>();
 
-                resDto = list.Select(x => new NewsTypeResDto()
-                {
-                    Id = x.Id,
-                    LType = Util.GetlTypeById((int)x.LType),
-                    Layer = x.Layer,
-                    LTypeName = x.LTypeName,
-                    ParentId = x.ParentId,
-                    ShowType = x.ShowType,
-                    SortCode = x.SortCode,
-                    TypeName = x.TypeName,
-                    GroupType = GetGroupType(x.LType, x.TypeName)
-                }).ToList();
 
-                CacheHelper.WriteCache(memKey, resDto);
+                CacheHelper.WriteCache(memKey, list);
             }
+
+
+            var resDto = list.Select(x => new NewsTypeResDto()
+            {
+                Id = x.Id,
+                LType = Util.GetlTypeById((int)x.LType),
+                Layer = x.Layer,
+                LTypeName = x.LTypeName,
+                ParentId = x.ParentId,
+                ShowType = x.ShowType,
+                SortCode = x.SortCode,
+                TypeName = x.TypeName,
+                GroupType = GetGroupType(x.LType, x.TypeName)
+            }).ToList();
 
             return new ApiResult<List<NewsTypeResDto>>()
             {
@@ -430,6 +434,44 @@ ORDER BY ModifyDate DESC,SortCode ASC ";
             };
         }
 
+
+        /// <summary>
+        /// 获取热门新闻
+        /// </summary>
+        /// <param name="count">查询数量</param>
+        /// <returns></returns>
+        public ApiResult<List<NewsListResDto>> GetHotNewsList(int count)
+        {
+            string hotArticlesql = "SELECT TOP " + count + @" [Id],[FullHead],[SortCode],[Thumb],[ReleaseTime],[ThumbStyle],
+(SELECT COUNT(1) FROM[dbo].[Comment] WHERE [ArticleId]=a.Id and RefCommentId=0) as CommentCount
+FROM [dbo].[News] a
+WHERE  DeleteMark=0 AND EnabledMark=1
+ORDER BY CommentCount DESC,SortCode ASC ";
+
+
+            var list = Util.ReaderToList<News>(hotArticlesql);
+
+
+            int sourceType = (int)ResourceTypeEnum.新闻缩略图;
+            var data = list.Select(x => new NewsListResDto()
+            {
+                Id = x.Id,
+                ParentId = x.ParentId,
+                CommentCount = x.CommentCount,
+                ReleaseTime = x.ReleaseTime,
+                SortCode = x.SortCode,
+                ThumbStyle = x.ThumbStyle,
+                Title = x.FullHead,
+                TypeId = x.TypeId,
+                ThumbList = sourceService.GetResources(sourceType, x.Id)
+                                .Select(n => n.RPath).ToList()
+            }).ToList();
+
+            return new ApiResult<List<NewsListResDto>>()
+            {
+                Data = data
+            };
+        }
 
     }
 }

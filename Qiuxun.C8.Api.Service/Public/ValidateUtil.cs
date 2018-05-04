@@ -219,7 +219,7 @@ namespace Qiuxun.C8.Api.Service.Public
         /// <returns></returns>
         public static bool IsValidMobile(string mobile)
         {
-            Regex rx = new Regex(@"^(13|15|17|18|19)\d{9}$", RegexOptions.None);
+            Regex rx = new Regex(@"^(13|14|15|17|18|19)\d{9}$", RegexOptions.None);
             Match m = rx.Match(mobile);
             return m.Success;
         }
@@ -325,12 +325,12 @@ namespace Qiuxun.C8.Api.Service.Public
         /// <summary>
         /// 检查字符串最大长度，返回指定长度的串
         /// </summary>
-        /// <param name="sqlInput">输入字符串</param>
+        /// <param name="inputData">输入字符串</param>
         /// <param name="maxLength">最大长度</param>
         /// <returns></returns>			
         public static string CheckMathLength(string inputData, int maxLength)
         {
-            if (inputData != null && inputData != string.Empty)
+            if (!string.IsNullOrEmpty(inputData))
             {
                 inputData = inputData.Trim();
                 if (inputData.Length > maxLength)//按最大长度截取字符串
