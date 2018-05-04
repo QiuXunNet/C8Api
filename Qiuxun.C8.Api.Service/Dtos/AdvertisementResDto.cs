@@ -14,15 +14,11 @@ namespace Qiuxun.C8.Api.Service.Dtos
         public List<string> ThumbList { get; set; }
 
         /// <summary>
-        /// 位置(栏目ID 1,2,3 逗号分隔)
-        /// </summary>
-        public string Location { get; set; }
-        /// <summary>
         /// 广告名
         /// </summary>
         public string Title { get; set; }
         /// <summary>
-        /// 层级
+        /// 层级 (用于确定显示位置：1-7)
         /// </summary>
         public int Layer { get; set; }
         /// <summary>

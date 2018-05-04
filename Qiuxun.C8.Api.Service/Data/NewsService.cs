@@ -435,5 +435,43 @@ ORDER BY ModifyDate DESC,SortCode ASC ";
         }
 
 
+        /// <summary>
+        /// 获取热门新闻
+        /// </summary>
+        /// <param name="count">查询数量</param>
+        /// <returns></returns>
+        public ApiResult<List<NewsListResDto>> GetHotNewsList(int count)
+        {
+            string hotArticlesql = "SELECT TOP " + count + @" [Id],[FullHead],[SortCode],[Thumb],[ReleaseTime],[ThumbStyle],
+(SELECT COUNT(1) FROM[dbo].[Comment] WHERE [ArticleId]=a.Id and RefCommentId=0) as CommentCount
+FROM [dbo].[News] a
+WHERE  DeleteMark=0 AND EnabledMark=1
+ORDER BY CommentCount DESC,SortCode ASC ";
+
+
+            var list = Util.ReaderToList<News>(hotArticlesql);
+
+
+            int sourceType = (int)ResourceTypeEnum.新闻缩略图;
+            var data = list.Select(x => new NewsListResDto()
+            {
+                Id = x.Id,
+                ParentId = x.ParentId,
+                CommentCount = x.CommentCount,
+                ReleaseTime = x.ReleaseTime,
+                SortCode = x.SortCode,
+                ThumbStyle = x.ThumbStyle,
+                Title = x.FullHead,
+                TypeId = x.TypeId,
+                ThumbList = sourceService.GetResources(sourceType, x.Id)
+                                .Select(n => n.RPath).ToList()
+            }).ToList();
+
+            return new ApiResult<List<NewsListResDto>>()
+            {
+                Data = data
+            };
+        }
+
     }
 }

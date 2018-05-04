@@ -187,5 +187,16 @@ namespace Qiuxun.C8.Api.Controllers
             return newsService.GetRecommendNewsList(newsTypeId);
         }
 
+        /// <summary>
+        /// 获取热门新闻
+        /// </summary>
+        /// <param name="count">查询数量</param>
+        /// <returns></returns>
+        [HttpGet, AllowAnonymous]
+        public ApiResult<List<NewsListResDto>> GetHotNewsList(int count = 5)
+        {
+            return newsService.GetRecommendNewsList(count);
+        }
+
     }
 }

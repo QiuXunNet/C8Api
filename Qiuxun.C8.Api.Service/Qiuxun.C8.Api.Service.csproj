@@ -164,6 +164,7 @@
     <Compile Include="Common\ServerRoles.cs" />
     <Compile Include="Common\ToolsHelper.cs" />
     <Compile Include="Common\WebLogHandleErrorAttribute.cs" />
+    <Compile Include="Data\AdvertisementService.cs" />
     <Compile Include="Data\AmountService.cs" />
     <Compile Include="Data\FriendshipLinksService.cs" />
     <Compile Include="Data\LeaderboardService.cs" />
