@@ -106,14 +106,13 @@ namespace Qiuxun.C8.Api.Public
         /// 验证是否包含敏感字
         /// </summary>
         /// <param name="str"></param>
-        /// <param name="excludeWordList"></param>
         /// <returns></returns>
         public static bool CheckSensitiveWords(string str)
         {
             string words = WebHelper.GetSensitiveWords();
-            string[] zang = words.Split(',');
+            string[] zang = words.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-            if (str.Trim().Length <= 0 || zang == null || zang.Count() <= 0)
+            if (str.Trim().Length <= 0 || zang.Count() <= 0)
             {
                 return false;
             }
