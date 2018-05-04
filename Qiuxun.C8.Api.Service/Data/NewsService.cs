@@ -457,12 +457,11 @@ ORDER BY ModifyDate DESC,SortCode ASC ";
         {
 
             var news = Util.GetEntityById<News>(articleId);
-            string recGallerySql = " SELECT TOP " + count + @" a.Id,FullHead as Name,LotteryNumber as Issue FROM News a 
- join NewsType b on b.Id= a.TypeId
- where  b.lType in
- (select ltype from News a join NewsType b on b.Id=a.TypeId
- where a.Id=" + articleId + " ) and a.TypeId=" + news.TypeId
- + @" and DeleteMark=0 and EnabledMark=1 
+            string recGallerySql = " SELECT TOP " + count + @" FullHead as Name, Id,LotteryNumber as Issue 
+ from News where Id  in(
+	select max(id) from News where TypeId=" + news.TypeId + @" group by FullHead having count(FullHead)>=1
+ )
+ and DeleteMark=0 and EnabledMark=1 
  order by RecommendMark DESC,LotteryNumber DESC,ModifyDate DESC";
             var recGalleryList = Util.ReaderToList<RecommendGalleryResDto>(recGallerySql);
 
