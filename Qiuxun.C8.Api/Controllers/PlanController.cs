@@ -23,7 +23,7 @@ namespace Qiuxun.C8.Api.Controllers
         /// <param name="pageIndex">页码</param>
         /// <param name="pageSize">页数据量</param>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet, AllowAnonymous]
         public ApiResult<PagedListP<Plan>> GetPlanData(int lType, int pageIndex = 1, int pageSize = 10)
         {
             PlanService service = new PlanService();
@@ -64,7 +64,7 @@ namespace Qiuxun.C8.Api.Controllers
         public ApiResult<dynamic> GetReadCoin(int lType, long userId)
         {
             PlanService service = new PlanService();
-            return service.GetReadCoin(lType, userId,UserInfo.UserId);
+            return service.GetReadCoin(lType, userId, UserInfo.UserId);
         }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace Qiuxun.C8.Api.Controllers
         public ApiResult<BettingRecord> GetLastPlay(LastPlayReqDto model)
         {
             PlanService service = new PlanService();
-            return service.GetLastPlay(model.lType, model.uid, model.playName, UserInfo.UserId,model.paytype??1);
+            return service.GetLastPlay(model.lType, model.uid, model.playName, UserInfo.UserId, model.paytype ?? 1);
         }
 
         /// <summary>
@@ -99,12 +99,12 @@ namespace Qiuxun.C8.Api.Controllers
         /// </summary>
         /// <param name="model">lType:彩种Id playName:玩法名称 type:类型 1=高手推荐 2=免费专家 pageIndex:页码 pageSize:页数据量</param>      
         /// <returns></returns>
-        [HttpPost]
+        [HttpPost, AllowAnonymous]
         public ApiResult<PagedListP<Expert>> GetExpertList(ExpertListReqDto model)
         {
             PlanService service = new PlanService();
             PagedListP<Expert> list = service.GetExpertList(model.lType, model.playName, model.type, model.pageIndex, model.pageSize);
-            return new ApiResult<PagedListP<Expert>>() {  Data = list };
+            return new ApiResult<PagedListP<Expert>>() { Data = list };
         }
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace Qiuxun.C8.Api.Controllers
         {
             PlanService service = new PlanService();
             PagedListP<AchievementModel> list = service.GetUserLastPlay(model.uid, model.lType, model.playName, this.UserInfo.UserId);
-            return new ApiResult<PagedListP<AchievementModel>>() {  Data = list };
+            return new ApiResult<PagedListP<AchievementModel>>() { Data = list };
         }
 
         /// <summary>
@@ -195,7 +195,7 @@ namespace Qiuxun.C8.Api.Controllers
         {
             string memberKey = "history_" + this.UserInfo.UserId + "_" + lType;
             List<ExpertSearchModel> historyList = CacheHelper.GetCache<List<ExpertSearchModel>>(memberKey) ?? new List<ExpertSearchModel>();
-            return new ApiResult<List<ExpertSearchModel>>() {  Data = historyList };
+            return new ApiResult<List<ExpertSearchModel>>() { Data = historyList };
         }
 
         /// <summary>
