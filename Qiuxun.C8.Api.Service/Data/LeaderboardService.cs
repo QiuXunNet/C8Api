@@ -50,20 +50,22 @@ namespace Qiuxun.C8.Api.Service.Data
         public RankIntegralResDto GetMyRank(string queryType, int userId)
         {
             string strsql = string.Format(@"
-                              SELECT  UserId, Sum(Score)Score,b.Name as NickName,isnull(c.RPath,'') as Avater 
-                                  FROM dbo.SuperiorRecord a
-                                  left join UserInfo b on b.Id=a.UserId
-                                  left join ResourceMapping c on c.FkId=a.UserId and c.[Type]=@ResourceType
-                                  where 1=1   and userId = @UserId  {0}
-                                  group by UserId,b.Name,c.RPath",
+                              SELECT isnull(sum(Score),0)
+                                  FROM dbo.SuperiorRecord a                                
+                                  where 1=1   and userId = @UserId  {0} ",
                  Tool.GetTimeWhere("Date", queryType));
 
             SqlParameter[] sp = new SqlParameter[]{
-                new SqlParameter("@ResourceType",(int)ResourceTypeEnum.用户头像),
                 new SqlParameter ("@UserId",userId)
             };
 
-            return Util.ReaderToList<RankIntegralResDto>(strsql, sp).FirstOrDefault();
+            var score = SqlHelper.ExecuteScalar(strsql, sp);
+
+            return new RankIntegralResDto()
+            {
+                UserId = userId,
+                Score = score.ToInt32()
+            };
         }
 
         /// <summary>
@@ -180,23 +182,23 @@ namespace Qiuxun.C8.Api.Service.Data
         /// <returns></returns>
         public RankIntegralResDto GetMyProfitReward(string queryType, int RType, int lType, int userId)
         {
-            string strsql = string.Format(@"select 
-                            b.UserId,sum(a.Money) Score,c.Name as NickName,d.RPath as Avater  
+            string strsql = string.Format(@"select isnull(sum(a.Money),0) 
                             from [dbo].[ComeOutRecord] a
-                            left join BettingRecord b on cast( b.Id as nvarchar(50))=a.OrderId 
-                            left join UserInfo c on c.Id=b.UserId
-                            left join ResourceMapping d on d.FkId=b.UserId and d.[Type]=@ResourceType
-                            where a.Type=@RType and b.lType=@lType  {0}
-                            group by b.UserId ,c.Name,d.RPath,b.lType
-                    ", Tool.GetTimeWhere("a.SubTime", queryType));
+                            left join BettingRecord b on cast( b.Id as nvarchar(50))=a.OrderId                          
+                            where a.Type=@RType and b.lType=@lType and b.UserId=@UserId  {0} ", Tool.GetTimeWhere("a.SubTime", queryType));
             SqlParameter[] sp = new SqlParameter[]{
                 new SqlParameter("@RType",RType),
-                new SqlParameter("@ResourceType",(int)ResourceTypeEnum.用户头像),
-                new SqlParameter("@lType",lType)
-            };
-            RankIntegralResDto model = Util.ReaderToList<RankIntegralResDto>(strsql, sp).FirstOrDefault();
+                new SqlParameter("@lType",lType),
+                new SqlParameter("@UserId",userId)
+            };            
 
-            return model;
+            var score = SqlHelper.ExecuteScalar(strsql, sp);
+
+            return new RankIntegralResDto()
+            {
+                UserId = userId,
+                Score = score.ToInt32()
+            };
         }
     }
 }

@@ -24,19 +24,27 @@ namespace Qiuxun.C8.Api.Controllers
         /// 根据彩种类型获取彩种记录
         /// </summary>
         /// <param name="lType">彩种类型</param>
+        /// <param name="date">查询日期</param>
         /// <param name="pageIndex">页码</param>
         /// <param name="pageSize">默认20[不必填]</param>
         /// <returns></returns>
         [HttpGet]
         [AllowAnonymous]
-        public ApiResult<PagedList<LotteryRecordRseDto>> GetRecordList(int lType,int pageIndex = 1,int pageSize=20)
+        public ApiResult<PagedList<LotteryRecordRseDto>> GetRecordList(int lType, string date = "", int pageIndex = 1,int pageSize=20)
         {
             var totalCount = 0;
             var result = new ApiResult<PagedList<LotteryRecordRseDto>>();
 
             if (lType >= 9)
             {
-                var date = DateTime.Now.ToString("yyyy-MM-dd");
+                if (string.IsNullOrEmpty(date))
+                {
+                    date = DateTime.Now.Year + "-" + date.Replace('月', '-').Replace('日', ' ');
+                }
+                else
+                {
+                    date = DateTime.Now.ToString("yyyy-MM-dd");
+                }                
 
                 var beginDate = date;
                 var endDate = date + " 23:59:59";
