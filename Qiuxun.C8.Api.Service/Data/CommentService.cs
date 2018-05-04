@@ -163,7 +163,9 @@ from Comment a
                 ReplayCount = x.ReplayCount,
                 UserId = x.UserId,
                 Pictures = resourceService.GetResources(resouceType, x.Id)
-                    .Select(n => n.RPath).ToList()
+                    .Select(n => n.RPath).ToList(),
+                SubTime = x.SubTime
+
             }).FirstOrDefault();
 
 

@@ -72,7 +72,7 @@ namespace Qiuxun.C8.Api.Service.Caching
             try
             {
                 string json = memcachedClient.Get(key).ToString();
-                //LogHelper.InfoFormat("key:{0}，value:{1}", key, json);
+                LogHelper.InfoFormat("key:{0}，value:{1}", key, json);
 
                 return json.FromJsonString<T>();
             }
