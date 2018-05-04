@@ -12,7 +12,7 @@ namespace Qiuxun.C8.Api.Service.Dtos
     public class CommentReqDto
     {
         /// <summary>
-        /// 评论对象的Id，[计划Id,文章Id，评论Id]
+        /// 评论对象的Id，[彩种Id,文章Id，评论Id]
         /// </summary>
         public int Id { get; set; }
         /// <summary>

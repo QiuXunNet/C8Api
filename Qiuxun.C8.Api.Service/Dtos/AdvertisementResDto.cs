@@ -8,10 +8,6 @@ namespace Qiuxun.C8.Api.Service.Dtos
 {
     public class AdvertisementResDto
     {
-        /// <summary>
-        /// 广告图片
-        /// </summary>
-        public List<string> ThumbList { get; set; }
 
         /// <summary>
         /// 广告名
@@ -22,7 +18,7 @@ namespace Qiuxun.C8.Api.Service.Dtos
         /// </summary>
         public int Layer { get; set; }
         /// <summary>
-        /// 缩略图类型 0=无图 1=1张小图 2=1张大图 3=大于1张小图
+        /// 图片显示方式 0=无图 1=1张小图 2=1张大图 3=大于1张小图 4=纯图片广告
         /// </summary>
         public int ThumbStyle { get; set; }
         /// <summary>
@@ -37,5 +33,9 @@ namespace Qiuxun.C8.Api.Service.Dtos
         /// 评论数量
         /// </summary>
         public int CommentsNumber { get; set; }
+        /// <summary>
+        /// 广告图片
+        /// </summary>
+        public List<string> ThumbList { get; set; }
     }
 }
