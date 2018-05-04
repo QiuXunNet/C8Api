@@ -12,13 +12,16 @@ namespace Qiuxun.C8.Api.Controllers.Tests
     [TestClass()]
     public class VersionControllerTests : BaseControllerTest
     {
-        VersionController _controller= new VersionController();
+        VersionController _controller = new VersionController();
         [TestMethod()]
         public void CheckverTest()
         {
-            
+            base.InitController(_controller);
+
             var result = _controller.Checkver();
-            Assert.Fail();
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.IsSuccess);
+            Console.WriteLine(result.ToJsonString());
         }
     }
 }

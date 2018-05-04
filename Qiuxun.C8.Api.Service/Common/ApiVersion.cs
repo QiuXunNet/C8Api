@@ -31,12 +31,12 @@ namespace Qiuxun.C8.Api.Service.Common
         public ApiVersion(long verNum)
         {
             this._sections = new uint[4];
-            if (verNum != 0L)
+            if (verNum != 0)
             {
-                this._mainVersion = (uint)(verNum >> 0x20);
+                this._mainVersion = (uint)(verNum >> 32);
                 this._buildVersion = (uint)verNum;
                 this._fullVersion = verNum;
-                this._sections[0] = this._mainVersion >> 0x17;
+                this._sections[0] = this._mainVersion >> 23;
                 this._sections[1] = (this._mainVersion & _mask23) >> 15;
                 this._sections[2] = this._mainVersion & _mask15;
                 this._sections[3] = this._buildVersion;
@@ -57,9 +57,9 @@ namespace Qiuxun.C8.Api.Service.Common
                     }
                     this._sections[i] = uint.Parse(strArray[i]);
                 }
-                this._mainVersion = ((this._sections[0] << 0x17) | (this._sections[1] << 15)) | this._sections[2];
+                this._mainVersion = ((this._sections[0] << 23) | (this._sections[1] << 15)) | this._sections[2];
                 this._buildVersion = this._sections[3];
-                this._fullVersion = (this._mainVersion << 0x20) | this._buildVersion;
+                this._fullVersion = (this._mainVersion << 32) | this._buildVersion;
             }
             catch (Exception)
             {
@@ -73,8 +73,8 @@ namespace Qiuxun.C8.Api.Service.Common
         {
             this._mainVersion = mainVersion;
             this._buildVersion = buildVersion;
-            this._fullVersion = (this._mainVersion << 0x20) | this._buildVersion;
-            this._sections = new uint[] { this._mainVersion >> 0x17, (this._mainVersion & _mask23) >> 15, this._mainVersion & _mask15, this._buildVersion };
+            this._fullVersion = (this._mainVersion << 32) | this._buildVersion;
+            this._sections = new uint[] { this._mainVersion >> 23, (this._mainVersion & _mask23) >> 15, this._mainVersion & _mask15, this._buildVersion };
         }
 
         public int CompareTo(ApiVersion other)
@@ -140,15 +140,15 @@ namespace Qiuxun.C8.Api.Service.Common
 
         public void IncreaseMain()
         {
-            this._fullVersion += 0x100000000L;
+            this._fullVersion += 4294967296;
             this._mainVersion++;
-            if (0x7fff > this._sections[2])
+            if (32767 > this._sections[2])
             {
                 this._sections[2]++;
             }
             else
             {
-                this._sections[0] = this._mainVersion >> 0x17;
+                this._sections[0] = this._mainVersion >> 23;
                 this._sections[1] = (this._mainVersion & _mask23) >> 15;
                 this._sections[2] = this._mainVersion & _mask15;
             }
@@ -267,7 +267,7 @@ namespace Qiuxun.C8.Api.Service.Common
         {
             get
             {
-                return (this._fullVersion == 0L);
+                return (this._fullVersion == 0);
             }
         }
 

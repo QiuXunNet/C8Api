@@ -13,8 +13,8 @@ using Qiuxun.C8.Api.Service.Enum;
 namespace Qiuxun.C8.ApiTests
 {
     [TestClass]
-    [DeploymentItem("..\\..\\..\\..\\Qiuxun.C8.Api\\Qiuxun.C8.Api\\App_Data", "App_Data")]
-    [DeploymentItem("..\\..\\..\\..\\Qiuxun.C8.Api\\Qiuxun.C8.Api\\bin")]
+    //[DeploymentItem("..\\..\\..\\..\\Qiuxun.C8.Api\\Qiuxun.C8.Api\\App_Data", "App_Data")]
+    //[DeploymentItem("..\\..\\..\\..\\Qiuxun.C8.Api\\Qiuxun.C8.Api\\bin")]
     public class BaseControllerTest
     {
         protected void InitController(QiuxunApiController controller)
@@ -30,7 +30,8 @@ namespace Qiuxun.C8.ApiTests
 
             controller.Request.AddProperty(new RequestInfo()
             {
-                InterfaceVersion = "1.0"
+                InterfaceVersion = "1.0",
+                ClientVersion = "1.0"
             });
         }
     }
