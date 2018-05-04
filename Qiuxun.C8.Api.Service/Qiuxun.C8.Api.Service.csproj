@@ -221,6 +221,7 @@
     <Compile Include="Dtos\LoginReqDto.cs" />
     <Compile Include="Dtos\SetPasswordReqDto.cs" />
     <Compile Include="Dtos\Talk\ProcessingRecordsResDto.cs" />
+    <Compile Include="Dtos\Talk\SaveImgReqDto.cs" />
     <Compile Include="Dtos\Talk\TalkNotesReqDto.cs" />
     <Compile Include="Dtos\Talk\TalkNotesResDto.cs" />
     <Compile Include="Dtos\Talk\UserStateResDto.cs" />

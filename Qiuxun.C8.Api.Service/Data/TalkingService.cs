@@ -307,7 +307,7 @@ namespace Qiuxun.C8.Api.Service.Data
         /// <returns></returns>
         public List<BlackListResDto> GetBlackList(string roomId, int id = 0)
         {
-            string sql = @"select top(20) tbl.Id,tbl.UserId,u.UserName,rm.RPath PhotoImg,tbl.RoomId from TalkBlackList tbl
+            string sql = @"select top(20) tbl.Id,tbl.UserId,u.Name as UserName,rm.RPath PhotoImg,tbl.RoomId from TalkBlackList tbl
                                 left join UserInfo u on tbl.UserId = u.Id
                                 left join ResourceMapping rm on u.Id = rm.FkId and rm.Type =2  
                                 where tbl.RoomId =@RoomId {0} and (tbl.IsEverlasting = 1 or EndTime >GETDATE())

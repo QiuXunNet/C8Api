@@ -60,16 +60,18 @@ namespace Qiuxun.C8.Api.Controllers
             result.Data = _service.GetUserState((int)this.UserInfo.UserId);
             return result;
         }
-             
+
         /// <summary>
         /// 发送图片时保存图片到服务器
         /// </summary>
-        /// <param name="img">Base64格式字符串</param>
+        /// <param name="model">Img Base64格式字符串</param>
         /// <returns>返回小图URL地址,大图地址去掉_Min即可</returns>
-        [HttpGet]
-        public ApiResult<string> SaveImg(string img)
+        [HttpPost]
+        public ApiResult<string> SaveImg(SaveImgReqDto model)
         {
-            img = img.Replace("data:image/jpeg;base64,", "");
+            //model.Img = HttpUtility.UrlDecode(model.Img);
+
+            model.Img = model.Img.Replace("data:image/jpeg;", "");
 
             var result = new ApiResult<string>();
 
@@ -85,7 +87,7 @@ namespace Qiuxun.C8.Api.Controllers
                     Directory.CreateDirectory(path);
                 }
 
-                byte[] arr = Convert.FromBase64String(img);
+                byte[] arr = Convert.FromBase64String(model.Img);
 
                 MemoryStream ms = new MemoryStream(arr);
                 Image image = Image.FromStream(ms);
