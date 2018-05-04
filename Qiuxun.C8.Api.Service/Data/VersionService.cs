@@ -36,7 +36,7 @@ namespace Qiuxun.C8.Api.Service.Data
                 (int)clientType, customerSourceId, appName);
 
             var resDto = CacheHelper.GetCache<CheckerResDto>(clientSourceKey);
-
+            
             if (resDto == null)
             {
                 var sourceVersion = GetSourceVersion(clientType, customerSourceId, appName, versionCode);
@@ -45,13 +45,13 @@ namespace Qiuxun.C8.Api.Service.Data
                 {
                     resDto = new CheckerResDto()
                     {
-                        Status = (int)sourceVersion.UpdateType,
+                        Status = sourceVersion.UpdateType,
                         Content = string.Empty,
                         Downurl = string.Empty
                     };
 
-                    if ((sourceVersion.UpdateType == ClientUpdateStatus.Optional ||
-                         sourceVersion.UpdateType == ClientUpdateStatus.Force) && sourceVersion.UpdateToVersionCode > 0)
+                    if ((sourceVersion.UpdateType == (int)ClientUpdateStatus.Optional ||
+                         sourceVersion.UpdateType == (int)ClientUpdateStatus.Force) && sourceVersion.UpdateToVersionCode > 0)
                     {
                         var updateToSourceVersion = GetSourceVersion(clientType, customerSourceId, appName,
                             sourceVersion.UpdateToVersionCode);
