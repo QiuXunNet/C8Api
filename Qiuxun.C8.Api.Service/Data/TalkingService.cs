@@ -54,7 +54,28 @@ namespace Qiuxun.C8.Api.Service.Data
 
             SqlParameter[] sp = new SqlParameter[] { new SqlParameter("@UserId", userId) };
             List<UserStateResDto> list = Util.ReaderToList<UserStateResDto>(usersql, sp);
-            var model = list.FirstOrDefault();
+            UserStateResDto model;
+            if (list.Any())
+            {
+                model = list.FirstOrDefault();
+            }
+            else
+            {
+                model = new UserStateResDto() {
+                    ChatBlack = 0,
+                    ChatShut = 0,
+                    ChatShutBegin = null,
+                    ChatShutEnd = null,
+                    CommentBlack = 0,
+                    CommentShut = 0,
+                    CommentShutBegin = null,
+                    CommentShutEnd = null,
+                    IsChatAD = 0,
+                    IsInfoAD = 0,
+                    IsPlanAD = 0,                   
+                    UserId = userId
+                };
+            }
 
             //获取积分大于100分且排在第一未的彩种
             usersql = @"select top(1) tab.Name from (
@@ -63,7 +84,7 @@ namespace Qiuxun.C8.Api.Service.Data
 	                        where br.UserId = @UserId
 	                        group by lt.Name
                         ) as tab 
-                        where tab.Score>=100
+                        where tab.Score>=10
                         order by score desc";
 
             model.MasterLottery = Convert.ToString(SqlHelper.ExecuteScalar(usersql, sp)).Replace("(PC蛋蛋)","");

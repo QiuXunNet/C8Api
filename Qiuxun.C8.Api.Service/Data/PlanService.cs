@@ -794,10 +794,10 @@ namespace Qiuxun.C8.Api.Service.Data
         /// <summary>
         /// 获取用户点阅计划所需金币数
         /// </summary>
-        public ApiResult<int> GetReadCoin(int lType, long userId)
+        public ApiResult<dynamic> GetReadCoin(int lType, long uid,long userId)
         {
             //step6.查询用户彩种积分，
-            int totalIntegral = LuoUtil.GetUserIntegral(userId, lType);
+            int totalIntegral = LuoUtil.GetUserIntegral(uid, lType);
             //step7.根据用户该彩种积分，查询点阅所需金币
             var setting = GetLotteryCharge().FirstOrDefault(
                     x => x.MinIntegral <= totalIntegral
@@ -805,8 +805,11 @@ namespace Qiuxun.C8.Api.Service.Data
                     && x.LType == lType
                 );
 
-            int ReadCoin = setting != null ? setting.Coin : 0;
-            return new ApiResult<int>() { Code = 100, Desc = "", Data = ReadCoin };
+            int readCoin = setting != null ? setting.Coin : 0;
+            int userCouponNum = GetUserCouponNum(userId);
+            int userCoin = new UserInfoService().GetUserInfo(userId).Coin;
+
+            return new ApiResult<dynamic>() { Code = 100, Desc = "", Data = new { ReadCoin=readCoin, UserCouponNum= userCouponNum, UserCoin= userCoin } };
         }
 
         /// <summary>

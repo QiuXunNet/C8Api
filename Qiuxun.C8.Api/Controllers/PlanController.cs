@@ -55,16 +55,16 @@ namespace Qiuxun.C8.Api.Controllers
         }
 
         /// <summary>
-        /// 获取用户点阅计划所需金币数
+        /// 获取用户点阅计划所需金币数\用户卡券数\用户金币数
         /// </summary>
         /// <param name="lType">彩种</param>
-        /// <param name="userId">用户ID</param>
+        /// <param name="userId">发布计划人ID</param>
         /// <returns></returns>
         [HttpGet]
-        public ApiResult<int> GetReadCoin(int lType, long userId)
+        public ApiResult<dynamic> GetReadCoin(int lType, long userId)
         {
             PlanService service = new PlanService();
-            return service.GetReadCoin(lType, userId);
+            return service.GetReadCoin(lType, userId,UserInfo.UserId);
         }
 
         /// <summary>
