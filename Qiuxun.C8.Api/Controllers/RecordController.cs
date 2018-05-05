@@ -24,7 +24,7 @@ namespace Qiuxun.C8.Api.Controllers
         /// 根据彩种类型获取彩种记录
         /// </summary>
         /// <param name="lType">彩种类型</param>
-        /// <param name="date">查询日期</param>
+        /// <param name="date">查询日期(传查询时间列表的Key)</param>
         /// <param name="pageIndex">页码</param>
         /// <param name="pageSize">默认20[不必填]</param>
         /// <returns></returns>
@@ -39,10 +39,6 @@ namespace Qiuxun.C8.Api.Controllers
             {
                 if (string.IsNullOrEmpty(date))
                 {
-                    date = DateTime.Now.Year + "-" + date.Replace('月', '-').Replace('日', ' ');
-                }
-                else
-                {
                     date = DateTime.Now.ToString("yyyy-MM-dd");
                 }                
 
@@ -56,8 +52,12 @@ namespace Qiuxun.C8.Api.Controllers
             }
             else
             {
-                int year = DateTime.Now.Year;
-                var beginDate = year + "-1-1";
+                if (string.IsNullOrEmpty(date))
+                {
+                    date = DateTime.Now.ToString("yyyy-01-01");
+                }
+               
+                var beginDate = date;
                 var list = _service.GetRecordList(ref totalCount,lType, pageIndex, pageSize, beginDate);
 
                 var pager = new PagedList<LotteryRecordRseDto>(list, pageIndex, pageSize, totalCount);
@@ -68,24 +68,18 @@ namespace Qiuxun.C8.Api.Controllers
         }
 
         /// <summary>
-        /// 当彩种类型大于等于9时，需要获取查询的时间列表
+        /// 获取查询的时间列表
         /// </summary>
+        /// <param name="lType">彩种类型</param>
         /// <returns></returns>
         [HttpGet]
         [AllowAnonymous]
-        public ApiResult<List<dynamic>> GetQueryDate()
+        public ApiResult<List<dynamic>> GetQueryDate(int lType)
         {
-            var strs = Util.GetQueryDate();
+            var list = Util.GetQueryDate(lType);
 
-            var result = new ApiResult<List<dynamic>>();
-            List<dynamic> list = new List<dynamic>();
-
-            foreach (var s in strs.Split(','))
-            {
-                list.Add(new { Date = s });
-            }
+            var result = new ApiResult<List<dynamic>>();           
             result.Data = list;
-
             return result;
         }
 
