@@ -33,7 +33,8 @@ namespace Qiuxun.C8.Api.Service.Data
 	    from [Plan] a 
 	    left join LotteryRecord b on b.Issue=a.Issue and b.lType=a.lType
         where a.lType = {1}
-    )as temp where rownumber>{2}", totalSize,lType,  (pageIndex - 1) * totalSize);
+    )as temp where rownumber>{2} 
+	order by temp.Issue desc,temp.Sort", totalSize,lType,  (pageIndex - 1) * totalSize);
             pager.PageData = Util.ReaderToList<Plan>(sql);        //计划列表
             pager.TotalCount = ToolsHelper.ObjectToInt(SqlHelper.ExecuteScalar(totalsql));
             return pager;

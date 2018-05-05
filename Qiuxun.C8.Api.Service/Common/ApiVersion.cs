@@ -140,7 +140,7 @@ namespace Qiuxun.C8.Api.Service.Common
 
         public void IncreaseMain()
         {
-            this._fullVersion += 4294967296;
+            this._fullVersion += 0x100000000L;
             this._mainVersion++;
             if (32767 > this._sections[2])
             {
@@ -156,7 +156,7 @@ namespace Qiuxun.C8.Api.Service.Common
 
         public void IncreaseMajor()
         {
-            if (0xff <= this._sections[0])
+            if (255 <= this._sections[0])
             {
                 throw new InvalidOperationException("MajorVersion已经达到最大值。");
             }

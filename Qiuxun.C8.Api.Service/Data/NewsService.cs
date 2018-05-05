@@ -394,7 +394,7 @@ UPDATE dbo.News SET PV+=1 WHERE Id=@Id";
         /// <returns></returns>
         public ApiResult<List<NewsListResDto>> GetRecommendNewsList(int newsTypeId)
         {
-            string recommendArticlesql = @"SELECT TOP 3 [Id],[FullHead],[SortCode],[Thumb],[ReleaseTime],[ThumbStyle],
+            string recommendArticlesql = @"SELECT TOP 3 [Id],TypeId,[FullHead],[SortCode],[Thumb],[ReleaseTime],[ThumbStyle],
 (SELECT COUNT(1) FROM[dbo].[Comment] WHERE [ArticleId]=a.Id and RefCommentId=0) as CommentCount
 FROM [dbo].[News] a
 WHERE [TypeId] = @TypeId AND DeleteMark=0 AND EnabledMark=1
@@ -510,5 +510,39 @@ ORDER BY CommentCount DESC,SortCode ASC ";
             };
         }
 
+        /// <summary>
+        /// 获取新闻栏目信息
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public ApiResult<NewsTypeResDto> GetNewsType(int id)
+        {
+            var newsType = Util.GetEntityById<NewsType>(id);
+
+            if (newsType == null) throw new ApiException(40000, "资讯栏目不存在");
+
+
+            var resDto = new NewsTypeResDto()
+            {
+                Id = newsType.Id,
+                TypeName = newsType.TypeName,
+                Layer = newsType.Layer,
+                LType = newsType.LType,
+                ParentId = newsType.ParentId,
+                ShowType = newsType.ShowType,
+                SortCode = newsType.SortCode
+            };
+
+            var lotteryType = Util.GetEntityById<LotteryType>(newsType.LType.ToInt32());
+
+            if (lotteryType != null)
+                resDto.LTypeName = lotteryType.TypeName;
+
+            return new ApiResult<NewsTypeResDto>()
+            {
+                Data = resDto
+            };
+
+        }
     }
 }

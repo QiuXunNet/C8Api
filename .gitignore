@@ -241,3 +241,4 @@ ModelManifest.xml
 # FAKE - F# Make
 .fake/
 /Logs
+/Qiuxun.C8.Api/Properties/PublishProfiles

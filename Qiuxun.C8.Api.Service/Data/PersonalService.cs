@@ -495,7 +495,7 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
                     list.ForEach(x =>
                     {
 
-                        x.LotteryIcon = "/images/" + Util.GetLotteryIcon(x.lType) + ".png";
+                        x.LotteryIcon = Util.GetLotteryIconUrl(x.lType);
                     });
                 }
             }
