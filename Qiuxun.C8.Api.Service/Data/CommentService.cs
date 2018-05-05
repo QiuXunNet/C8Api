@@ -250,15 +250,17 @@ from Comment a
         /// <param name="lastId">上次拉取的最后一条Id</param>
         /// <param name="type">类型1=计划 2=文章 3=该用户所有计划的评论数量</param>
         /// <param name="pageSize"></param>
+        /// <param name="userId">当前登录用户Id</param>
         /// <param name="articleUserId">评论关联用户Id</param>
         /// <returns></returns>
-        public ApiResult<List<CommentResDto>> GetCommentList(int id, int lastId, int type, int pageSize, int articleUserId)
+        public ApiResult<List<CommentResDto>> GetCommentList(int id, int lastId, int type, int pageSize, long userId, int articleUserId)
         {
             string sql;
             if (type == 1)
             {
                 sql = @"select Top " + pageSize + @" a.*,isnull(b.Name,'') as NickName,isnull(c.RPath,'') as Avater 
 ,(select count(1) from Comment where PId = a.Id ) as ReplayCount
+,(select count(1) from LikeRecord where [Status]=1 and [Type]=a.[Type] and CommentId=a.Id and UserId=@UserId) as CurrentUserLikes
 ,(select count(1) from LikeRecord where [Status]=1 and [Type]=a.[Type] and CommentId=a.Id) as StarCount
 from Comment a
   left join UserInfo b on b.Id = a.UserId
@@ -269,6 +271,7 @@ from Comment a
             {
                 sql = @"select Top " + pageSize + @" a.*,isnull(b.Name,'') as NickName,isnull(c.RPath,'') as Avater 
 ,(select count(1) from Comment where PId = a.Id ) as ReplayCount
+,(select count(1) from LikeRecord where [Status]=1 and [Type]=a.[Type] and CommentId=a.Id and UserId=@UserId) as CurrentUserLikes
 ,(select count(1) from LikeRecord where [Status]=1 and [Type]=a.[Type] and CommentId=a.Id) as StarCount
 from Comment a
   left join UserInfo b on b.Id = a.UserId
@@ -289,6 +292,7 @@ from Comment a
                 new SqlParameter("@ArticleId",id),
                 new SqlParameter("@Type",type),
                 new SqlParameter("@ArticleUserId",articleUserId),
+                new SqlParameter("@UserId",userId),
             };
 
             var list = Util.ReaderToList<Comment>(sql, parameters);

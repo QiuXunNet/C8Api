@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using Qiuxun.C8.Api.Public;
 using Qiuxun.C8.Api.Service.Api;
 using Qiuxun.C8.Api.Service.Common;
 using Qiuxun.C8.Api.Service.Common.Paging;
@@ -79,7 +80,11 @@ namespace Qiuxun.C8.Api.Controllers
         {
             if (type != 1 && type != 2 && type != 3)
                 throw new ApiException(40000, "超出业务范围");
-            return commentService.GetCommentList(id, lastId, type, pageSize, refUserId);
+
+            int userId = 0;
+            if (UserInfo != null)
+                userId = UserInfo.UserId.ToInt32();
+            return commentService.GetCommentList(id, lastId, type, pageSize, userId, refUserId);
         }
 
         /// <summary>
