@@ -22302,17 +22302,25 @@ namespace Qiuxun.C8.Api.Public
         }
 
 
-        public static string GetQueryDate()
+        public static List<dynamic> GetQueryDate(int lType)
         {
-            string queryDate = "";
+            var list = new List<dynamic>();
+
             for (int i = 0; i < 5; i++)
             {
-                DateTime dTemp = DateTime.Now.AddDays(-i);
-
-                queryDate += dTemp.Month + "月" + dTemp.Day + ",";
+                if (lType >= 9)
+                {
+                    DateTime dTemp = DateTime.Now.AddDays(-i);
+                    list.Add(new { Key = dTemp.ToString("yyyy-MM-dd"), Value = dTemp.ToString("MM月dd日") });
+                }
+                else
+                {
+                    DateTime dTemp = DateTime.Now.AddYears(-i);
+                    list.Add(new { Key = dTemp.ToString("yyyy-01-01"), Value = dTemp.ToString("yyyy年") });
+                }
             }
 
-            return queryDate.TrimEnd(','); ;
+            return list;
         }
 
 

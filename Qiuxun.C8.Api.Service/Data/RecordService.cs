@@ -20,8 +20,8 @@ namespace Qiuxun.C8.Api.Service.Data
             string sqlCount = "";
             if (lType >= 9)
             {
-                sql = @"select lType,Issue,Num from (
-                        select row_number()over(order by Issue desc) as rownumber,lType,Issue,Num 
+                sql = @"select lType,Issue,Num,SubTime from (
+                        select row_number()over(order by Issue desc) as rownumber,lType,Issue,Num,SubTime  
                         from LotteryRecord 
                         where lType=@lType and SubTime > @BeginTime and SubTime < @EndTime 
                         ) tab where tab.rownumber between (@PageIndex - 1)*@PageSize and @PageIndex*@PageSize";
@@ -30,8 +30,8 @@ namespace Qiuxun.C8.Api.Service.Data
             }
             else
             {
-                sql = @"select lType,Issue,Num from (
-                        select row_number()over(order by Issue desc) as rownumber,lType,Issue,Num 
+                sql = @"select lType,Issue,Num,SubTime from (
+                        select row_number()over(order by Issue desc) as rownumber,lType,Issue,Num.SubTime 
                         from LotteryRecord 
                         where lType=@lType and SubTime > @BeginTime
                         ) tab where tab.rownumber between (@PageIndex - 1)*@PageSize and @PageIndex*@PageSize";

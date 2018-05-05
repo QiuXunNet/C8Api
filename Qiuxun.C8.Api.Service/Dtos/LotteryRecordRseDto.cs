@@ -22,6 +22,11 @@ namespace Qiuxun.C8.Api.Service.Dtos
         public string Issue { get; set; }
 
         /// <summary>
+        /// 开奖时间
+        /// </summary>
+        public DateTime SubTime { get; set; }
+
+        /// <summary>
         /// 球号
         /// </summary>
         public string Num { get; set; }
