@@ -20,7 +20,7 @@ namespace Qiuxun.C8.Api.Service.Model
         /// <summary>
         /// 客户端类型 0=未知 1=Android 2=IOS 3=Browser 4=Weixin
         /// </summary>
-        public DevicePlatform ClientType { get; set; }
+        public int ClientType { get; set; }
 
         /// <summary>
         /// 版本描述信息
@@ -53,7 +53,7 @@ namespace Qiuxun.C8.Api.Service.Model
         /// <summary>
         /// 升级方式 1=无需升级 2=用户可选择是否升级 3=强制用户升级
         /// </summary>
-        public ClientUpdateStatus UpdateType { get; set; }
+        public int UpdateType { get; set; }
         /// <summary>
         /// 版本编号
         /// </summary>

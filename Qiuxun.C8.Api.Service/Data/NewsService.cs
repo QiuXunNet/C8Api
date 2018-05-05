@@ -266,6 +266,11 @@ WHERE [TypeId]=@TypeId and DeleteMark=0 and EnabledMark=1 ";
         /// <returns></returns>
         public ApiResult<NewsResDto> GetNewsDetal(int id)
         {
+            //添加新闻PV计数
+            new Task(() =>
+            {
+                AddNewsPv(id);
+            }).Start();
             //获取新闻实体
 
             string sql = @"SELECT 
@@ -350,6 +355,39 @@ ORDER BY SortCode desc,Id DESC";
 
 
         /// <summary>
+        /// 添加新闻PV计数
+        /// </summary>
+        /// <param name="id"></param>
+        private void AddNewsPv(int id)
+        {
+            try
+            {
+                string pvSql = @"if exists(
+	select 1 from dbo.PageView where [Type]=@Type and FkId=@Id and ViewDate=@ViewDate
+  )
+  begin
+   update dbo.PageView set ViewTotal+=1 where [Type]=@Type and FkId=@Id and ViewDate=@ViewDate
+  end
+  else
+  begin
+  insert into dbo.PageView(ViewDate,ViewTotal,[Type],FkId) values(GETDATE(),1,@Type,@Id)
+  end;
+UPDATE dbo.News SET PV+=1 WHERE Id=@Id";
+                var pvParam = new[]
+                {
+                        new SqlParameter("@Type",1),//新闻类型=1
+                        new SqlParameter("@Id",id),
+                        new SqlParameter("@ViewDate",DateTime.Today),
+                    };
+                SqlHelper.ExecuteNonQuery(pvSql, pvParam);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.ErrorFormat("新闻{2}PV增加异常，Message:{0},StackTrace:{1}", ex.Message, ex.StackTrace, id);
+            }
+        }
+
+        /// <summary>
         /// 根据新闻栏目Id获取推荐阅读文章列表
         /// </summary>
         /// <param name="newsTypeId"></param>
@@ -419,12 +457,11 @@ ORDER BY ModifyDate DESC,SortCode ASC ";
         {
 
             var news = Util.GetEntityById<News>(articleId);
-            string recGallerySql = " SELECT TOP " + count + @" a.Id,FullHead as Name,LotteryNumber as Issue FROM News a 
- join NewsType b on b.Id= a.TypeId
- where  b.lType in
- (select ltype from News a join NewsType b on b.Id=a.TypeId
- where a.Id=" + articleId + " ) and a.TypeId=" + news.TypeId
- + @" and DeleteMark=0 and EnabledMark=1 
+            string recGallerySql = " SELECT TOP " + count + @" FullHead as Name, Id,LotteryNumber as Issue 
+ from News where Id  in(
+	select max(id) from News where TypeId=" + news.TypeId + @" group by FullHead having count(FullHead)>=1
+ )
+ and DeleteMark=0 and EnabledMark=1 
  order by RecommendMark DESC,LotteryNumber DESC,ModifyDate DESC";
             var recGalleryList = Util.ReaderToList<RecommendGalleryResDto>(recGallerySql);
 

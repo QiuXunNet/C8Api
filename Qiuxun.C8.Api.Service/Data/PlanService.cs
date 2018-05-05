@@ -539,11 +539,11 @@ namespace Qiuxun.C8.Api.Service.Data
             if (playName == "全部")//全部
             {
                 strsql = string.Format(@"select * from BettingRecord   where UserId ={0} and lType = {1}", uid, lType);
-                numsql = string.Format(@"SELECT * FROM (  select row_number() over(order by l.SubTime desc  ) as rowNumber, Num,l.SubTime,l.Issue from LotteryRecord l
+                numsql = string.Format(@"SELECT * FROM (  select row_number() over(order by l.SubTime desc  ) as rowNumber, Num,l.SubTime,l.Issue,b.lType from LotteryRecord l
 	                                      ,BettingRecord b
 	                                      where b.Issue=l.Issue and b.lType=l.lType
 	                                      and b.UserId={0} and b.lType={1}  and b.WinState in(3,4)
-	                                      group by l.Issue,Num,l.SubTime
+	                                      group by l.Issue,Num,l.SubTime,b.lType
 	                                      )t
 	                                      where   rowNumber BETWEEN {2} AND {3}  ", uid, lType, pager.StartIndex, pager.EndIndex);
                 playSql = string.Format(@" select top 1 * from BettingRecord where UserId={0} 
@@ -553,11 +553,11 @@ namespace Qiuxun.C8.Api.Service.Data
             {
                 strsql = string.Format(@"
                 select * from BettingRecord   where UserId ={0} and lType = {1}  and PlayName = @PlayName", uid, lType);
-                numsql = string.Format(@"SELECT * FROM (  select row_number() over(order by l.SubTime desc  ) as rowNumber,  Num,l.SubTime,l.Issue from LotteryRecord l
+                numsql = string.Format(@"SELECT * FROM (  select row_number() over(order by l.SubTime desc  ) as rowNumber,  Num,l.SubTime,l.Issue,b.lType from LotteryRecord l
 	                                      ,BettingRecord b
 	                                      where b.Issue=l.Issue and b.lType=l.lType
 	                                      and b.UserId={0} and b.lType={1} and b.PlayName=@PlayName  and b.WinState in(3,4)
-	                                      group by l.Issue,Num,l.SubTime
+	                                      group by l.Issue,Num,l.SubTime,b.lType
 	                                      )t
 	                                      where   rowNumber BETWEEN {2} AND {3} ", uid, lType, pager.StartIndex, pager.EndIndex);
                 playSql = string.Format(@" select top 1 * from BettingRecord where UserId={0} 
@@ -579,6 +579,8 @@ namespace Qiuxun.C8.Api.Service.Data
                     l.Issue = item.Issue;
                     l.Num = item.Num;
                     l.SubTime = Convert.ToDateTime(item.SubTime).ToString("yyyy-MM-dd");
+                    l.lType = item.lType;
+                    
                     model.LotteryNum = l;
                     if (listbet.Count() > 0)
                         model.BettingRecord = listbet.Where(x => x.Issue == item.Issue).ToList();
