@@ -22,11 +22,11 @@ namespace Qiuxun.C8.Api.Service.Data
         public PagedListP<Plan> GetPlanData(int lType, int pageIndex, int pageSize)
         {
             var pager = new PagedListP<Plan>();
-            pager.PageSize = pageSize;
-            pager.PageIndex = pageIndex;
             int count = Util.GetGFTJCount(lType);
             int totalSize = (pageSize + 1) * count;
 
+            pager.PageSize = totalSize;
+            pager.PageIndex = pageIndex;
             string totalsql = "select COUNT(1) from ( select row_number() over(order by Id desc) as rownumber,* from [Plan] where lType = " + lType + ") as temp";
             string sql =string.Format(@"select top {0} temp.* from ( 
        select row_number() over(order by a.Id desc,a.Sort) as rownumber,a.*,b.Num as OpenNum,b.SubTime as OpenTime 
