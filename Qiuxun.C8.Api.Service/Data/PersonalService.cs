@@ -229,7 +229,7 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
         /// </summary>
         public ApiResult<List<FansResDto>> GetFansBangList(string type, int pageIndex, int pageSize)
         {
-            string strsql = string.Format(@"select  * from ( select top 100 row_number() over(order by count(1) desc  ) as Rank, count(1)as Number,Followed_UserId,Name as NickName,isnull(RPath,'/images/default_avater.png') as Avater
+            string strsql = string.Format(@"select  * from ( select top 100 row_number() over(order by count(1) desc  ) as Rank, count(1)as Number,Followed_UserId as FollowedUserId,Name as NickName,isnull(RPath,'/images/default_avater.png') as Avater
                                              from Follow f 
                                              left join UserInfo u on f.Followed_UserId=u.id
                                              left join ResourceMapping r on (r.FkId=f.Followed_UserId and r.Type=@ResourceType)
