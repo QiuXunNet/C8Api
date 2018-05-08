@@ -304,6 +304,26 @@ WHERE [Id]=@Id and DeleteMark=0 and EnabledMark=1 ";
                 TypeId = model.TypeId
             };
 
+            #region 设置分享信息
+
+            string webHost = BaseService.WebHost;
+            resDto.Share = new ShareDto()
+            {
+                Title = model.FullHead,
+                Describe = model.FullHead,
+                Link = string.Format("{0}/News/NewsDetail/{1}", webHost, model.Id)
+            };
+
+            int sourceType = (int)ResourceTypeEnum.新闻缩略图;
+            List<string> thumbList = sourceService.GetResources(sourceType, model.Id)
+                .Select(n => n.RPath).ToList();
+            if (thumbList.Count > 0)
+                resDto.Share.Icon = thumbList.FirstOrDefault();
+            else
+                resDto.Share.Icon = string.Format("{0}/images/c8.png", webHost);
+
+            #endregion
+
             #region 上一篇 下一篇
             //查询上一篇
             string preSql = @"SELECT TOP 1
@@ -479,7 +499,7 @@ ORDER BY ModifyDate DESC,SortCode ASC ";
         /// <returns></returns>
         public ApiResult<List<NewsListResDto>> GetHotNewsList(int count)
         {
-            string hotArticlesql = "SELECT TOP " + count + @" [Id],[FullHead],[SortCode],[Thumb],[ReleaseTime],[ThumbStyle],
+            string hotArticlesql = "SELECT TOP " + count + @" [Id],[FullHead],[SortCode],[Thumb],[ReleaseTime],[ThumbStyle],[TypeId],
 (SELECT COUNT(1) FROM[dbo].[Comment] WHERE [ArticleId]=a.Id and RefCommentId=0) as CommentCount
 FROM [dbo].[News] a
 WHERE  DeleteMark=0 AND EnabledMark=1

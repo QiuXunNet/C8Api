@@ -1272,5 +1272,29 @@ WHERE rowNumber BETWEEN @Start AND @End", ltypeWhere, winStateWhere);
 
             return result;
         }
+
+        /// <summary>
+        /// 邀请注册
+        /// </summary>
+        /// <param name="uid">用户Id</param>
+        /// <returns></returns>
+        public ApiResult<ShareDto> InvitationReg(long uid)
+        {
+
+            string webHost = BaseService.WebHost;
+            var share = new ShareDto()
+            {
+                Title = "邀请注册",
+                Describe = "万彩吧，助你壕梦成真！！新用户注册有惊喜",
+                Link = string.Format("{0}/Home/Register/{1}", webHost, uid),
+                Icon = string.Format("{0}/images/c8.png", webHost)
+            };
+
+            return new ApiResult<ShareDto>()
+            {
+                Data = share
+            };
+
+        }
     }
 }

@@ -431,7 +431,19 @@ namespace Qiuxun.C8.Api.Controllers
 
             PersonalService service = new PersonalService();
             PagedListP<UserCoupon> resDto = service.GetMyUserCouponList(type, pageIndex, pageSize, userId);
-            return new ApiResult<PagedListP<UserCoupon>>() { Data = resDto };            
+            return new ApiResult<PagedListP<UserCoupon>>() { Data = resDto };
+        }
+
+        /// <summary>
+        /// 邀请注册
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ApiResult<ShareDto> InvitationReg()
+        {
+            long userId = UserInfo.UserId;
+
+            return new PersonalService().InvitationReg(userId);
         }
     }
 }

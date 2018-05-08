@@ -191,7 +191,7 @@ from Comment a
         {
             string sql = "select top " + count + string.Format(@"  a.*,isnull(b.Name,'') as NickName,isnull(c.RPath,'') as Avater,
 (select count(1) from LikeRecord where [Status]=1 and [Type]=a.[Type] and CommentId=a.Id and UserId=@UserId) as CurrentUserLikes,
-(select count(1) from Comment where PId = a.Id ) as ReplayCount,
+(select count(1) from Comment where RefCommentId = a.Id ) as ReplayCount,
 (select count(1) from LikeRecord where [Status]=1 and [Type]=a.[Type] and CommentId=a.Id) as StarCount
 from Comment a
   left join UserInfo b on b.Id = a.UserId
@@ -259,7 +259,7 @@ from Comment a
             if (type == 1)
             {
                 sql = @"select Top " + pageSize + @" a.*,isnull(b.Name,'') as NickName,isnull(c.RPath,'') as Avater 
-,(select count(1) from Comment where PId = a.Id ) as ReplayCount
+,(select count(1) from Comment where RefCommentId = a.Id ) as ReplayCount
 ,(select count(1) from LikeRecord where [Status]=1 and [Type]=a.[Type] and CommentId=a.Id and UserId=@UserId) as CurrentUserLikes
 ,(select count(1) from LikeRecord where [Status]=1 and [Type]=a.[Type] and CommentId=a.Id) as StarCount
 from Comment a
@@ -270,7 +270,7 @@ from Comment a
             else
             {
                 sql = @"select Top " + pageSize + @" a.*,isnull(b.Name,'') as NickName,isnull(c.RPath,'') as Avater 
-,(select count(1) from Comment where PId = a.Id ) as ReplayCount
+,(select count(1) from Comment where RefCommentId = a.Id ) as ReplayCount
 ,(select count(1) from LikeRecord where [Status]=1 and [Type]=a.[Type] and CommentId=a.Id and UserId=@UserId) as CurrentUserLikes
 ,(select count(1) from LikeRecord where [Status]=1 and [Type]=a.[Type] and CommentId=a.Id) as StarCount
 from Comment a
@@ -364,7 +364,7 @@ from Comment a
         {
             string sql = "select top " + pageSize + @" a.*,isnull(b.Name,'') as NickName,isnull(c.RPath,'') as Avater 
 ,(select count(1) from LikeRecord where [Status]=1 and [Type]=a.[Type] and CommentId=a.Id and UserId=@UserId) as CurrentUserLikes 
-,(select count(1) from Comment where PId = a.Id ) as ReplayCount
+,(select count(1) from Comment where RefCommentId = a.Id ) as ReplayCount
 ,(select count(1) from LikeRecord where [Status]=1 and [Type]=a.[Type] and CommentId=a.Id) as StarCount
 from Comment a
   left join UserInfo b on b.Id = a.UserId

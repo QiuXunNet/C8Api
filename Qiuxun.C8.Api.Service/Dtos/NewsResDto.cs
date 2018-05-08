@@ -56,6 +56,8 @@ namespace Qiuxun.C8.Api.Service.Dtos
         /// 下一篇
         /// </summary>
         public NextNewsInfo Next { get; set; }
+
+        public ShareDto Share { get; set; }
     }
 
     /// <summary>
@@ -157,4 +159,5 @@ namespace Qiuxun.C8.Api.Service.Dtos
             }
         }
     }
+
 }
