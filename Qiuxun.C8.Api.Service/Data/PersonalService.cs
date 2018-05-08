@@ -622,8 +622,7 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
                 {
                     list.ForEach(x =>
                     {
-
-                        x.LotteryIcon = "/images/" + Util.GetLotteryIcon(x.lType) + ".png";
+                        x.LotteryIcon = Util.GetLotteryIconUrl(x.lType);
                     });
                 }
                 else if (type == 3)
@@ -1052,12 +1051,12 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
             if (ltype > 0) ltypeWhere = " AND lType=" + ltype;
 
             string sql = string.Format(@"SELECT * FROM ( 
-	                            SELECT row_number() over(order by WinState,Issue DESC,lType ) as rowNumber,* FROM (
-		                            SELECT distinct lType,Issue, (case WinState when 1 then 1 else 2 end) as WinState FROM [dbo].[BettingRecord]
-		                            WHERE UserId=@UserId{0}{1}
-		                            ) t
-	                            ) tt
-                            WHERE rowNumber BETWEEN @Start AND @End", ltypeWhere, winStateWhere);
+	SELECT row_number() over(order by WinState,SubTime DESC,lType) as rowNumber,* FROM (
+		SELECT distinct lType,Issue, (case WinState when 1 then 1 else 2 end) as WinState,SubTime FROM [dbo].[BettingRecord] a
+		WHERE SubTime=(select max(SubTime) from [BettingRecord] b where a.lType=b.lType and a.Issue=b.Issue  and a.UserId=b.UserId) and UserId=@UserId{0}{1}
+		) t
+	) tt
+WHERE rowNumber BETWEEN @Start AND @End", ltypeWhere, winStateWhere);
 
             if (uid == 0)
                 uid = userId;

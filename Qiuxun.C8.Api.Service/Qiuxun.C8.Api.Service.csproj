@@ -240,6 +240,7 @@
     <Compile Include="Enum\CommissionTypeEnum.cs" />
     <Compile Include="Enum\DevicePlatform.cs" />
     <Compile Include="Enum\HashCryptoType.cs" />
+    <Compile Include="Enum\InstallSourceEnum.cs" />
     <Compile Include="Enum\LikeStatusEnum.cs" />
     <Compile Include="Enum\LocationType.cs" />
     <Compile Include="Enum\OAuthType.cs" />

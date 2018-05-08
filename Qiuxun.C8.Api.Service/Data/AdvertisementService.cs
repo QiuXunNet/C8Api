@@ -32,7 +32,7 @@ namespace Qiuxun.C8.Api.Service.Data
             if (list == null)
             {
                 string strsql;
-                if (location == 3)
+                if (adtype == 3)
                 {
                     //六彩栏目列表
                     strsql = string.Format(@"select * from [dbo].[Advertisement] where charindex(',{1},',','+[where]+',')>0 and 
@@ -64,7 +64,8 @@ namespace Qiuxun.C8.Api.Service.Data
                     Layer = x.Layer,
                     ThumbStyle = x.ThumbStyle,
                     TransferUrl = x.TransferUrl,
-                    ThumbList = GetAdvertisementPictures(x.ThumbStyle, x.Id)
+                    ThumbList = GetAdvertisementPictures(x.ThumbStyle, x.Id),
+                    SubTime = x.SubTime
                 }).ToList();
 
 
