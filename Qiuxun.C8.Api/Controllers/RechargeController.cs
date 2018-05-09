@@ -8,12 +8,15 @@ using Qiuxun.C8.Api.Service.Api;
 using Qiuxun.C8.Api.Service.Common;
 using Qiuxun.C8.Api.Service.Data;
 using Qiuxun.C8.Api.Service.Dtos;
+using Senparc.Weixin.MP;
+using Senparc.Weixin.MP.TenPayLibV3;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Cryptography;
 using System.Web;
 using System.Web.Http;
 
@@ -38,28 +41,48 @@ namespace Qiuxun.C8.Api.Controllers
 
 
         #region 微信支付代码
-
+        private string appid = "wx436dc2d2db2c0f04";
+        private string mchid = "1482199772";
+        private string body = "金币充值";
+        private string spbillCreateIp = "";
+        private string notifyUrl = "";
+        private TenPayV3Type tradeType = TenPayV3Type.APP;
         private string key = "1de60212dceafe2b4fdb621bd6f04288";
+        private string nonceStr = "";
         /// <summary>
         /// 获取微信充值必要的数据和订单号
         /// </summary>
         /// <param name="money">充值金额</param>
-        /// <param name="userId">充值人</param>
         /// <returns>返回微信充值必要的数据和订单号</returns>
         [HttpGet]
-        public ApiResult GetWxInfo(int money, int userId)
+        public ApiResult GetWxInfo(int money)
         {
+            spbillCreateIp = HttpContext.Current.Request.UserHostAddress;
+            notifyUrl = "http://" + HttpContext.Current.Request.Url.Host + ":" + HttpContext.Current.Request.Url.Port + "/api/Recharge/WxNotify";
+            nonceStr = Guid.NewGuid().ToString("N");
+
+
             var result = new ApiResult<WXResDto>();
-
             WXResDto model = new WXResDto();
-            model.Key = key.Insert(5, "a");
-            model.Key = key.Insert(12, "s");
-            model.Key = key.Insert(25, "d");
-
             model.OrderId = GetRandom();
 
-            if (_service.AddComeOutRecord(model.OrderId, money, 1, userId))
+            if (_service.AddComeOutRecord(model.OrderId, money, 1, (int)UserInfo.UserId))
             {
+                DateTime start = DateTime.Now, end = DateTime.Now.AddMinutes(15);
+                var xmlDataInfo = new TenPayV3UnifiedorderRequestData(appid
+                   , mchid, body, model.OrderId, money * 100
+                   , spbillCreateIp, notifyUrl, tradeType
+                   , null, key, nonceStr, null, start, end);
+
+                var resultWx = TenPayV3.Unifiedorder(xmlDataInfo);//调用统一订单接口
+
+                model.AppId = appid;
+                model.MchId = mchid;
+                // model.Package = resultWx.
+                model.PrepayId = resultWx.prepay_id;
+                model.Sign = resultWx.sign;
+                model.TradeType = resultWx.trade_type;
+
                 result.Data = model;
                 return result;
             }
@@ -91,13 +114,21 @@ namespace Qiuxun.C8.Api.Controllers
             //微信服务器可能会多次推送到本接口，这里需要根据out_trade_no去查询订单是否处理，如果处理直接返回：return Content(xml, "text/xml"); 不跑下面代码
             //if (false)
             //{
-            if (_service.AlertComeOutRecord(out_trade_no, 1))
+            if (payNotifyRepHandler.IsTenpaySign())
             {
-                return xml;
+                if (_service.AlertComeOutRecord(out_trade_no, 1))
+                {
+                    return xml;
+                }
+                else
+                {
+                    //如果订单修改失败，需要微信再次发送请求
+                    xml = string.Format(@"<xml><return_code><![CDATA[FAIL]]></return_code><return_msg><![CDATA[]]></return_msg></xml>");
+                    return xml;
+                }
             }
             else
             {
-                //如果订单修改失败，需要微信再次发送请求
                 xml = string.Format(@"<xml><return_code><![CDATA[FAIL]]></return_code><return_msg><![CDATA[]]></return_msg></xml>");
                 return xml;
             }
@@ -144,7 +175,7 @@ namespace Qiuxun.C8.Api.Controllers
                 model.OutTradeNo = zFBResDto.OrderId;
                 model.TimeoutExpress = "5m";
                 request.SetBizModel(model);
-                request.SetNotifyUrl("http://" + HttpContext.Current.Request.Url.Host + ":" + HttpContext.Current.Request.Url.Port+ "/api/Recharge/AsyncPay");
+                request.SetNotifyUrl("http://" + HttpContext.Current.Request.Url.Host + ":" + HttpContext.Current.Request.Url.Port + "/api/Recharge/AsyncPay");
                 //这里和普通的接口调用不同，使用的是sdkExecute
                 AlipayTradeAppPayResponse response = client.SdkExecute(request);
                 //页面输出的response.Body就是orderString 可以直接给客户端请求，无需再做处理。
