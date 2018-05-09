@@ -23,8 +23,9 @@ namespace Qiuxun.C8.Api.Service.Data
         /// <param name="location">栏目Id</param>
         /// <param name="adtype">广告类型 1=栏目 2=文章 3=六彩栏目</param>
         /// <param name="deviceType">设备类型 1=网页等其他 2=ios 3=安卓</param>
+        /// <param name="city">所在城市</param>
         /// <returns></returns>
-        public ApiResult<List<AdvertisementResDto>> GetAdvertList(int location, int adtype, int deviceType)
+        public ApiResult<List<AdvertisementResDto>> GetAdvertList(int location, int adtype, int deviceType, string city, string reqIp)
         {
             string memKey = string.Format("advertisement_{0}_{1}_{2}", location, adtype, deviceType);
 
@@ -57,7 +58,7 @@ namespace Qiuxun.C8.Api.Service.Data
 
             if (list != null)
             {
-                string cityId = Tool.GetCityId();
+                string cityId = Tool.GetCityIdByCityandIp(city, reqIp);
                 var resDto = list.Select(x => new AdvertisementResDto()
                 {
                     Title = x.Title,
