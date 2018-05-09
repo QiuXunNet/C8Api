@@ -91,7 +91,7 @@ namespace Qiuxun.C8.Api.Service.Data
             {
                 return 108227128545247242;
             }
-            if ((clientType == DevicePlatform.Ios) && (fullVersion < 216876491030396828))
+            if ((clientType == DevicePlatform.Ios) && (fullVersion >= 216876491030396828))
             {
                 return 216876491030396828;
             }
