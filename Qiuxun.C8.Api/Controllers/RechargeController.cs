@@ -78,11 +78,12 @@ namespace Qiuxun.C8.Api.Controllers
 
                 model.AppId = appid;
                 model.MchId = mchid;
-                // model.Package = resultWx.
+                model.Package = "Sign=WXPay";
                 model.PrepayId = resultWx.prepay_id;
-                model.Sign = resultWx.sign;
-                model.TradeType = resultWx.trade_type;
-
+                model.CreatedOn = GetTimeStamp();
+                model.NonceStr = resultWx.nonce_str;
+                model.Sign = GetAppPaySign(appid, model.CreatedOn, model.NonceStr, model.Package, key, mchid, model.PrepayId);
+                model.TradeType = resultWx.trade_type; 
                 result.Data = model;
                 return result;
             }
@@ -91,6 +92,34 @@ namespace Qiuxun.C8.Api.Controllers
                 return new ApiResult(10000, "生成订单失败");
             }
         }
+
+        private string GetAppPaySign(string appId
+          , string timeStamp, string nonceStr, string package,
+          string key, string partnerid, string prepayid, string signType = "MD5"
+          )
+        {
+            RequestHandler paySignReqHandler = new RequestHandler(null);
+            paySignReqHandler.SetParameter("appid", appId.Trim());
+            paySignReqHandler.SetParameter("timestamp", timeStamp.Trim());
+            paySignReqHandler.SetParameter("noncestr", nonceStr.Trim());
+            paySignReqHandler.SetParameter("partnerid", partnerid);
+            paySignReqHandler.SetParameter("prepayid", prepayid);
+            paySignReqHandler.SetParameter("package", package.Trim());
+            //paySignReqHandler.SetParameter("signtype", "MD5");
+            var paySign = paySignReqHandler.CreateMd5Sign("key", key);
+            return paySign;
+        }
+
+        /// <summary> 
+        /// 获取时间戳 
+        /// </summary> 
+        /// <returns></returns> 
+        private string GetTimeStamp()
+        {
+            TimeSpan ts = DateTime.Now - new DateTime(1970, 1, 1, 0, 0, 0, 0);
+            return Convert.ToInt64(ts.TotalSeconds).ToString();
+        }
+
 
         [AllowAnonymous]
         public string WxNotify()
