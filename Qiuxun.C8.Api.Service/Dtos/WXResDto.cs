@@ -49,6 +49,16 @@ namespace Qiuxun.C8.Api.Service.Dtos
         public string Package { get; set; }
 
         /// <summary>
+        /// 创建时间
+        /// </summary>
+        public string CreatedOn { get; set; }
+
+        /// <summary>
+        /// 随机串
+        /// </summary>
+        public string NonceStr { get; set; }
+
+        /// <summary>
         /// 签名
         /// </summary>
         public string Sign { get; set; }
