@@ -18,14 +18,16 @@ namespace Qiuxun.C8.Api.Controllers
     public class AdvertController : QiuxunApiController
     {
         AdvertisementService advertService = new AdvertisementService();
+
         /// <summary>
         /// 获取广告列表
         /// </summary>
         /// <param name="location">栏目Id (type=3时传-1)</param>
         /// <param name="type">广告类型 1=栏目 2=文章 3=六彩</param>
+        /// <param name="city">请求城市</param>
         /// <returns></returns>
         [HttpGet, AllowAnonymous]
-        public ApiResult<List<AdvertisementResDto>> GetAdvertisementList(int location, int type)
+        public ApiResult<List<AdvertisementResDto>> GetAdvertisementList(int location, int type, string city)
         {
 
             #region 校验请求参数
@@ -52,7 +54,7 @@ namespace Qiuxun.C8.Api.Controllers
                 deviceType = 1;
             }
 
-            return advertService.GetAdvertList(location, type, deviceType);
+            return advertService.GetAdvertList(location, type, deviceType, city, RequestInfo.ClientIP);
         }
     }
 }

@@ -65,8 +65,37 @@ namespace Qiuxun.C8.Api.Public
         /// <returns></returns>
         public static string GetCityId()
         {
-            string city = GetByIPCity();
+            string city = GetCityByIp();
+
+            return GetCityId(city);
+        }
+
+        public static string GetCityIdByIp(string ip)
+        {
+            string city = GetCityByIp(ip);
+
+            return GetCityId(city);
+        }
+
+        public static string GetCityIdByCityandIp(string city, string ip)
+        {
+            if (!string.IsNullOrWhiteSpace(city))
+            {
+                return GetCityId(city);
+            }
+
+            return GetCityByIp(ip);
+        }
+
+        public static string GetCityId(string city)
+        {
             string i = "0";
+
+            if (string.IsNullOrWhiteSpace(city))
+            {
+                return i;
+            }
+
 
             if (city.Contains("深圳"))
             {
@@ -97,12 +126,16 @@ namespace Qiuxun.C8.Api.Public
         /// 获取访客ip城市
         /// </summary>
         /// <returns></returns>
-        public static string GetByIPCity()
+        public static string GetCityByIp()
+        {
+            string ip = GetIP();
+            return GetCityByIp(ip);
+        }
+
+        public static string GetCityByIp(string ip)
         {
             try
             {
-
-                string ip = GetIP();
                 string json = HttpCommon.HttpGet("http://ip.taobao.com/service/getIpInfo.php?ip=" + ip + "");
                 JObject jo = (JObject)JsonConvert.DeserializeObject(json);
                 string data = jo["data"].ToString();
@@ -116,8 +149,6 @@ namespace Qiuxun.C8.Api.Public
                 return string.Empty;
             }
         }
-
-
 
 
         /// <summary>
