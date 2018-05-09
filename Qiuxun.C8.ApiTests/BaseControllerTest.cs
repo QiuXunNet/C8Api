@@ -31,9 +31,9 @@ namespace Qiuxun.C8.ApiTests
             controller.Request.AddProperty(new RequestInfo()
             {
                 InterfaceVersion = "1.0",
-                ClientVersion = "1.0",
-                ClientType = DevicePlatform.Android,
-                ClientSourceId = 1
+                ClientVersion = "1.0.0",
+                ClientType = DevicePlatform.Ios,
+                ClientSourceId = 2
             });
         }
     }
