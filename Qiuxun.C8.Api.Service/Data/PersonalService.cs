@@ -229,7 +229,7 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
         /// </summary>
         public ApiResult<List<FansResDto>> GetFansBangList(string type, int pageIndex, int pageSize)
         {
-            string strsql = string.Format(@"select  * from ( select top 100 row_number() over(order by count(1) desc  ) as Rank, count(1)as Number,Followed_UserId,Name as NickName,isnull(RPath,'/images/default_avater.png') as Avater
+            string strsql = string.Format(@"select  * from ( select top 100 row_number() over(order by count(1) desc  ) as Rank, count(1)as Number,Followed_UserId as FollowedUserId,Name as NickName,isnull(RPath,'/images/default_avater.png') as Avater
                                              from Follow f 
                                              left join UserInfo u on f.Followed_UserId=u.id
                                              left join ResourceMapping r on (r.FkId=f.Followed_UserId and r.Type=@ResourceType)
@@ -622,8 +622,7 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
                 {
                     list.ForEach(x =>
                     {
-
-                        x.LotteryIcon = "/images/" + Util.GetLotteryIcon(x.lType) + ".png";
+                        x.LotteryIcon = Util.GetLotteryIconUrl(x.lType);
                     });
                 }
                 else if (type == 3)
@@ -766,7 +765,7 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
             #region 分页查询动态消息
             string sql = @"SELECT * FROM (
                                 select row_number() over(order by m.SubTime DESC ) as rowNumber,m.*,a.PId,a.Content,
-	                            a.[Type] as CommentType,a.ArticleId,
+	                            a.[Type] as CommentType,a.ArticleId,a.ArticleUserId,a.RefCommentId,
 	                            a.UserId as FromUserId,b.Name as FromNickName,c.RPath as FromAvater 
 	                            from UserInternalMessage m
 	                            left join Comment a on a.Id=m.RefId
@@ -799,7 +798,7 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
                     var comment = GetComment(x.PId);
                     x.MyContent = comment.Content;
                 }
-                var info = GetLotteryTypeName(x.Type, x.ArticleId);
+                var info = GetLotteryTypeName(x.Type, x.ArticleId, x.ArticleUserId, x.RefCommentId);
                 x.LotteryTypeName = info.TypeName ?? "";
                 x.RefNickName = info.NickName;
 
@@ -933,7 +932,7 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
                 }
 
 
-                var info = GetLotteryTypeName(x.Type, x.ArticleId);
+                var info = GetLotteryTypeName(x.Type, x.ArticleId, x.ArticleUserId, x.RefCommentId);
 
                 x.LotteryTypeName = info == null ? "" : info.TypeName;
             });
@@ -971,22 +970,44 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
         /// 查询彩种类型名称
         /// </summary>
         /// <param name="type">类型 1=计划 2=文章</param>
-        /// <param name="id">计划/文章 Id</param>
+        /// <param name="id">彩种Id（上级评论Id）/文章 Id</param>
+        /// <param name="articleUserId">发表计划用户Id type=1时</param>
+        /// <param name="refCommentId">相关一级评论Id</param>
         /// <returns></returns>
-        private DynamicRelatedInfoDto GetLotteryTypeName(int type, int id)
+        private DynamicRelatedInfoDto GetLotteryTypeName(int type, int id, int articleUserId, int refCommentId)
         {
             DynamicRelatedInfoDto info = null;
             if (type == 1)
             {
-                //查询计划所属彩种
-                string sql = @"select b.Name as NickName,a.Id,1 as RelatedType,a.lType from BettingRecord a
-                            left join UserInfo b on b.Id=a.UserId
-                            where a.Id=" + id;
-                var list = Util.ReaderToList<DynamicRelatedInfoDto>(sql);
-                if (list.Any())
-                    info = list.First();
+                info = new DynamicRelatedInfoDto();
+                UserInfoService userService = new UserInfoService();
+                if (refCommentId <= 0)
+                {
+                    //id为彩种Id
+                    info.LType = id;
+                    info.TypeName = Util.GetLotteryTypeName(id);
 
-                info.TypeName = Util.GetLotteryTypeName(info.LType);
+                    var user = userService.GetUserInfo(articleUserId);
+                    if (user != null)
+                    {
+                        info.NickName = user.NickName;
+                    }
+                }
+                else
+                {
+                    var comment = Util.GetEntityById<Comment>(refCommentId);
+                    if (comment != null)
+                    {
+                        info.LType = comment.ArticleUserId;
+                        info.TypeName = Util.GetLotteryTypeName(comment.ArticleUserId);
+
+                        var user = userService.GetUserInfo(articleUserId);
+                        if (user != null)
+                        {
+                            info.NickName = user.NickName;
+                        }
+                    }
+                }
 
             }
             else
@@ -1030,12 +1051,12 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
             if (ltype > 0) ltypeWhere = " AND lType=" + ltype;
 
             string sql = string.Format(@"SELECT * FROM ( 
-	                            SELECT row_number() over(order by WinState,Issue DESC,lType ) as rowNumber,* FROM (
-		                            SELECT distinct lType,Issue, (case WinState when 1 then 1 else 2 end) as WinState FROM [dbo].[BettingRecord]
-		                            WHERE UserId=@UserId{0}{1}
-		                            ) t
-	                            ) tt
-                            WHERE rowNumber BETWEEN @Start AND @End", ltypeWhere, winStateWhere);
+	SELECT row_number() over(order by WinState,SubTime DESC,lType) as rowNumber,* FROM (
+		SELECT distinct lType,Issue, (case WinState when 1 then 1 else 2 end) as WinState,SubTime FROM [dbo].[BettingRecord] a
+		WHERE SubTime=(select max(SubTime) from [BettingRecord] b where a.lType=b.lType and a.Issue=b.Issue  and a.UserId=b.UserId) and UserId=@UserId{0}{1}
+		) t
+	) tt
+WHERE rowNumber BETWEEN @Start AND @End", ltypeWhere, winStateWhere);
 
             if (uid == 0)
                 uid = userId;
@@ -1122,13 +1143,14 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
         }
 
         /// <summary>
-        /// 获取已邀请的人数和总奖励金币数
+        /// 获取邀请注册信息（已邀请人数、奖励金币、奖励查看券）
         /// </summary>
         public ApiResult<InvitationRegResDto> GetInvitationReg(long userId)
         {
-            string strsql = @" select Number,Coin from
+            string strsql = @" select Number,Coin,Voucher from
                               (select count(1) as Number from UserInfo where Pid = @Pid) t1,
-                              (select sum([Money])as Coin from ComeOutRecord  where [UserId]=@UserId and [Type]=7) t2";
+                              (select sum([Money]) as Coin from ComeOutRecord  where [UserId]=@UserId and [Type]=7) t2,
+							  (select count(1) as Voucher from UserCoupon  where [UserId]=@UserId and FromType=2) t3";
 
             SqlParameter[] sp = new SqlParameter[] {
                 new SqlParameter("@Pid",userId),
@@ -1250,6 +1272,30 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
             result = Convert.ToInt32(SqlHelper.ExecuteScalar(strsql, sp));
 
             return result;
+        }
+
+        /// <summary>
+        /// 邀请注册
+        /// </summary>
+        /// <param name="uid">用户Id</param>
+        /// <returns></returns>
+        public ApiResult<ShareDto> InvitationReg(long uid)
+        {
+
+            string webHost = BaseService.WebHost;
+            var share = new ShareDto()
+            {
+                Title = "邀请注册",
+                Describe = "万彩吧，助你壕梦成真！！新用户注册有惊喜",
+                Link = string.Format("{0}/Home/Register/{1}", webHost, uid),
+                Icon = string.Format("{0}/images/c8.png", webHost)
+            };
+
+            return new ApiResult<ShareDto>()
+            {
+                Data = share
+            };
+
         }
     }
 }

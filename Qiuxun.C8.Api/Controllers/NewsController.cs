@@ -195,7 +195,7 @@ namespace Qiuxun.C8.Api.Controllers
         [HttpGet, AllowAnonymous]
         public ApiResult<List<NewsListResDto>> GetHotNewsList(int count = 5)
         {
-            return newsService.GetRecommendNewsList(count);
+            return newsService.GetHotNewsList(count);
         }
 
         /// <summary>

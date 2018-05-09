@@ -32,7 +32,7 @@ namespace Qiuxun.C8.Api.Service.Data
             if (list == null)
             {
                 string strsql;
-                if (location == 3)
+                if (adtype == 3)
                 {
                     //六彩栏目列表
                     strsql = string.Format(@"select * from [dbo].[Advertisement] where charindex(',{1},',','+[where]+',')>0 and 
@@ -56,6 +56,7 @@ namespace Qiuxun.C8.Api.Service.Data
 
             if (list != null)
             {
+                string cityId = Tool.GetCityId();
                 var resDto = list.Select(x => new AdvertisementResDto()
                 {
                     Title = x.Title,
@@ -64,7 +65,9 @@ namespace Qiuxun.C8.Api.Service.Data
                     Layer = x.Layer,
                     ThumbStyle = x.ThumbStyle,
                     TransferUrl = x.TransferUrl,
-                    ThumbList = GetAdvertisementPictures(x.ThumbStyle, x.Id)
+                    ThumbList = GetAdvertisementPictures(x.ThumbStyle, x.Id),
+                    SubTime = x.SubTime,
+                    Display = IsShow(cityId, x.RestrictedAreas)
                 }).ToList();
 
 
@@ -92,6 +95,20 @@ namespace Qiuxun.C8.Api.Service.Data
             ResourceManagementService resourceService = new ResourceManagementService();
 
             return resourceService.GetResources(resourceType, id).Select(y => y.RPath).ToList();
+        }
+
+        /// <summary>
+        /// 是否显示广告
+        /// </summary>
+        /// <param name="cityId">当前访问者城市Id</param>
+        /// <param name="restrictedAreas">广告受限制城市Id集合</param>
+        /// <returns></returns>
+        private bool IsShow(string cityId, string restrictedAreas)
+        {
+            if (string.IsNullOrWhiteSpace(restrictedAreas)) return true;
+            var list = restrictedAreas.Split(new char[] { ',', '，' }, StringSplitOptions.RemoveEmptyEntries);
+            //城市Id不包含在受限制城市Id集合，则显示
+            return !list.Contains(cityId);
         }
     }
 }

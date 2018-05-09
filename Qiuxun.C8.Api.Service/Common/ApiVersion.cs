@@ -22,7 +22,7 @@ namespace Qiuxun.C8.Api.Service.Common
         private const uint _minorMax = 0xff;
         private const uint _patchMax = 0x7fff;
         private uint[] _sections;
-        public static readonly ApiVersion Empty = new ApiVersion(0L);
+        public static readonly ApiVersion Empty = new ApiVersion(0);
 
         public ApiVersion() : this((long)0L)
         {

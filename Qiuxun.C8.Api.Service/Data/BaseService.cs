@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,6 +17,8 @@ namespace Qiuxun.C8.Api.Service.Data
     /// </summary>
     public class BaseService
     {
+        public static string WebHost = ConfigurationManager.AppSettings["webHost"];
+        public static string ApiHost = ConfigurationManager.AppSettings["apiHost"];
         /// <summary>
         /// 获取贴子点阅扣费配置表
         /// </summary>

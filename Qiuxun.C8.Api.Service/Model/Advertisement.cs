@@ -67,5 +67,9 @@ namespace Qiuxun.C8.Api.Service.Model
         /// 评论数量
         /// </summary>
         public int CommentsNumber { get; set; }
+        /// <summary>
+        /// 屏蔽区域
+        /// </summary>
+        public string RestrictedAreas { get; set; }
     }
 }

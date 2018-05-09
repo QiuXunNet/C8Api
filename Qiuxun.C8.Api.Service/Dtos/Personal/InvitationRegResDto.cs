@@ -10,5 +10,9 @@ namespace Qiuxun.C8.Api.Service.Dtos.Personal
     {
         public int Number { get; set; }//人数
         public int Coin { get; set; }//金币
+        /// <summary>
+        /// 查看券数量
+        /// </summary>
+        public int Voucher { get; set; }
     }
 }

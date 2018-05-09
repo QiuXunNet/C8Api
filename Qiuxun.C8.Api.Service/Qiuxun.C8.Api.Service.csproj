@@ -202,6 +202,7 @@
     <Compile Include="Dtos\NewsResDto.cs" />
     <Compile Include="Dtos\NewsTypeResDto.cs" />
     <Compile Include="Dtos\RecommendGalleryResDto.cs" />
+    <Compile Include="Dtos\ShareDto.cs" />
     <Compile Include="Dtos\Talk\AddBlackReqDto.cs" />
     <Compile Include="Dtos\Talk\BlackListResDto.cs" />
     <Compile Include="Dtos\Talk\ChatRoomResDto.cs" />
@@ -240,6 +241,7 @@
     <Compile Include="Enum\CommissionTypeEnum.cs" />
     <Compile Include="Enum\DevicePlatform.cs" />
     <Compile Include="Enum\HashCryptoType.cs" />
+    <Compile Include="Enum\InstallSourceEnum.cs" />
     <Compile Include="Enum\LikeStatusEnum.cs" />
     <Compile Include="Enum\LocationType.cs" />
     <Compile Include="Enum\OAuthType.cs" />

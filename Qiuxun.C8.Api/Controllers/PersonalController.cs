@@ -164,7 +164,7 @@ namespace Qiuxun.C8.Api.Controllers
         }
 
         /// <summary>
-        /// 获取已邀请的人数和总奖励金币数
+        /// 获取邀请注册信息（已邀请人数、奖励金币、奖励查看券）
         /// </summary>
         /// <returns>InvitationRegResDto</returns>
         [HttpGet]
@@ -431,7 +431,19 @@ namespace Qiuxun.C8.Api.Controllers
 
             PersonalService service = new PersonalService();
             PagedListP<UserCoupon> resDto = service.GetMyUserCouponList(type, pageIndex, pageSize, userId);
-            return new ApiResult<PagedListP<UserCoupon>>() { Data = resDto };            
+            return new ApiResult<PagedListP<UserCoupon>>() { Data = resDto };
+        }
+
+        /// <summary>
+        /// 邀请注册
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ApiResult<ShareDto> InvitationReg()
+        {
+            long userId = UserInfo.UserId;
+
+            return new PersonalService().InvitationReg(userId);
         }
     }
 }
