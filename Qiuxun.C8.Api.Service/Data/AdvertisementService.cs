@@ -49,7 +49,8 @@ namespace Qiuxun.C8.Api.Service.Data
 
                 if (list != null)
                 {
-                    CacheHelper.WriteCache(memKey, list);
+                   // CacheHelper.WriteCache(memKey, list);
+                    CacheHelper.AddCache(memKey, list);
                 }
 
             }

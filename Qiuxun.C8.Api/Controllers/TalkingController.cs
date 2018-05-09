@@ -307,15 +307,15 @@ namespace Qiuxun.C8.Api.Controllers
         public ApiResult<string> GetSensitiveWordsList()
         {
             var str = "";
-            if (CacheHelper.GetCache("GetSensitiveWordsList") == null)
+            if (CacheHelper.GetCache<string>("GetSensitiveWordsList") == null)
             {                
                 str = _service.GetSensitiveWordsList();
 
-                CacheHelper.AddCache("GetSensitiveWordsList", str, DateTime.Now.AddHours(2));
+                CacheHelper.SetCache("GetSensitiveWordsList", str, DateTime.Now.AddHours(2));
             }
             else
             {
-                str = CacheHelper.GetCache("GetSensitiveWordsList").ToString();
+                str = CacheHelper.GetCache<string>("GetSensitiveWordsList").ToString();
             }
 
             var result = new ApiResult<string>();

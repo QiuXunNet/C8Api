@@ -331,7 +331,8 @@ namespace Qiuxun.C8.Api.Service.Data
             {
                 ExpertSearchModel e1 = list.Where(x => x.UserId == uid && x.lType == lType).FirstOrDefault();
                 list.Remove(e1);
-                CacheHelper.WriteCache(memberKey, list, 144000);
+                //CacheHelper.WriteCache(memberKey, list, 144000);
+                CacheHelper.AddCache(memberKey, list, 144000);
             }
             else
             {
@@ -394,7 +395,8 @@ namespace Qiuxun.C8.Api.Service.Data
                     list.Add(e);
                 }
 
-                CacheHelper.WriteCache(memberKey, list, 144000);
+               // CacheHelper.WriteCache(memberKey, list, 144000);
+                CacheHelper.AddCache(memberKey, list, 144000);
                 return new ApiResult();
             }
             else
@@ -777,7 +779,8 @@ namespace Qiuxun.C8.Api.Service.Data
                 list = Util.ReaderToList<CommissionSetting>(sql);
                 if (list != null)
                 {
-                    CacheHelper.WriteCache(memKey, list, 60);
+                   // CacheHelper.WriteCache(memKey, list, 60);
+                    CacheHelper.AddCache(memKey, list, 60);
                 }
             }
 
@@ -830,7 +833,8 @@ namespace Qiuxun.C8.Api.Service.Data
 
             if (list != null)
             {
-                CacheHelper.WriteCache(memKey, list);
+               // CacheHelper.WriteCache(memKey, list);
+                CacheHelper.AddCache(memKey, list);
                 return list;
             }
 
