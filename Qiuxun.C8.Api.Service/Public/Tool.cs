@@ -9,6 +9,8 @@ using System.Web;
 using Qiuxun.C8.Api.Public;
 using System.IO;
 using System.Drawing;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Qiuxun.C8.Api.Service.Common;
 
 namespace Qiuxun.C8.Api.Public
@@ -55,6 +57,67 @@ namespace Qiuxun.C8.Api.Public
 
             return userIP;
         }
+
+
+        /// <summary>
+        /// 获取广告位城市标识
+        /// </summary>
+        /// <returns></returns>
+        public static string GetCityId()
+        {
+            string city = GetByIPCity();
+            string i = "0";
+
+            if (city.Contains("深圳"))
+            {
+                i = "2";
+            }
+            else if (city.Contains("北京"))
+            {
+                i = "1";
+            }
+            else if (city.Contains("广州"))
+            {
+                i = "3";
+
+            }
+            else if (city.Contains("上海"))
+            {
+                i = "4";
+            }
+            else if (city.Contains("东莞"))
+            {
+                i = "5";
+            }
+            return i;
+        }
+
+
+        /// <summary>
+        /// 获取访客ip城市
+        /// </summary>
+        /// <returns></returns>
+        public static string GetByIPCity()
+        {
+            try
+            {
+
+                string ip = GetIP();
+                string json = HttpCommon.HttpGet("http://ip.taobao.com/service/getIpInfo.php?ip=" + ip + "");
+                JObject jo = (JObject)JsonConvert.DeserializeObject(json);
+                string data = jo["data"].ToString();
+                JObject jocity = (JObject)JsonConvert.DeserializeObject(data);
+                string city = jocity["city"].ToString();
+
+                return city;
+            }
+            catch (Exception)
+            {
+                return string.Empty;
+            }
+        }
+
+
 
 
         /// <summary>

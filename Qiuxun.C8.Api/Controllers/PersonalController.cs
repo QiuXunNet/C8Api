@@ -164,7 +164,7 @@ namespace Qiuxun.C8.Api.Controllers
         }
 
         /// <summary>
-        /// 获取已邀请的人数和总奖励金币数
+        /// 获取邀请注册信息（已邀请人数、奖励金币、奖励查看券）
         /// </summary>
         /// <returns>InvitationRegResDto</returns>
         [HttpGet]

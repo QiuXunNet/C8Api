@@ -1143,13 +1143,14 @@ WHERE rowNumber BETWEEN @Start AND @End", ltypeWhere, winStateWhere);
         }
 
         /// <summary>
-        /// 获取已邀请的人数和总奖励金币数
+        /// 获取邀请注册信息（已邀请人数、奖励金币、奖励查看券）
         /// </summary>
         public ApiResult<InvitationRegResDto> GetInvitationReg(long userId)
         {
-            string strsql = @" select Number,Coin from
+            string strsql = @" select Number,Coin,Voucher from
                               (select count(1) as Number from UserInfo where Pid = @Pid) t1,
-                              (select sum([Money])as Coin from ComeOutRecord  where [UserId]=@UserId and [Type]=7) t2";
+                              (select sum([Money]) as Coin from ComeOutRecord  where [UserId]=@UserId and [Type]=7) t2,
+							  (select count(1) as Voucher from UserCoupon  where [UserId]=@UserId and FromType=2) t3";
 
             SqlParameter[] sp = new SqlParameter[] {
                 new SqlParameter("@Pid",userId),

@@ -41,5 +41,9 @@ namespace Qiuxun.C8.Api.Service.Dtos
         /// 时间
         /// </summary>
         public DateTime SubTime { get; set; }
+        /// <summary>
+        /// 是否显示
+        /// </summary>
+        public bool Display { get; set; }
     }
 }
