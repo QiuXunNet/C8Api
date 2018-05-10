@@ -54,6 +54,18 @@
       <HintPath>..\packages\Newtonsoft.Json.10.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="ServiceStack.Common, Version=5.0.0.0, Culture=neutral, PublicKeyToken=02c12cbda47e6587, processorArchitecture=MSIL">
+      <HintPath>..\packages\ServiceStack.Common.5.1.0\lib\net45\ServiceStack.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Interfaces, Version=5.0.0.0, Culture=neutral, PublicKeyToken=02c12cbda47e6587, processorArchitecture=MSIL">
+      <HintPath>..\packages\ServiceStack.Interfaces.5.1.0\lib\net45\ServiceStack.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Redis, Version=5.0.0.0, Culture=neutral, PublicKeyToken=02c12cbda47e6587, processorArchitecture=MSIL">
+      <HintPath>..\packages\ServiceStack.Redis.5.1.0\lib\net45\ServiceStack.Redis.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Text, Version=5.0.0.0, Culture=neutral, PublicKeyToken=02c12cbda47e6587, processorArchitecture=MSIL">
+      <HintPath>..\packages\ServiceStack.Text.5.1.0\lib\net45\ServiceStack.Text.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -139,6 +151,17 @@
     <Compile Include="Auth\PermissionHelper.cs" />
     <Compile Include="Auth\QiuxunTokenAuthorizer.cs" />
     <Compile Include="Auth\TokenInfo.cs" />
+    <Compile Include="Cache\CacheHelper.cs" />
+    <Compile Include="Cache\CacheProvider.cs" />
+    <Compile Include="Cache\ICacheStrategy.cs" />
+    <Compile Include="Cache\LocalCacheStrategy.cs" />
+    <Compile Include="Cache\MemCachedStrategy.cs" />
+    <Compile Include="Cache\RedisStrategy.cs" />
+    <Compile Include="Cache\Redis\DoRedisList.cs" />
+    <Compile Include="Cache\Redis\DoRedisString.cs" />
+    <Compile Include="Cache\Redis\RedisBase.cs" />
+    <Compile Include="Cache\Redis\RedisConfig.cs" />
+    <Compile Include="Cache\Redis\RedisManager.cs" />
     <Compile Include="Caching\CacheHelper.cs" />
     <Compile Include="Caching\MemClientFactory.cs" />
     <Compile Include="Common\AESHelper.cs" />

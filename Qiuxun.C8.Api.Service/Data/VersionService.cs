@@ -67,7 +67,8 @@ namespace Qiuxun.C8.Api.Service.Data
                         }
                     }
 
-                    CacheHelper.WriteCache(clientSourceKey, resDto, 1440);
+                    //CacheHelper.WriteCache(clientSourceKey, resDto, 1440);
+                    CacheHelper.AddCache(clientSourceKey, resDto, 1440);
                 }
                 else
                 {

@@ -84,7 +84,8 @@ namespace Qiuxun.C8.Api.Service.Auth
 
             try
             {
-                CacheHelper.WriteCache("identity_" + _token, identity, 43200);
+                //CacheHelper.WriteCache("identity_" + _token, identity, 43200);
+                CacheHelper.AddCache("identity_" + _token, identity, 43200);
             }
             catch (Exception ex)
             {
@@ -152,7 +153,7 @@ namespace Qiuxun.C8.Api.Service.Auth
             {
                 this._identity.ExpireTime = expireTime;
 
-                CacheHelper.AddCache("identity_" + _token, _identity, expireTime);
+                CacheHelper.SetCache("identity_" + _token, _identity, expireTime);
                 this._container.SetToken(this._token, expireTime);
             }
             return this._identity;
@@ -179,6 +180,7 @@ namespace Qiuxun.C8.Api.Service.Auth
             identity.ExpireTime = info.ExpireTime;
             try
             {
+                //CacheHelper.SetCache("identity_" + _token, identity, identity.ExpireTime);
                 CacheHelper.SetCache("identity_" + _token, identity, identity.ExpireTime);
             }
             catch (Exception ex)
@@ -193,6 +195,7 @@ namespace Qiuxun.C8.Api.Service.Auth
             identity.ExpireTime = expireTime;
             try
             {
+                //CacheHelper.SetCache("identity_" + _token, identity, identity.ExpireTime);
                 CacheHelper.SetCache("identity_" + _token, identity, identity.ExpireTime);
             }
             catch (Exception ex)

@@ -38,7 +38,8 @@ namespace Qiuxun.C8.Api.Service.Data
             {
                 list = Util.GetEntityAll<LotteryType>().OrderBy(x => x.SortCode).ToList();
 
-                CacheHelper.WriteCache("base_lottery_type", list);
+                //CacheHelper.WriteCache("base_lottery_type", list);
+                CacheHelper.AddCache("base_lottery_type", list);
             }
             var resDto = list.Select(x => new LotteryTypeResDto()
             {
@@ -76,7 +77,8 @@ namespace Qiuxun.C8.Api.Service.Data
                 list = Util.ReaderToList<NewsType>(newsTypeSql) ?? new List<NewsType>();
 
 
-                CacheHelper.WriteCache(memKey, list);
+               // CacheHelper.WriteCache(memKey, list);
+                CacheHelper.AddCache(memKey, list);
             }
 
 
@@ -147,7 +149,8 @@ order by a.LotteryNumber desc";
 
             list = Util.ReaderToList<Gallery>(sql, parameters) ?? new List<Gallery>();
 
-            CacheHelper.WriteCache(memKey, list);
+            //CacheHelper.WriteCache(memKey, list);
+            CacheHelper.AddCache(memKey, list);
             return list;
         }
 

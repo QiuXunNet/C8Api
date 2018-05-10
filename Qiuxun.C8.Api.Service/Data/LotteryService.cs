@@ -84,7 +84,8 @@ namespace Qiuxun.C8.Api.Service.Data
                     });
                 });
 
-                CacheHelper.WriteCache(memKey, resDto);
+               // CacheHelper.WriteCache(memKey, resDto);
+                CacheHelper.AddCache(memKey, resDto);
             }
 
             return new ApiResult<List<PlayResDto>>()
