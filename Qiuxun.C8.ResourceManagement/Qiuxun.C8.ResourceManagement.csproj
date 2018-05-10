@@ -61,6 +61,7 @@
     <Compile Include="AliCDNHelper.cs" />
     <Compile Include="AliOssPictureProcess.cs" />
     <Compile Include="AliOssStorage.cs" />
+    <Compile Include="Common\UrlHelper.cs" />
     <Compile Include="Data\LogHelper.cs" />
     <Compile Include="Data\SqlHelper.cs" />
     <Compile Include="Enum\BusinessResourceType.cs" />
