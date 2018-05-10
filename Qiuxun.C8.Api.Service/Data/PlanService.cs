@@ -28,13 +28,13 @@ namespace Qiuxun.C8.Api.Service.Data
             pager.PageSize = totalSize;
             pager.PageIndex = pageIndex;
             string totalsql = "select COUNT(1) from ( select row_number() over(order by Id desc) as rownumber,* from [Plan] where lType = " + lType + ") as temp";
-            string sql =string.Format(@"select top {0} temp.* from ( 
+            string sql = string.Format(@"select top {0} temp.* from ( 
        select row_number() over(order by a.Id desc,a.Sort) as rownumber,a.*,b.Num as OpenNum,b.SubTime as OpenTime 
 	    from [Plan] a 
 	    left join LotteryRecord b on b.Issue=a.Issue and b.lType=a.lType
         where a.lType = {1}
     )as temp where rownumber>{2} 
-	order by temp.Issue desc,temp.Sort", totalSize,lType,  (pageIndex - 1) * totalSize);
+	order by temp.Issue desc,temp.Sort", totalSize, lType, (pageIndex - 1) * totalSize);
             pager.PageData = Util.ReaderToList<Plan>(sql);        //计划列表
             pager.TotalCount = ToolsHelper.ObjectToInt(SqlHelper.ExecuteScalar(totalsql));
             return pager;
@@ -58,6 +58,13 @@ namespace Qiuxun.C8.Api.Service.Data
             string isOpenSql = "select count(1) from dbo.LotteryRecord where lType=" + lType + " and Issue=@Issue";
             object obj = SqlHelper.ExecuteScalar(isOpenSql, new SqlParameter("@Issue", currentIssue));
             if (obj != null && Convert.ToInt32(obj) > 0)
+            {
+                return new ApiResult(400, "发帖失败，当期已封盘");
+            }
+
+            //获取当前最新期
+            string currentLastIssue = Util.GetCurrentIssue(lType);
+            if (string.IsNullOrEmpty(currentLastIssue) || currentIssue != currentLastIssue)
             {
                 return new ApiResult(400, "发帖失败，当期已封盘");
             }
@@ -147,7 +154,7 @@ namespace Qiuxun.C8.Api.Service.Data
         /// <summary>
         /// 获取该用户最新计划(同时会插入点阅记录，收费专家扣除用户金币数、获得佣金)
         /// </summary>
-        public ApiResult<BettingRecord> GetLastPlay(int lType, long uid, string playName, long userId,int paytype = 1)
+        public ApiResult<BettingRecord> GetLastPlay(int lType, long uid, string playName, long userId, int paytype = 1)
         {
             if (string.IsNullOrWhiteSpace(playName))
             {
@@ -178,7 +185,7 @@ namespace Qiuxun.C8.Api.Service.Data
             }
 
             //如果是使用金币查看,否则使用查看劵查看
-            if (paytype == 1) 
+            if (paytype == 1)
             {
                 //step2:查询用户是否点阅过该帖子。若未点阅过，则校验金币是否充足
                 string readRecordSql = @"select count(1) from ComeOutRecord 
@@ -264,10 +271,10 @@ namespace Qiuxun.C8.Api.Service.Data
 
                 }
             }
-            else if(paytype == 2)
+            else if (paytype == 2)
             {
                 int couponNum = GetUserCouponNum(userId);
-                if (couponNum>0)
+                if (couponNum > 0)
                 {
                     UpdateUserCoupon(lastBettingRecord.Id, userId);
                 }
@@ -276,7 +283,7 @@ namespace Qiuxun.C8.Api.Service.Data
                     return new ApiResult<BettingRecord>() { Code = 6004, Desc = "收费帖子，查看劵不足", Data = null };
                 }
             }
-           
+
             return new ApiResult<BettingRecord>() { Code = 100, Desc = "", Data = lastBettingRecord };
             #endregion
         }
@@ -399,16 +406,16 @@ namespace Qiuxun.C8.Api.Service.Data
             }
             else
             {
-                return new ApiResult(-999,"数据库错误");
+                return new ApiResult(-999, "数据库错误");
             }
 
         }
-    
+
 
         /// <summary>
         /// 获取专家热搜前N条数据
         /// </summary>
-        public ApiResult<List<ExpertSearchModel>> GetTopExpertSearch(int lType, int top,long userId)
+        public ApiResult<List<ExpertSearchModel>> GetTopExpertSearch(int lType, int top, long userId)
         {
             string strsql = string.Format(@"select top {0} UserId,lType,isnull(u.Name, '') as Name,isnull(r.RPath, '') as Avater,(select count(1)  from [dbo].[Follow] where UserId=@MyUserId and [Followed_UserId]=e.UserId and Status=1) isFollow 
                             from ExpertHotSearch e
@@ -581,7 +588,7 @@ namespace Qiuxun.C8.Api.Service.Data
                     l.Num = item.Num;
                     l.SubTime = Convert.ToDateTime(item.SubTime).ToString("yyyy-MM-dd");
                     l.lType = item.lType;
-                    
+
                     model.LotteryNum = l;
                     if (listbet.Count() > 0)
                         model.BettingRecord = listbet.Where(x => x.Issue == item.Issue).ToList();
@@ -797,7 +804,7 @@ namespace Qiuxun.C8.Api.Service.Data
         /// <summary>
         /// 获取用户点阅计划所需金币数
         /// </summary>
-        public ApiResult<dynamic> GetReadCoin(int lType, long uid,long userId)
+        public ApiResult<dynamic> GetReadCoin(int lType, long uid, long userId)
         {
             //step6.查询用户彩种积分，
             int totalIntegral = LuoUtil.GetUserIntegral(uid, lType);
@@ -812,7 +819,7 @@ namespace Qiuxun.C8.Api.Service.Data
             int userCouponNum = GetUserCouponNum(userId);
             int userCoin = new UserInfoService().GetUserInfo(userId).Coin;
 
-            return new ApiResult<dynamic>() { Code = 100, Desc = "", Data = new { ReadCoin=readCoin, UserCouponNum= userCouponNum, UserCoin= userCoin } };
+            return new ApiResult<dynamic>() { Code = 100, Desc = "", Data = new { ReadCoin = readCoin, UserCouponNum = userCouponNum, UserCoin = userCoin } };
         }
 
         /// <summary>
@@ -880,7 +887,7 @@ namespace Qiuxun.C8.Api.Service.Data
                 new SqlParameter("@Id",Id)
 
             };
-           
+
             return SqlHelper.ExecuteNonQuery(strsql, sp);
         }
     }
