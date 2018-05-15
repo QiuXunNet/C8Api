@@ -350,8 +350,8 @@ namespace Qiuxun.C8.Api.Service
             try
             {
                 //TODO:api请求日志持久化
-                //logService.AddRequestLog(log);
-                LogHelper.InfoFormat("API请求日志：\r\n{0}", entity.ToJsonString());
+                logService.AddRequestLog(log);
+                //LogHelper.InfoFormat("API请求日志：\r\n{0}", entity.ToJsonString());
             }
             catch (Exception exception)
             {
@@ -415,8 +415,8 @@ namespace Qiuxun.C8.Api.Service
             try
             {
                 //TODO:api请求日志持久化
-                //logService.AddRequestLog(log);
-                LogHelper.InfoFormat("API请求日志：\r\n{0}", entity.ToJsonString());
+                logService.AddRequestLog(log);
+                //LogHelper.InfoFormat("API请求日志：\r\n{0}", entity.ToJsonString());
             }
             catch (Exception exception)
             {
@@ -478,8 +478,8 @@ namespace Qiuxun.C8.Api.Service
             try
             {
                 //TODO:api请求日志持久化
-                //logService.AddRequestLog(log);
-                LogHelper.InfoFormat("API请求日志：\r\n{0}", entity.ToJsonString());
+                logService.AddRequestLog(log);
+                //LogHelper.InfoFormat("API请求日志：\r\n{0}", entity.ToJsonString());
             }
             catch (Exception exception)
             {
