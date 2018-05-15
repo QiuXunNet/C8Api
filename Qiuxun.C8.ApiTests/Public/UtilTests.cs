@@ -14,7 +14,7 @@ namespace Qiuxun.C8.Api.Public.Tests
         [TestMethod()]
         public void GetShowInfoTest()
         {
-            string showInfo = Util.GetShowInfo(5, "01,02,03,04,05,06,07");
+            string showInfo = Util.GetShowInfo(5, "01,02,03,04,05,06,07", new DateTime());
             Assert.IsNotNull(showInfo);
 
             Console.WriteLine(showInfo);
@@ -90,7 +90,7 @@ namespace Qiuxun.C8.Api.Public.Tests
             int divisorMilliseconds = 10 * 60 * 1000;
             int diffCount = totalMilliseconds / divisorMilliseconds;
             int remainderMilliseconds = totalMilliseconds % divisorMilliseconds;
-            int disableMilliseconds = divisorMilliseconds - remainderMilliseconds-30000;
+            int disableMilliseconds = divisorMilliseconds - remainderMilliseconds - 30000;
 
 
 
@@ -102,7 +102,7 @@ namespace Qiuxun.C8.Api.Public.Tests
 
             Console.WriteLine($"封盘倒计时：{hour}H,{minute}M,{seconds}S");
 
-            DateTime t3 = t1.AddMilliseconds((diffCount+1)*divisorMilliseconds);
+            DateTime t3 = t1.AddMilliseconds((diffCount + 1) * divisorMilliseconds);
 
             var diff2 = t3 - t2;
 

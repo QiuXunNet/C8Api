@@ -25221,7 +25221,7 @@ namespace Qiuxun.C8.Api.Public
         /// <param name="lType"></param>
         /// <param name="openNum"></param>
         /// <returns></returns>
-        public static string GetShowInfo(int lType, string openNum)
+        public static string GetShowInfo(int lType, string openNum,DateTime subTime)
         {
             string result = "";
 
@@ -25257,13 +25257,13 @@ namespace Qiuxun.C8.Api.Public
             }
             else if (lType == 5)
             {
-                result += Util.GetShengxiaoByDigit(int.Parse(arr[0]), SubTime) + "," +
-                          Util.GetShengxiaoByDigit(int.Parse(arr[1]), SubTime) + "," +
-                          Util.GetShengxiaoByDigit(int.Parse(arr[2]), SubTime) + "," +
-                          Util.GetShengxiaoByDigit(int.Parse(arr[3]), SubTime) + "," +
-                          Util.GetShengxiaoByDigit(int.Parse(arr[4]), SubTime) + "," +
-                          Util.GetShengxiaoByDigit(int.Parse(arr[5]), SubTime) + "," +
-                          Util.GetShengxiaoByDigit(int.Parse(arr[6]), SubTime);
+                result += Util.GetShengxiaoByDigit(int.Parse(arr[0]), subTime) + "," +
+                          Util.GetShengxiaoByDigit(int.Parse(arr[1]), subTime) + "," +
+                          Util.GetShengxiaoByDigit(int.Parse(arr[2]), subTime) + "," +
+                          Util.GetShengxiaoByDigit(int.Parse(arr[3]), subTime) + "," +
+                          Util.GetShengxiaoByDigit(int.Parse(arr[4]), subTime) + "," +
+                          Util.GetShengxiaoByDigit(int.Parse(arr[5]), subTime) + "," +
+                          Util.GetShengxiaoByDigit(int.Parse(arr[6]), subTime);
             }
             else if (lType == 63 || lType == 64)
             {

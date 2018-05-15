@@ -84,7 +84,7 @@ namespace Qiuxun.C8.Api.Service.Data
                     });
                 });
 
-               // CacheHelper.WriteCache(memKey, resDto);
+                // CacheHelper.WriteCache(memKey, resDto);
                 CacheHelper.AddCache(memKey, resDto);
             }
 
@@ -121,8 +121,8 @@ namespace Qiuxun.C8.Api.Service.Data
                     info.OpenNum = lastLotteryRecord.Num;
                     info.Issue = lastLotteryRecord.Issue;
                     info.OpenTime = lastLotteryRecord.ShowOpenTime;
-                    info.OpenNumAlias = Util.GetShowInfo(lastLotteryRecord.lType, lastLotteryRecord.Num);
-                    info.CurrentIssue = LuoUtil.GetCurrentIssue(x.lType); 
+                    info.OpenNumAlias = Util.GetShowInfo(lastLotteryRecord.lType, lastLotteryRecord.Num, lastLotteryRecord.SubTime);
+                    info.CurrentIssue = LuoUtil.GetCurrentIssue(x.lType);
                 }
                 info.Logo = Util.GetLotteryIconUrl(x.lType);
                 resDto.Add(info);
@@ -159,7 +159,7 @@ namespace Qiuxun.C8.Api.Service.Data
                 info.OpenNum = lastLotteryRecord.Num;
                 info.Issue = lastLotteryRecord.Issue;
                 info.OpenTime = lastLotteryRecord.ShowOpenTime;
-                info.OpenNumAlias = Util.GetShowInfo(lastLotteryRecord.lType, lastLotteryRecord.Num);
+                info.OpenNumAlias = Util.GetShowInfo(lastLotteryRecord.lType, lastLotteryRecord.Num, lastLotteryRecord.SubTime);
                 info.CurrentIssue = Util.GetCurrentIssue(lType);
             }
             info.Logo = Util.GetLotteryIconUrl(lotteryInfo.lType);

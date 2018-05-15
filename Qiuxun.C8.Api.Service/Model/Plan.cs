@@ -201,7 +201,7 @@ namespace Qiuxun.C8.Api.Service.Model
             {
                 if (string.IsNullOrWhiteSpace(OpenNum)) return OpenNum;
 
-                return Util.GetShowInfo(lType, OpenNum);
+                return Util.GetShowInfo(lType, OpenNum,OpenTime);
             }
         }
     }
