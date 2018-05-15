@@ -39,15 +39,15 @@ namespace Qiuxun.C8.Api.Model
                 string result = "";
                 int length = Issue.Length;
 
-                if (lType == 10 || lType == 63 || lType == 65)
+                if (lType == 10 || lType == 39 || lType == 54 || lType == 63 || lType == 65)
                 {
                     result = Issue;
                 }
-                else if ((lType >= 9 && lType <= 14) || (lType >= 38 && lType <= 62) || lType == 64 || lType < 9)
+                else if ((lType >= 9 && lType <= 14) || lType == 64 || lType < 9)
                 {
                     result = Issue.Substring(length - 3);
                 }
-                else if (lType >= 15 && lType <= 37)
+                else if (lType >= 15 && lType <= 62)
                 {
                     result = Issue.Substring(length - 2);
                 }
@@ -95,13 +95,13 @@ namespace Qiuxun.C8.Api.Model
                 }
                 else if (lType == 5)
                 {
-                    result += Util.GetShengxiaoByDigit(int.Parse(arr[0])) + "," +
-                              Util.GetShengxiaoByDigit(int.Parse(arr[1])) + "," +
-                              Util.GetShengxiaoByDigit(int.Parse(arr[2])) + "," +
-                              Util.GetShengxiaoByDigit(int.Parse(arr[3])) + "," +
-                              Util.GetShengxiaoByDigit(int.Parse(arr[4])) + "," +
-                              Util.GetShengxiaoByDigit(int.Parse(arr[5])) + "," +
-                              Util.GetShengxiaoByDigit(int.Parse(arr[6]));
+                    result += Util.GetShengxiaoByDigit(int.Parse(arr[0]),SubTime) + "," +
+                              Util.GetShengxiaoByDigit(int.Parse(arr[1]), SubTime) + "," +
+                              Util.GetShengxiaoByDigit(int.Parse(arr[2]), SubTime) + "," +
+                              Util.GetShengxiaoByDigit(int.Parse(arr[3]), SubTime) + "," +
+                              Util.GetShengxiaoByDigit(int.Parse(arr[4]), SubTime) + "," +
+                              Util.GetShengxiaoByDigit(int.Parse(arr[5]), SubTime) + "," +
+                              Util.GetShengxiaoByDigit(int.Parse(arr[6]), SubTime);
                 }
                 else if (lType == 63 || lType == 64)
                 {

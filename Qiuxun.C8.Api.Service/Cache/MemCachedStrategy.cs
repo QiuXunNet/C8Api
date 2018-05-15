@@ -200,6 +200,12 @@ namespace Qiuxun.C8.Api.Service.Cache
         {
             MemClient.FlushAll();
         }
+
+        public bool Exists(string cacheKey)
+        {
+            return MemClient.KeyExists(cacheKey);
+        }
+
         #endregion
     }
 }

@@ -118,6 +118,14 @@ namespace Qiuxun.C8.Api.Service.Cache
         {
             doRedisString.RemoveAll();
         }
+
+
         #endregion
+
+
+        public bool Exists(string cacheKey)
+        {
+           return doRedisString.KeyExists(cacheKey);
+        }
     }
 }

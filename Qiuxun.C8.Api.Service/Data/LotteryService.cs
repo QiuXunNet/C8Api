@@ -122,7 +122,7 @@ namespace Qiuxun.C8.Api.Service.Data
                     info.Issue = lastLotteryRecord.Issue;
                     info.OpenTime = lastLotteryRecord.ShowOpenTime;
                     info.OpenNumAlias = Util.GetShowInfo(lastLotteryRecord.lType, lastLotteryRecord.Num);
-                    info.CurrentIssue = Util.GetCurrentIssue(x.lType);
+                    info.CurrentIssue = LuoUtil.GetCurrentIssue(x.lType); 
                 }
                 info.Logo = Util.GetLotteryIconUrl(x.lType);
                 resDto.Add(info);
@@ -184,7 +184,7 @@ namespace Qiuxun.C8.Api.Service.Data
 
         public LotteryRecord GetLotteryRecord(int ltype)
         {
-            string sql = "select top(1)* from LotteryRecord where lType = " + ltype + " order by Id desc";
+            string sql = "select top(1)* from LotteryRecord where lType = " + ltype + " order by Issue desc";
             return Util.ReaderToModel<LotteryRecord>(sql);
         }
     }

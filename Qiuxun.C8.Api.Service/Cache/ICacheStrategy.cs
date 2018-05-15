@@ -72,5 +72,7 @@ namespace Qiuxun.C8.Api.Service.Cache
         /// 清空的有缓存数据
         /// </summary>
         void FlushAll();
+
+        bool Exists(string cacheKey);
     }
 }
