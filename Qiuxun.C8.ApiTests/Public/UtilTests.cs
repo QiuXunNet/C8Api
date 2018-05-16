@@ -23,7 +23,7 @@ namespace Qiuxun.C8.Api.Public.Tests
         [TestMethod()]
         public void GetCurrentIssueTest()
         {
-            var result = Util.GetCurrentIssue(65);
+            var result = Util.GetCurrentIssue(51);
             Assert.IsNotNull(result);
             Console.WriteLine(result);
         }
@@ -126,7 +126,7 @@ namespace Qiuxun.C8.Api.Public.Tests
         [TestMethod()]
         public void GetCurrentIssueTest1()
         {
-            var result = LuoUtil.GetCurrentIssue(65, DateTime.Parse("2018-05-15 18:30:00"));
+            var result = LuoUtil.GetCurrentIssue(51, DateTime.Now);
             Console.WriteLine(result);
         }
     }

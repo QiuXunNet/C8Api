@@ -66,6 +66,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="BaseControllerTest.cs" />
+    <Compile Include="Controllers\CommonControllerTests.cs" />
     <Compile Include="Controllers\NewsControllerTests.cs" />
     <Compile Include="Controllers\VersionControllerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -91,7 +92,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Content Include="XML\LotteryTime.xml">
+    <Content Include="App_Data\LotteryTime.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

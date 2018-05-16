@@ -38,7 +38,7 @@ namespace Qiuxun.C8.Api.Service.Dtos
                 string result = "";
                 int length = Issue.Length;
 
-                if (lType == 10 || lType == 63 || lType == 65)
+                if (lType == 10 || lType == 39 || lType == 54 || lType == 63 || lType == 65)
                 {
                     result = Issue;
                 }

@@ -125,15 +125,19 @@ namespace Qiuxun.C8.Api.Public
             else
             {
 
-                if (lType != 9 && lType != 51)
+                //if (lType != 9 && lType != 51)
+                //{
+                //    dateStr = lotteryTimeModel.BeginTimeDate.ToString("yyyyMMdd");
+                //}
+
+                if (lType == 9 || lType == 51)
+                {
+                    //获取当前阶段初始期号
+                    intervalCount += lotteryTimeModel.BeginIssue.ToInt32();
+                }
+                else
                 {
                     dateStr = lotteryTimeModel.BeginTimeDate.ToString("yyyyMMdd");
-                }
-
-                //获取当前阶段初始期号
-                if (lType == 9)
-                {
-                    intervalCount += lotteryTimeModel.BeginIssue.ToInt32();
                 }
                 //step3.获取该彩种的开奖间隔时长。并是否小于等于0, true则返回空
 

@@ -164,7 +164,7 @@ namespace Qiuxun.C8.Api.Controllers
         [HttpGet, AllowAnonymous]
         public ApiResult<List<LotteryTimeModel>> GetLotteryTimeSettings(int ltype)
         {
-            var list = LotteryTime.GetLotteryTimeList();
+            var list = LotteryTime.GetLotteryTimeModelList();
             return new ApiResult<List<LotteryTimeModel>>()
             {
                 Data = list

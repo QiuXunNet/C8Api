@@ -94,15 +94,18 @@ namespace Qiuxun.C8.Api.Service.Public
                 {
                     var model = list2.FirstOrDefault();
 
-                    if ((int)(nowTime - model.EndTimeDate).TotalSeconds < int.Parse(model.LotteryInterval))
+                    //用于最后一期倒计时完成后显示配置时长的“正在开奖”文字
+                    if (Math.Abs((int)(nowTime - model.EndTimeDate).TotalSeconds) < int.Parse(model.LotteryInterval))
                     {
                         return "正在开奖";
                     }
 
+                    //如果当前时间小于开奖开始时间，即当前时间和开始开奖时间为同一天
                     if (nowTime < model.BeginTimeDate)
                     {
                         nextLotteryTimeSeconds = (int)(model.BeginTimeDate - nowTime).TotalSeconds;
                     }
+                    // 如果当前时间大于开奖开始时间，即当前时间和开始开奖时间不为同一天
                     else
                     {
                         nextLotteryTimeSeconds = (int)(model.BeginTimeDate.AddDays(1) - nowTime).TotalSeconds;
@@ -112,21 +115,25 @@ namespace Qiuxun.C8.Api.Service.Public
                 }
                 else //如果存在多条记录，则取离当前时间最近的一条
                 {
+                    //查询开奖开始时间和当前时间在同一天的记录
                     var model = list2.Where(e => nowTime < e.BeginTimeDate).OrderBy(e => e.BeginTimeDate).FirstOrDefault();
 
+                    //如果查不到,则开始开奖时间则必定在后一天,查询到后给开奖时间加一天
                     if (model == null)
                     {
                         model = list2.Where(e => nowTime < e.BeginTimeDate.AddDays(1)).OrderBy(e => e.BeginTimeDate.AddDays(1)).FirstOrDefault();
                         model.BeginTimeDate = model.BeginTimeDate.AddDays(1);
                     }
 
-                    if ((int)(nowTime - model.EndTimeDate).TotalSeconds < int.Parse(model.LotteryInterval))
+                    //用于最后一期倒计时完成后显示配置时长的“正在开奖”文字
+                    if (Math.Abs((int)(nowTime - model.EndTimeDate).TotalSeconds) < int.Parse(model.LotteryInterval))
                     {
                         return "正在开奖";
                     }
 
                     nextLotteryTimeSeconds = (int)(model.BeginTimeDate - nowTime).TotalSeconds;
 
+                    //第一期开奖时间需要加上时间间隔时长
                     nextLotteryTimeSeconds += int.Parse(model.TimeInterval) * 60;
                 }
                 return (nextLotteryTimeSeconds / 3600).ToString("00") + "&" + (nextLotteryTimeSeconds % 3600 / 60).ToString("00") + "&" + (nextLotteryTimeSeconds % 60).ToString("00");
@@ -174,7 +181,6 @@ namespace Qiuxun.C8.Api.Service.Public
             return lotteryTimeModel;
         }
 
-
         public static LotteryTimeModel GetLotteryModel(string lType, DateTime currentTime)
         {
             var list = GetLotteryTimeModelList();
@@ -201,12 +207,12 @@ namespace Qiuxun.C8.Api.Service.Public
                 if (model.BeginTimeDate > model.EndTimeDate)
                 {
                     //如果当前时间小于23:59:59  说明还在跨天的前一天，则EndTime加一天
-                    if (nowTime <= Convert.ToDateTime(nowTimeStr + " 23:59:59"))
+                    if (nowTime >= Convert.ToDateTime(nowTimeStr + " " + model.EndTime))
                     {
                         model.EndTimeDate = model.EndTimeDate.AddDays(1);
                     }
                     //如果当前时间小于01:00:00  说明在跨天的后一天，则BeginTime减一天
-                    if (nowTime <= Convert.ToDateTime(nowTimeStr + " " + model.EndTime))
+                    if (nowTime < Convert.ToDateTime(nowTimeStr + " " + model.EndTime))
                     {
                         model.BeginTimeDate = model.BeginTimeDate.AddDays(-1);
                     }
@@ -219,6 +225,7 @@ namespace Qiuxun.C8.Api.Service.Public
         public static LotteryTimeModel GetModelUseIssue(string lType)
         {
             var nowTime = DateTime.Now;
+            var nowTimeStr = nowTime.ToString("yyyy-MM-dd");
 
             var list = GetLotteryTimeModelList().Where(e => e.LType == lType);
             if (!list.Any())
