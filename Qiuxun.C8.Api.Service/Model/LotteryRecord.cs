@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Qiuxun.C8.Api.Public;
+using Qiuxun.C8.Api.Service.Public;
 
 namespace Qiuxun.C8.Api.Model
 {
@@ -29,7 +30,9 @@ namespace Qiuxun.C8.Api.Model
 
         public string ShowOpenTime
         {
-            get { return Util.GetOpenRemainingTimeWithHour(this.lType); }
+
+            get { return LotteryTime.GetTime(lType.ToString()); }
+            //get { return Util.GetOpenRemainingTimeWithHour(this.lType); }
         }
 
         public string ShowIssue

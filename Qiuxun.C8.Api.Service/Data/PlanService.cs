@@ -299,7 +299,7 @@ namespace Qiuxun.C8.Api.Service.Data
         /// </summary>
         public ApiResult<List<BettingRecord>> AlreadyPostData(int lType, long userId)
         {
-            string sql = "select * from BettingRecord where UserId  =" + userId + " and lType=" + lType + " and Issue = '" + Util.GetCurrentIssue(lType) + "'";
+            string sql = "select * from BettingRecord where UserId  =" + userId + " and lType=" + lType + " and Issue = '" + LuoUtil.GetCurrentIssue(lType) + "'";
             List<BettingRecord> list = Util.ReaderToList<BettingRecord>(sql);
 
             return new ApiResult<List<BettingRecord>>() { Code = 100, Data = list };

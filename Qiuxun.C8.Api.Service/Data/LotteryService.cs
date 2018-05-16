@@ -160,7 +160,7 @@ namespace Qiuxun.C8.Api.Service.Data
                 info.Issue = lastLotteryRecord.Issue;
                 info.OpenTime = lastLotteryRecord.ShowOpenTime;
                 info.OpenNumAlias = Util.GetShowInfo(lastLotteryRecord.lType, lastLotteryRecord.Num, lastLotteryRecord.SubTime);
-                info.CurrentIssue = Util.GetCurrentIssue(lType);
+                info.CurrentIssue = LuoUtil.GetCurrentIssue(lType);
             }
             info.Logo = Util.GetLotteryIconUrl(lotteryInfo.lType);
 

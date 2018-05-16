@@ -7,6 +7,7 @@ using Qiuxun.C8.Api.Service.Public;
 
 namespace Qiuxun.C8.Api.Public
 {
+
     public class LuoUtil
     {
         /// <summary>
@@ -35,6 +36,7 @@ namespace Qiuxun.C8.Api.Public
 
             return GetCurrentIssue(lType, nowTime);
         }
+
 
 
         /// <summary>
@@ -250,42 +252,61 @@ namespace Qiuxun.C8.Api.Public
                 string sql = "select OpenLine from DateLine where lType = " + lType;
                 DateTime target = (DateTime)SqlHelper.ExecuteScalar(sql);
 
-                if (d > target) return "正在开奖";
+                var diffTimespan = target - d;
+                int diffSeconds = (int)diffTimespan.TotalSeconds;
+                if (0 <= diffSeconds && diffSeconds <= 30)
+                {
+                    return "已封盘";
+                }
 
                 return CompareTime(d, target);
 
             }
             #endregion
 
-
-            var lotterySetting = LotteryTime.GetModelUseIssue(lType.ToString());
-
-            //开奖前30秒封盘
-
-            //step1.当期开奖时间和当前时间差，获取相差总时长（毫秒）
-            TimeSpan diff = d - lotterySetting.BeginTimeDate;
-
-            int totalMilliseconds = (int)diff.TotalMilliseconds;
-
-            //step2.计算除数
-            int divisorMilliseconds = lotterySetting.TimeInterval.ToInt32() * 60 * 1000;
-
-            //step3.计算余数
-            int diffCount = totalMilliseconds / divisorMilliseconds;
-            int remainderMilliseconds = totalMilliseconds % divisorMilliseconds;
-
-            //step4.判断是否封盘的30秒
-            int disableMilliseconds = divisorMilliseconds - remainderMilliseconds;
-
-            if (0 <= disableMilliseconds && disableMilliseconds <= 30000)
+            //查询下一期开奖时间
+            string lotteryType = lType.ToString();
+            var lotterySetting = LotteryTime.GetLotteryModel(lotteryType, d);
+            if (lotterySetting == null)
             {
-                return "已封盘";
-            }
+                lotterySetting = LotteryTime.GetModelUseIssue(lotteryType);
 
-            //封盘开始时间
-            DateTime disableTime = lotterySetting.BeginTimeDate.AddMilliseconds((diffCount + 1) * divisorMilliseconds - 30000);
-            var disableDiff = disableTime - lotterySetting.BeginTimeDate;
-            return GetDiffTime(disableDiff);
+                if (lotterySetting == null) return string.Empty;
+
+                return GetDiffTime(lotterySetting.BeginTimeDate - d);
+            }
+            else
+            {
+
+                //开奖前30秒封盘
+
+
+                //step1.当期开奖时间和当前时间差，获取相差总时长（毫秒）
+                TimeSpan diff = d - lotterySetting.BeginTimeDate;
+
+                int totalMilliseconds = (int)diff.TotalMilliseconds;
+
+                //step2.计算除数
+                int divisorMilliseconds = lotterySetting.TimeInterval.ToInt32() * 60 * 1000;
+
+                //step3.计算余数
+                int diffCount = totalMilliseconds / divisorMilliseconds;
+                int remainderMilliseconds = totalMilliseconds % divisorMilliseconds;
+
+                //step4.判断是否封盘的30秒
+                int disableMilliseconds = divisorMilliseconds - remainderMilliseconds;
+
+                if (0 <= disableMilliseconds && disableMilliseconds <= 30000)
+                {
+                    return "已封盘";
+                }
+
+                //封盘开始时间
+                DateTime disableTime =
+                    lotterySetting.BeginTimeDate.AddMilliseconds((diffCount + 1) * divisorMilliseconds - 30000);
+                var disableDiff = disableTime - lotterySetting.BeginTimeDate;
+                return GetDiffTime(disableDiff);
+            }
         }
 
         /// <summary>
@@ -322,7 +343,7 @@ namespace Qiuxun.C8.Api.Public
         public static string ConvertTimeString(int milliseconds)
         {
 
-            int seconds = milliseconds / 60000;
+            int seconds = milliseconds % 60000;
             int minute = milliseconds / 3600000;
             int hour = milliseconds / (3600000 * 24);
 

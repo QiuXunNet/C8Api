@@ -174,6 +174,17 @@ namespace Qiuxun.C8.Api.Service.Public
             return lotteryTimeModel;
         }
 
+
+        public static LotteryTimeModel GetLotteryModel(string lType, DateTime currentTime)
+        {
+            var list = GetLotteryTimeModelList();
+
+            var lotteryTimeModel = list.FirstOrDefault(e => e.LType == lType &&
+            currentTime > e.BeginTimeDate && currentTime < e.EndTimeDate);
+
+            return lotteryTimeModel;
+        }
+
         public static List<LotteryTimeModel> GetLotteryTimeModelList()
         {
             var nowTime = DateTime.Now;
