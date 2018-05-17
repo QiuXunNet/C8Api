@@ -65,8 +65,14 @@ namespace Qiuxun.C8.Api.Service.Public
             {
                 #region 全国彩
 
-                string sql = "select OpenLine from DateLine where lType = " + lType;
-                DateTime target = (DateTime)SqlHelper.ExecuteScalar(sql);
+                DateTime target = CacheHelper.GetCache<DateTime>("LotteryTypeLotteryTimeCache" + lType);
+                if (target == null || target == default(DateTime))
+                {
+                    string sql = "select OpenLine from DateLine where lType = " + lType;
+                    target = (DateTime)SqlHelper.ExecuteScalar(sql);
+
+                    CacheHelper.SetCache<DateTime>("LotteryTypeLotteryTimeCache" + lType, target, target.AddMinutes(-5));
+                }
 
                 if (nowTime > target) return "正在开奖";
 
