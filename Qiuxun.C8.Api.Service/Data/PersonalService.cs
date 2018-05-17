@@ -1174,22 +1174,24 @@ WHERE rowNumber BETWEEN @Start AND @End", ltypeWhere, winStateWhere);
         /// <returns></returns>
         public List<MyFanResDto> GetMyFans(int pageSize, long userId, int lastId)
         {
-            string strsql = @"SELECT  a.* ,
-                                    ISNULL(b.Name, '') AS NickName ,
-                                    ISNULL(b.Autograph, '') AS Autograph ,
-                                    ISNULL(c.RPath, '') AS Avater ,
-                                    ( SELECT    COUNT(1)
-                                      FROM      Follow
-                                      WHERE     UserId = @Followed_UserId
-                                                AND Followed_UserId = a.UserId
-                                                AND Status = 1
-                                    ) AS Isfollowed
-                            FROM    Follow AS a
-                                    LEFT JOIN UserInfo b ON b.Id = a.UserId
-                                    LEFT JOIN ResourceMapping c ON c.FkId = a.UserId
-                                                                   AND c.Type = @Type
-                            WHERE   a.Followed_UserId = @Followed_UserId
-                                    AND a.Status = 1";
+            //当前登录用户Id，客户端自己获取
+            //UserId和FollowedUserId为同一个值，为了兼容安卓和IOS已发布的问题
+            string strsql = @"SELECT  a.Id,a.UserId,a.UserId as FollowedUserId,a.FollowTime,
+            ISNULL(b.Name, '') AS NickName ,
+            ISNULL(b.Autograph, '') AS Autograph ,
+            ISNULL(c.RPath, '') AS Avater ,
+            ( SELECT    COUNT(1)
+                FROM      Follow
+                WHERE     UserId = @Followed_UserId
+                        AND Followed_UserId = a.UserId
+                        AND Status = 1
+            ) AS [Status]
+    FROM    Follow AS a
+            LEFT JOIN UserInfo b ON b.Id = a.UserId
+            LEFT JOIN ResourceMapping c ON c.FkId = a.UserId
+                                            AND c.Type = @Type
+    WHERE   a.Followed_UserId = @Followed_UserId
+            AND a.Status = 1";
             if (lastId > 0)
             {
                 strsql += " AND a.Id < " + lastId;
@@ -1201,6 +1203,11 @@ WHERE rowNumber BETWEEN @Start AND @End", ltypeWhere, winStateWhere);
                 new SqlParameter("@Type",(int)ResourceTypeEnum.用户头像),
             };
             var list = Util.ReaderToList<MyFanResDto>(strsql, sp);
+
+            list.ForEach(x =>
+            {
+                x.Isfollowed = x.Status;
+            });
             return list;
         }
 

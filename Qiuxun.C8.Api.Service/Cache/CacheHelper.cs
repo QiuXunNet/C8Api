@@ -29,7 +29,7 @@ namespace Qiuxun.C8.Api.Service.Caching
 
         static CacheHelper()
         {
-            string provider = ConfigurationManager.AppSettings["CacheProvider"].ToLower(); 
+            string provider = ConfigurationManager.AppSettings["CacheProvider"].ToLower();
             timeOut = Convert.ToInt32((ConfigurationManager.AppSettings["CacheTimeOut"]));
 
             switch (provider)
@@ -62,7 +62,7 @@ namespace Qiuxun.C8.Api.Service.Caching
                 /// 如果配置为0也认为是永久不失效
                 cs.AddObject<T>(GetCacheKey(cacheKey), obj, timeOut);
             }
-        }       
+        }
 
         /// <summary>
         /// 添加缓存，带失效时间
@@ -157,9 +157,9 @@ namespace Qiuxun.C8.Api.Service.Caching
                 {
                     return default(T);
                 }
-                
+
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return default(T);
             }
@@ -196,6 +196,16 @@ namespace Qiuxun.C8.Api.Service.Caching
         private static string GetCacheKey(string cacheKey)
         {
             return prefix + cacheKey;
+        }
+
+        /// <summary>
+        /// 判断key是否存在
+        /// </summary>
+        /// <param name="cacheKey"></param>
+        /// <returns></returns>
+        public static bool Exists(string cacheKey)
+        {
+            return cs.Exists(cacheKey);
         }
     }
 }

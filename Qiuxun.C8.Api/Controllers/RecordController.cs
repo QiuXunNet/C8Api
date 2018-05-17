@@ -30,7 +30,7 @@ namespace Qiuxun.C8.Api.Controllers
         /// <returns></returns>
         [HttpGet]
         [AllowAnonymous]
-        public ApiResult<PagedList<LotteryRecordRseDto>> GetRecordList(int lType, string date = "", int pageIndex = 1,int pageSize=20)
+        public ApiResult<PagedList<LotteryRecordRseDto>> GetRecordList(int lType, string date = "", int pageIndex = 1, int pageSize = 20)
         {
             var totalCount = 0;
             var result = new ApiResult<PagedList<LotteryRecordRseDto>>();
@@ -40,14 +40,14 @@ namespace Qiuxun.C8.Api.Controllers
                 if (string.IsNullOrEmpty(date))
                 {
                     date = DateTime.Now.ToString("yyyy-MM-dd");
-                }                
+                }
 
                 var beginDate = date;
                 var endDate = date + " 23:59:59";
 
-                var list = _service.GetRecordList(ref totalCount,lType, pageIndex, pageSize, beginDate, endDate);
+                var list = _service.GetRecordList(ref totalCount, lType, pageIndex, pageSize, beginDate, endDate);
 
-                var pager = new PagedList<LotteryRecordRseDto>(list,pageIndex,pageSize,totalCount);
+                var pager = new PagedList<LotteryRecordRseDto>(list, pageIndex, pageSize, totalCount);
                 result.Data = pager;
             }
             else
@@ -56,9 +56,10 @@ namespace Qiuxun.C8.Api.Controllers
                 {
                     date = DateTime.Now.ToString("yyyy-01-01");
                 }
-               
+
                 var beginDate = date;
-                var list = _service.GetRecordList(ref totalCount,lType, pageIndex, pageSize, beginDate);
+                var endDate = Convert.ToDateTime(beginDate).AddYears(1).ToString("yyyy-01-01");
+                var list = _service.GetRecordList(ref totalCount, lType, pageIndex, pageSize, beginDate, endDate);
 
                 var pager = new PagedList<LotteryRecordRseDto>(list, pageIndex, pageSize, totalCount);
                 result.Data = pager;
@@ -78,7 +79,7 @@ namespace Qiuxun.C8.Api.Controllers
         {
             var list = Util.GetQueryDate(lType);
 
-            var result = new ApiResult<List<dynamic>>();           
+            var result = new ApiResult<List<dynamic>>();
             result.Data = list;
             return result;
         }

@@ -223,6 +223,11 @@ namespace Qiuxun.C8.Api.Service.Cache
             }
         }
 
+        public bool Exists(string cacheKey)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// 建立回调委托的一个实例
         /// </summary>

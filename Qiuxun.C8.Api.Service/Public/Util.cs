@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
+using Qiuxun.C8.Api.Service.Public;
 
 namespace Qiuxun.C8.Api.Public
 {
@@ -332,7 +333,7 @@ namespace Qiuxun.C8.Api.Public
         //2017-8-29
         public static string GetPK10Issue(int lType)            //期号依次递增的彩种
         {
-            string sql = "select top(1)Issue from LotteryRecord where lType = " + lType + " order by Id desc";
+            string sql = "select top(1)Issue from LotteryRecord where lType = " + lType + " order by Issue desc";
 
             long nextIssue = 0;
             int year = DateTime.Now.Year;
@@ -2122,7 +2123,7 @@ namespace Qiuxun.C8.Api.Public
 
                 #endregion
             }
-            else if (lType <= 8 || lType == 39 || lType == 54 || lType == 63 || lType == 65)      //期号依次递增的彩种
+            else if (lType <= 8 || lType == 10 || lType == 39 || lType == 54 || lType == 63 || lType == 65)      //期号依次递增的彩种
             {
                 return GetPK10Issue(lType);
             }
@@ -21760,7 +21761,7 @@ namespace Qiuxun.C8.Api.Public
 
         public static string HandIssueSpecial(int lType, DateTime d, string date, string issue, string result)
         {
-            if (lType == 15 && d > DateTime.Parse(date + " 23:53:0"))
+            if (lType == 51 && d > DateTime.Parse(date + " 23:53:0"))
             {
                 result = d.AddDays(1).ToString("MMdd") + issue;
             }
@@ -22051,7 +22052,7 @@ namespace Qiuxun.C8.Api.Public
             }
             else if (id == 11)
             {
-                lType = 18;
+                lType = 39;
             }
             else if (id == 12)
             {
@@ -22216,6 +22217,11 @@ namespace Qiuxun.C8.Api.Public
             }
 
             return result.TrimEnd(',');
+        }
+
+        public static string GetShengxiaoByDigit(int digit, DateTime time)
+        {
+            return ChineseZodiacHelper.GetChineseZodiac(time, digit);
         }
 
         //六合彩数字转生肖
@@ -25215,7 +25221,7 @@ namespace Qiuxun.C8.Api.Public
         /// <param name="lType"></param>
         /// <param name="openNum"></param>
         /// <returns></returns>
-        public static string GetShowInfo(int lType, string openNum)
+        public static string GetShowInfo(int lType, string openNum,DateTime subTime)
         {
             string result = "";
 
@@ -25251,13 +25257,13 @@ namespace Qiuxun.C8.Api.Public
             }
             else if (lType == 5)
             {
-                result += Util.GetShengxiaoByDigit(int.Parse(arr[0])) + "," +
-                          Util.GetShengxiaoByDigit(int.Parse(arr[1])) + "," +
-                          Util.GetShengxiaoByDigit(int.Parse(arr[2])) + "," +
-                          Util.GetShengxiaoByDigit(int.Parse(arr[3])) + "," +
-                          Util.GetShengxiaoByDigit(int.Parse(arr[4])) + "," +
-                          Util.GetShengxiaoByDigit(int.Parse(arr[5])) + "," +
-                          Util.GetShengxiaoByDigit(int.Parse(arr[6]));
+                result += Util.GetShengxiaoByDigit(int.Parse(arr[0]), subTime) + "," +
+                          Util.GetShengxiaoByDigit(int.Parse(arr[1]), subTime) + "," +
+                          Util.GetShengxiaoByDigit(int.Parse(arr[2]), subTime) + "," +
+                          Util.GetShengxiaoByDigit(int.Parse(arr[3]), subTime) + "," +
+                          Util.GetShengxiaoByDigit(int.Parse(arr[4]), subTime) + "," +
+                          Util.GetShengxiaoByDigit(int.Parse(arr[5]), subTime) + "," +
+                          Util.GetShengxiaoByDigit(int.Parse(arr[6]), subTime);
             }
             else if (lType == 63 || lType == 64)
             {

@@ -38,7 +38,7 @@ namespace Qiuxun.C8.Api.Service.Dtos
                 string result = "";
                 int length = Issue.Length;
 
-                if (lType == 10 || lType == 63 || lType == 65)
+                if (lType == 10 || lType == 39 || lType == 54 || lType == 63 || lType == 65)
                 {
                     result = Issue;
                 }
@@ -65,13 +65,13 @@ namespace Qiuxun.C8.Api.Service.Dtos
 
                 if (lType == 5)  //只保留六合彩的生肖转换
                 {
-                    result += Util.GetShengxiaoByDigit(int.Parse(arr[0])) + "," +
-                              Util.GetShengxiaoByDigit(int.Parse(arr[1])) + "," +
-                              Util.GetShengxiaoByDigit(int.Parse(arr[2])) + "," +
-                              Util.GetShengxiaoByDigit(int.Parse(arr[3])) + "," +
-                              Util.GetShengxiaoByDigit(int.Parse(arr[4])) + "," +
-                              Util.GetShengxiaoByDigit(int.Parse(arr[5])) + "," +
-                              Util.GetShengxiaoByDigit(int.Parse(arr[6]));
+                    result += Util.GetShengxiaoByDigit(int.Parse(arr[0]), SubTime) + "," +
+                              Util.GetShengxiaoByDigit(int.Parse(arr[1]), SubTime) + "," +
+                              Util.GetShengxiaoByDigit(int.Parse(arr[2]), SubTime) + "," +
+                              Util.GetShengxiaoByDigit(int.Parse(arr[3]), SubTime) + "," +
+                              Util.GetShengxiaoByDigit(int.Parse(arr[4]), SubTime) + "," +
+                              Util.GetShengxiaoByDigit(int.Parse(arr[5]), SubTime) + "," +
+                              Util.GetShengxiaoByDigit(int.Parse(arr[6]), SubTime);
                 }              
 
                 return result;

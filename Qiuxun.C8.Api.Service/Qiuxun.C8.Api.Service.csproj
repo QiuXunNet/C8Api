@@ -348,7 +348,9 @@
     <Compile Include="Model\UserTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Extension\DateTimeExtensions.cs" />
+    <Compile Include="Public\ChineseZodiacHelper.cs" />
     <Compile Include="Public\HttpCommon.cs" />
+    <Compile Include="Public\LotteryTime.cs" />
     <Compile Include="Public\LuoUtil.cs" />
     <Compile Include="Public\SmsSender.cs" />
     <Compile Include="Public\SqlHelper.cs" />

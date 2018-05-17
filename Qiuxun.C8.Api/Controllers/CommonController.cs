@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Web.Http;
 using Qiuxun.C8.Api.Model;
 using Qiuxun.C8.Api.Service.Api;
+using Qiuxun.C8.Api.Service.Caching;
 using Qiuxun.C8.Api.Service.Common;
 using Qiuxun.C8.Api.Service.Common.Paging;
 using Qiuxun.C8.Api.Service.Data;
@@ -134,6 +135,40 @@ namespace Qiuxun.C8.Api.Controllers
             int resType = reqDto.Type ?? 0;
 
             return resourceService.UploadFile(reqDto.File, resType, userId, this.Request);
+        }
+
+        /// <summary>
+        /// 清除缓存
+        /// </summary>
+        /// <param name="key">缓存Key</param>
+        /// <returns></returns>
+        [HttpGet, AllowAnonymous]
+        public ApiResult CleanCache(string key)
+        {
+            if (string.IsNullOrWhiteSpace(key))
+                return new ApiResult(40000, "key不能为空");
+
+            if (!CacheHelper.Exists(key))
+                return new ApiResult(404, "没有该key的缓存");
+
+            CacheHelper.DeleteCache(key);
+
+            return new ApiResult();
+        }
+
+        /// <summary>
+        /// 获取彩种时间配置
+        /// </summary>
+        /// <param name="ltype"></param>
+        /// <returns></returns>
+        [HttpGet, AllowAnonymous]
+        public ApiResult<List<LotteryTimeModel>> GetLotteryTimeSettings(int ltype)
+        {
+            var list = LotteryTime.GetLotteryTimeModelList();
+            return new ApiResult<List<LotteryTimeModel>>()
+            {
+                Data = list
+            };
         }
 
 

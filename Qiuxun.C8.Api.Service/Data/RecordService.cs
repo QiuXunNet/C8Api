@@ -14,30 +14,38 @@ namespace Qiuxun.C8.Api.Service.Data
     /// </summary>
     public class RecordService
     {
-        public List<LotteryRecordRseDto> GetRecordList(ref int totalCount, int lType,int pageIndex,int pageSize, string beginTime,string endTime ="")
+        public List<LotteryRecordRseDto> GetRecordList(ref int totalCount, int lType,int pageIndex,int pageSize, string beginTime,string endTime)
         {
             string sql = "";
             string sqlCount = "";
-            if (lType >= 9)
-            {
-                sql = @"select lType,Issue,Num,SubTime from (
+
+            sql = @"select lType,Issue,Num,SubTime from (
                         select row_number()over(order by Issue desc) as rownumber,lType,Issue,Num,SubTime  
                         from LotteryRecord 
                         where lType=@lType and SubTime > @BeginTime and SubTime < @EndTime 
                         ) tab where tab.rownumber between (@PageIndex - 1)*@PageSize and @PageIndex*@PageSize";
-                    
-                sqlCount = "select count(*) from LotteryRecord where lType=@lType and SubTime > @BeginTime and SubTime < @EndTime ";
-            }
-            else
-            {
-                sql = @"select lType,Issue,Num,SubTime from (
-                        select row_number()over(order by Issue desc) as rownumber,lType,Issue,Num,SubTime 
-                        from LotteryRecord 
-                        where lType=@lType and SubTime > @BeginTime
-                        ) tab where tab.rownumber between (@PageIndex - 1)*@PageSize and @PageIndex*@PageSize";
 
-                sqlCount = "select count(*) from LotteryRecord where lType=@lType and SubTime > @BeginTime ";
-            }
+            sqlCount = "select count(*) from LotteryRecord where lType=@lType and SubTime > @BeginTime and SubTime < @EndTime ";
+            //if (lType >= 9)
+            //{
+            //    sql = @"select lType,Issue,Num,SubTime from (
+            //            select row_number()over(order by Issue desc) as rownumber,lType,Issue,Num,SubTime  
+            //            from LotteryRecord 
+            //            where lType=@lType and SubTime > @BeginTime and SubTime < @EndTime 
+            //            ) tab where tab.rownumber between (@PageIndex - 1)*@PageSize and @PageIndex*@PageSize";
+                    
+            //    sqlCount = "select count(*) from LotteryRecord where lType=@lType and SubTime > @BeginTime and SubTime < @EndTime ";
+            //}
+            //else
+            //{
+            //    sql = @"select lType,Issue,Num,SubTime from (
+            //            select row_number()over(order by Issue desc) as rownumber,lType,Issue,Num,SubTime 
+            //            from LotteryRecord 
+            //            where lType=@lType and SubTime > @BeginTime
+            //            ) tab where tab.rownumber between (@PageIndex - 1)*@PageSize and @PageIndex*@PageSize";
+
+            //    sqlCount = "select count(*) from LotteryRecord where lType=@lType and SubTime > @BeginTime ";
+            //}
 
             var pms = new SqlParameter[] {
                 new SqlParameter("@lType",lType),

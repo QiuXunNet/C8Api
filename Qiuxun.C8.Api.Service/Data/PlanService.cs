@@ -11,6 +11,7 @@ using Qiuxun.C8.Caching;
 using Qiuxun.C8.Api.Service.Caching;
 using Qiuxun.C8.Api.Service.Enum;
 using Qiuxun.C8.Api.Service.Model;
+using Qiuxun.C8.Api.Service.Public;
 
 namespace Qiuxun.C8.Api.Service.Data
 {
@@ -48,8 +49,13 @@ namespace Qiuxun.C8.Api.Service.Data
 
             #region 校验
             //获取当前状态
-            string time = Util.GetOpenRemainingTime(lType);
+            string time = LotteryTime.GetTime(lType.ToString());
             if (time == "正在开奖")
+            {
+                return new ApiResult(400, "发帖失败，当期已封盘");
+            }
+
+            if (LuoUtil.GetRemainingTime(lType) == "已封盘")
             {
                 return new ApiResult(400, "发帖失败，当期已封盘");
             }
@@ -63,8 +69,8 @@ namespace Qiuxun.C8.Api.Service.Data
             }
 
             //获取当前最新期
-            string currentLastIssue = Util.GetCurrentIssue(lType);
-            if (string.IsNullOrEmpty(currentLastIssue) || currentIssue != currentLastIssue)
+            string currentLastIssue = LuoUtil.GetCurrentIssue(lType);
+            if (string.IsNullOrEmpty(currentLastIssue) && currentIssue != currentLastIssue)
             {
                 return new ApiResult(400, "发帖失败，当期已封盘");
             }
@@ -293,7 +299,7 @@ namespace Qiuxun.C8.Api.Service.Data
         /// </summary>
         public ApiResult<List<BettingRecord>> AlreadyPostData(int lType, long userId)
         {
-            string sql = "select * from BettingRecord where UserId  =" + userId + " and lType=" + lType + " and Issue = '" + Util.GetCurrentIssue(lType) + "'";
+            string sql = "select * from BettingRecord where UserId  =" + userId + " and lType=" + lType + " and Issue = '" + LuoUtil.GetCurrentIssue(lType) + "'";
             List<BettingRecord> list = Util.ReaderToList<BettingRecord>(sql);
 
             return new ApiResult<List<BettingRecord>>() { Code = 100, Data = list };

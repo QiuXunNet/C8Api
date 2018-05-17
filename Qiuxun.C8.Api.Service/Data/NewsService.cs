@@ -165,11 +165,12 @@ order by a.LotteryNumber desc";
         {
 
             string sql = @"SELECT * FROM ( 
-SELECT row_number() over(order by SortCode ASC, ReleaseTime DESC ) as rowNumber,
+SELECT row_number() over(order by SortCode ASC, LotteryNumber DESC, ReleaseTime DESC ) as rowNumber,
 [Id],[FullHead],[SortCode],[Thumb],TypeId,[ReleaseTime],[ThumbStyle],(SELECT COUNT(1) FROM [dbo].[Comment] WHERE [ArticleId]=a.Id and RefCommentId=0) as CommentCount
 FROM [dbo].[News] a
 WHERE [TypeId]=@TypeId and DeleteMark=0 and EnabledMark=1 ) T
-WHERE rowNumber BETWEEN @Start AND @End";
+WHERE rowNumber BETWEEN @Start AND @End
+ORDER BY rowNumber";
             SqlParameter[] parameters =
             {
                 new SqlParameter("@TypeId",SqlDbType.BigInt),
@@ -332,7 +333,7 @@ WHERE [Id]=@Id and DeleteMark=0 and EnabledMark=1 ";
             string preSql = @"SELECT TOP 1
 [Id],[FullHead] as Title
 FROM [dbo].[News] 
-WHERE [TypeId]=@TypeId AND [Id] > @CurrentId 
+WHERE [TypeId]=@TypeId AND DeleteMark=0 AND EnabledMark=1 AND [Id] > @CurrentId 
 ORDER BY SortCode,Id";
             SqlParameter[] preParameters =
             {
@@ -352,7 +353,7 @@ ORDER BY SortCode,Id";
             string nextsql = @"SELECT TOP 1
 [Id],[FullHead] as Title
 FROM [dbo].[News] 
-WHERE [TypeId]=@TypeId AND [Id] < @CurrentId 
+WHERE [TypeId]=@TypeId AND DeleteMark=0 AND EnabledMark=1 AND [Id] < @CurrentId 
 ORDER BY SortCode desc,Id DESC";
             SqlParameter[] nextparameters =
             {
