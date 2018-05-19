@@ -164,14 +164,14 @@ order by a.LotteryNumber desc";
         /// <returns></returns>
         public ApiResult<PagedListDto<NewsListResDto>> GetNewsList(int ltype, int pageIndex, int pageSize)
         {
-
             string sql = @"SELECT * FROM ( 
-SELECT row_number() over(order by SortCode ASC, LotteryNumber DESC, ReleaseTime DESC ) as rowNumber,
-[Id],[FullHead],[SortCode],[Thumb],TypeId,[ReleaseTime],[ThumbStyle],(SELECT COUNT(1) FROM [dbo].[Comment] WHERE [ArticleId]=a.Id and RefCommentId=0) as CommentCount
-FROM [dbo].[News] a
-WHERE [TypeId]=@TypeId and DeleteMark=0 and EnabledMark=1 ) T
-WHERE rowNumber BETWEEN @Start AND @End
-ORDER BY rowNumber";
+                            SELECT row_number() over(order by SortCode ASC, LotteryNumber DESC, ReleaseTime DESC ) as rowNumber,
+                            [Id],[FullHead],[SortCode],[Thumb],[ReleaseTime],[ThumbStyle],(SELECT COUNT(1) FROM [dbo].[Comment] WHERE [ArticleId]=a.Id and RefCommentId=0) as CommentCount
+                            ,STUFF((SELECT ',' + RPath FROM  dbo.ResourceMapping WHERE  Type=1 AND FkId=a.Id FOR XML PATH('')), 1, 1, '') AS ThumbListStr
+                            FROM [dbo].[News] a
+                            WHERE [TypeId]=@TypeId and DeleteMark=0 and EnabledMark=1 ) T
+                            WHERE rowNumber BETWEEN @Start AND @End 
+                            ORDER BY rowNumber";
             SqlParameter[] parameters =
             {
                 new SqlParameter("@TypeId",SqlDbType.BigInt),
@@ -183,7 +183,6 @@ ORDER BY rowNumber";
             parameters[2].Value = pageSize * pageIndex;
             var list = Util.ReaderToList<News>(sql, parameters) ?? new List<News>();
 
-            int sourceType = (int)ResourceTypeEnum.新闻缩略图;
             var pageData = list.Select(x => new NewsListResDto()
             {
                 Id = x.Id,
@@ -194,12 +193,9 @@ ORDER BY rowNumber";
                 ThumbStyle = x.ThumbStyle,
                 Title = x.FullHead,
                 TypeId = x.TypeId,
-                ThumbList = sourceService.GetResources(sourceType, x.Id)
-                    .Select(n => n.RPath).ToList()
-            }).ToList();
-
-
-
+                ThumbList = !(string.IsNullOrWhiteSpace(x.ThumbListStr)) ? x.ThumbListStr.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList() : new List<string>()
+        }).ToList();
+            
             //查询总数量
             string countSql = @"SELECT count(1) FROM [dbo].[News]
 WHERE [TypeId]=@TypeId and DeleteMark=0 and EnabledMark=1 ";

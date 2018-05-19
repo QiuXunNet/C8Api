@@ -135,6 +135,8 @@ namespace Qiuxun.C8.Api.Model.News
         public int ThumbStyle { get; set; }
 
         public List<string> ThumbList { get; set; }
+
+        public string ThumbListStr { get; set; }
         /// <summary>
         /// 完整期号
         /// </summary>
