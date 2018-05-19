@@ -21773,272 +21773,209 @@ namespace Qiuxun.C8.Api.Public
         public static string GetLotteryIcon(int lType)
         {
             string result = "";
+            switch (lType)
+            {
+                case 1:
+                    result = "logo1";
+                    break;
+                case 2:
+                    result = "logo2";
+                    break;
+                case 3:
+                    result = "logo3";
+                    break;
+                case 4:
+                    result = "logo4";
+                    break;
+                case 5:
+                    result = "logo5";
+                    break;
+                case 6:
+                    result = "logo6";
+                    break;
+                case 7:
+                    result = "logo7";
+                    break;
+                case 8:
+                    result = "logo8";
+                    break;
+                case 9:
+                    result = "logo57";
+                    break;
+                case 10:
+                    result = "logo58";
+                    break;
+                case 11:
+                    result = "logo59";
+                    break;
+                case 12:
+                    result = "logo60";
+                    break;
+                case 13:
+                    result = "logo61";
+                    break;
+                case 14:
+                    result = "logo62";
+                    break;
+                case 15:
+                    result = "logo9";
+                    break;
+                case 16:
+                    result = "logo10";
+                    break;
+                case 17:
+                    result = "logo11";
+                    break;
+                case 18:
+                    result = "logo12";
+                    break;
+                case 19:
+                    result = "logo13";
+                    break;
+                case 20:
+                    result = "logo14";
+                    break;
+                case 21:
+                    result = "logo15";
+                    break;
+                case 22:
+                    result = "logo16";
+                    break;
+                case 23:
+                    result = "logo17";
+                    break;
+                case 24:
+                    result = "logo18";
+                    break;
+                case 25:
+                    result = "logo19";
+                    break;
+                case 26:
+                    result = "logo20";
+                    break;
+                case 27:
+                    result = "logo21";
+                    break;
+                case 28:
+                    result = "logo22";
+                    break;
+                case 29:
+                    result = "logo23";
+                    break;
+                case 30:
+                    result = "logo24";
+                    break;
+                case 31:
+                    result = "logo25";
+                    break;
+                case 32:
+                    result = "logo26";
+                    break;
+                case 33:
+                    result = "logo27";
+                    break;
+                case 34:
+                    result = "logo28";
+                    break;
+                case 35:
+                    result = "logo29";
+                    break;
+                case 36:
+                    result = "logo30";
+                    break;
+                case 37:
+                    result = "logo31";
+                    break;
+                case 38:
+                    result = "logo32";
+                    break;
+                case 39:
+                    result = "logo33";
+                    break;
+                case 40:
+                    result = "logo34";
+                    break;
+                case 41:
+                    result = "logo35";
+                    break;
+                case 42:
+                    result = "logo36";
+                    break;
+                case 43:
+                    result = "logo37";
+                    break;
+                case 44:
+                    result = "logo38";
+                    break;
+                case 45:
+                    result = "logo39";
+                    break;
+                case 46:
+                    result = "logo40";
+                    break;
+                case 47:
+                    result = "logo41";
+                    break;
+                case 48:
+                    result = "logo42";
+                    break;
+                case 49:
+                    result = "logo43";
+                    break;
+                case 50:
+                    result = "logo44";
+                    break;
+                case 51:
 
-            if (lType == 1)
-            {
-                result = "logo1";
+                    result = "logo45";
+                    break;
+                case 52:
+                    result = "logo46";
+                    break;
+                case 53:
+                    result = "logo47";
+                    break;
+                case 54:
+                    result = "logo48";
+                    break;
+                case 55:
+                    result = "logo49";
+                    break;
+                case 56:
+                    result = "logo50";
+                    break;
+                case 57:
+                    result = "logo51";
+                    break;
+                case 58:
+                    result = "logo52";
+                    break;
+                case 59:
+                    result = "logo53";
+                    break;
+                case 60:
+                    result = "logo54";
+                    break;
+                case 61:
+                    result = "logo55";
+                    break;
+                case 62:
+                    result = "logo56";
+                    break;
+                case 63:
+                    result = "logo63";
+                    break;
+                case 64:
+                    result = "logo64";
+                    break;
+                case 65:
+                    result = "logo65";
+                    break;
+                default:
+                    result = "";
+                    break;
             }
-            else if (lType == 2)
-            {
-                result = "logo2";
-            }
-            else if (lType == 3)
-            {
-                result = "logo3";
-            }
-            else if (lType == 4)
-            {
-                result = "logo4";
-            }
-            else if (lType == 5)
-            {
-                result = "logo5";
-            }
-            else if (lType == 6)
-            {
-                result = "logo6";
-            }
-            else if (lType == 7)
-            {
-                result = "logo7";
-            }
-            else if (lType == 8)
-            {
-                result = "logo8";
-            }
-            else if (lType == 9)
-            {
-                result = "logo57";
-            }
-            else if (lType == 10)
-            {
-                result = "logo58";
-            }
-            else if (lType == 11)
-            {
-                result = "logo59";
-            }
-            else if (lType == 12)
-            {
-                result = "logo60";
-            }
-            else if (lType == 13)
-            {
-                result = "logo61";
-            }
-            else if (lType == 14)
-            {
-                result = "logo62";
-            }
-            else if (lType == 15)
-            {
-                result = "logo9";
-            }
-            else if (lType == 16)
-            {
-                result = "logo10";
-            }
-            else if (lType == 17)
-            {
-                result = "logo11";
-            }
-            else if (lType == 18)
-            {
-                result = "logo12";
-            }
-            else if (lType == 19)
-            {
-                result = "logo13";
-            }
-            else if (lType == 20)
-            {
-                result = "logo14";
-            }
-            else if (lType == 21)
-            {
-                result = "logo15";
-            }
-            else if (lType == 22)
-            {
-                result = "logo16";
-            }
-            else if (lType == 23)
-            {
-                result = "logo17";
-            }
-            else if (lType == 24)
-            {
-                result = "logo18";
-            }
-            else if (lType == 25)
-            {
-                result = "logo19";
-            }
-            else if (lType == 26)
-            {
-                result = "logo20";
-            }
-            else if (lType == 27)
-            {
-                result = "logo21";
-            }
-            else if (lType == 28)
-            {
-                result = "logo22";
-            }
-            else if (lType == 29)
-            {
-                result = "logo23";
-            }
-            else if (lType == 30)
-            {
-                result = "logo24";
-            }
-            else if (lType == 31)
-            {
-                result = "logo25";
-            }
-            else if (lType == 32)
-            {
-                result = "logo26";
-            }
-            else if (lType == 33)
-            {
-                result = "logo27";
-            }
-            else if (lType == 34)
-            {
-                result = "logo28";
-            }
-            else if (lType == 35)
-            {
-                result = "logo29";
-            }
-            else if (lType == 36)
-            {
-                result = "logo30";
-            }
-            else if (lType == 37)
-            {
-                result = "logo31";
-            }
-            else if (lType == 38)
-            {
-                result = "logo32";
-            }
-            else if (lType == 39)
-            {
-                result = "logo33";
-            }
-            else if (lType == 40)
-            {
-                result = "logo34";
-            }
-            else if (lType == 41)
-            {
-                result = "logo35";
-            }
-            else if (lType == 42)
-            {
-                result = "logo36";
-            }
-            else if (lType == 43)
-            {
-                result = "logo37";
-            }
-            else if (lType == 44)
-            {
-                result = "logo38";
-            }
-            else if (lType == 45)
-            {
-                result = "logo39";
-            }
-            else if (lType == 46)
-            {
-                result = "logo40";
-            }
-            else if (lType == 47)
-            {
-                result = "logo41";
-            }
-            else if (lType == 48)
-            {
-                result = "logo42";
-            }
-            else if (lType == 49)
-            {
-                result = "logo43";
-            }
-            else if (lType == 50)
-            {
-                result = "logo44";
-            }
-            else if (lType == 51)
-            {
-                result = "logo45";
-            }
-            else if (lType == 52)
-            {
-                result = "logo46";
-            }
-            else if (lType == 53)
-            {
-                result = "logo47";
-            }
-            else if (lType == 54)
-            {
-                result = "logo48";
-            }
-            else if (lType == 55)
-            {
-                result = "logo49";
-            }
-            else if (lType == 56)
-            {
-                result = "logo50";
-            }
-            else if (lType == 57)
-            {
-                result = "logo51";
-            }
-            else if (lType == 58)
-            {
-                result = "logo52";
-            }
-            else if (lType == 59)
-            {
-                result = "logo53";
-            }
-            else if (lType == 60)
-            {
-                result = "logo54";
-            }
-            else if (lType == 61)
-            {
-                result = "logo55";
-            }
-            else if (lType == 62)
-            {
-                result = "logo56";
-            }
-            else if (lType == 63)
-            {
-                result = "logo63";
-            }
-            else if (lType == 64)
-            {
-                result = "logo64";
-            }
-            else if (lType == 65)
-            {
-                result = "logo65";
-            }
-
-
-
             return result;
-
         }
 
 
@@ -22333,270 +22270,207 @@ namespace Qiuxun.C8.Api.Public
         public static string GetLotteryTypeName(int lType)
         {
             string result = "";
-
-            if (lType == 1)
-            {
-                result = "福彩3D";
-            }
-            else if (lType == 2)
-            {
-                result = "双色球";
-            }
-            else if (lType == 3)
-            {
-                result = "七星彩";
-            }
-            else if (lType == 4)
-            {
-                result = "大乐透";
-            }
-            else if (lType == 5)
-            {
-                result = "6彩";
-            }
-            else if (lType == 6)
-            {
-                result = "排列3";
-            }
-            else if (lType == 7)
-            {
-                result = "排列5";
-            }
-            else if (lType == 8)
-            {
-                result = "七乐彩";
-            }
-            else if (lType == 9)
-            {
-                result = "重庆时时彩";
-            }
-            else if (lType == 10)
-            {
-                result = "黑龙江时时彩";
-            }
-            else if (lType == 11)
-            {
-                result = "内蒙古时时彩";
-            }
-            else if (lType == 12)
-            {
-                result = "天津时时彩";
-            }
-            else if (lType == 13)
-            {
-                result = "新疆时时彩";
-            }
-            else if (lType == 14)
-            {
-                result = "云南时时彩";
-            }
-            else if (lType == 15)
-            {
-                result = "安徽11选5";
-            }
-            else if (lType == 16)
-            {
-                result = "北京11选5";
-            }
-            else if (lType == 17)
-            {
-                result = "福建11选5";
-            }
-            else if (lType == 18)
-            {
-                result = "广东11选5";
-            }
-            else if (lType == 19)
-            {
-                result = "甘肃11选5";
-            }
-            else if (lType == 20)
-            {
-                result = "广西11选5";
-            }
-            else if (lType == 21)
-            {
-                result = "贵州11选5";
-            }
-            else if (lType == 22)
-            {
-                result = "河北11选5";
-            }
-            else if (lType == 23)
-            {
-                result = "黑龙江11选5";
-            }
-            else if (lType == 24)
-            {
-                result = "湖北11选5";
-            }
-            else if (lType == 25)
-            {
-                result = "吉林11选5";
-            }
-            else if (lType == 26)
-            {
-                result = "江苏11选5";
-            }
-            else if (lType == 27)
-            {
-                result = "江西11选5";
-            }
-            else if (lType == 28)
-            {
-                result = "辽宁11选5";
-            }
-            else if (lType == 29)
-            {
-                result = "内蒙古11选5";
-            }
-            else if (lType == 30)
-            {
-                result = "山东11选5";
-            }
-            else if (lType == 31)
-            {
-                result = "上海11选5";
-            }
-            else if (lType == 32)
-            {
-                result = "陕西11选5";
-            }
-            else if (lType == 33)
-            {
-                result = "山西11选5";
-            }
-            else if (lType == 34)
-            {
-                result = "天津11选5";
-            }
-            else if (lType == 35)
-            {
-                result = "新疆11选5";
-            }
-            else if (lType == 36)
-            {
-                result = "云南11选5";
-            }
-            else if (lType == 37)
-            {
-                result = "浙江11选5";
-            }
-            else if (lType == 38)
-            {
-                result = "安徽快三";
-            }
-            else if (lType == 39)
-            {
-                result = "北京快三";
-            }
-            else if (lType == 40)
-            {
-                result = "福建快三";
-            }
-            else if (lType == 41)
-            {
-                result = "甘肃快三";
-            }
-            else if (lType == 42)
-            {
-                result = "广西快三";
-            }
-            else if (lType == 43)
-            {
-                result = "贵州快三";
-            }
-            else if (lType == 44)
-            {
-                result = "河北快三";
-            }
-            else if (lType == 45)
-            {
-                result = "湖北快三";
-            }
-            else if (lType == 46)
-            {
-                result = "吉林快三";
-            }
-            else if (lType == 47)
-            {
-                result = "江苏快三";
-            }
-            else if (lType == 48)
-            {
-                result = "江西快三";
-            }
-            else if (lType == 49)
-            {
-                result = "内蒙古快三";
-            }
-            else if (lType == 50)
-            {
-                result = "上海快三";
-            }
-            else if (lType == 51)
-            {
-                result = "重庆快乐十分";
-            }
-            else if (lType == 52)
-            {
-                result = "广东快乐十分";
-            }
-            else if (lType == 53)
-            {
-                result = "广西快乐十分";
-            }
-            else if (lType == 54)
-            {
-                result = "黑龙江快乐十分";
-            }
-            else if (lType == 55)
-            {
-                result = "湖南快乐十分";
-            }
-            else if (lType == 56)
-            {
-                result = "陕西快乐十分";
-            }
-            else if (lType == 57)
-            {
-                result = "山西快乐十分";
-            }
-            else if (lType == 58)
-            {
-                result = "天津快乐十分";
-            }
-            else if (lType == 59)
-            {
-                result = "云南快乐十分";
-            }
-            else if (lType == 60)
-            {
-                result = "辽宁快乐十二";
-            }
-            else if (lType == 61)
-            {
-                result = "四川快乐十二";
-            }
-            else if (lType == 62)
-            {
-                result = "浙江快乐十二";
-            }
-            else if (lType == 63)
-            {
-                result = "北京赛车(PK10)";
-            }
-            else if (lType == 64)
-            {
-                result = "幸运飞艇";
-            }
-            else if (lType == 65)
-            {
-                result = "北京快乐8(PC蛋蛋)";
+            switch (lType)
+            {
+                case 1:
+                    result = "福彩3D";
+                    break;
+                case 2:
+                    result = "双色球";
+                    break;
+                case 3:
+                    result = "七星彩";
+                    break;
+                case 4:
+                    result = "大乐透";
+                    break;
+                case 5:
+                    result = "6彩";
+                    break;
+                case 6:
+                    result = "排列3";
+                    break;
+                case 7:
+                    result = "排列5";
+                    break;
+                case 8:
+                    result = "七乐彩";
+                    break;
+                case 9:
+                    result = "重庆时时彩";
+                    break;
+                case 10:
+                    result = "黑龙江时时彩";
+                    break;
+                case 11:
+                    result = "内蒙古时时彩";
+                    break;
+                case 12:
+                    result = "天津时时彩";
+                    break;
+                case 13:
+                    result = "新疆时时彩";
+                    break;
+                case 14:
+                    result = "云南时时彩";
+                    break;
+                case 15:
+                    result = "安徽11选5";
+                    break;
+                case 16:
+                    result = "北京11选5";
+                    break;
+                case 17:
+                    result = "福建11选5";
+                    break;
+                case 18:
+                    result = "广东11选5";
+                    break;
+                case 19:
+                    result = "甘肃11选5";
+                    break;
+                case 20:
+                    result = "广西11选5";
+                    break;
+                case 21:
+                    result = "贵州11选5";
+                    break;
+                case 22:
+                    result = "河北11选5";
+                    break;
+                case 23:
+                    result = "黑龙江11选5";
+                    break;
+                case 24:
+                    result = "湖北11选5";
+                    break;
+                case 25:
+                    result = "吉林11选5";
+                    break;
+                case 26:
+                    result = "江苏11选5";
+                    break;
+                case 27:
+                    result = "江西11选5";
+                    break;
+                case 28:
+                    result = "辽宁11选5";
+                    break;
+                case 29:
+                    result = "内蒙古11选5";
+                    break;
+                case 30:
+                    result = "山东11选5";
+                    break;
+                case 31:
+                    result = "上海11选5";
+                    break;
+                case 32:
+                    result = "陕西11选5";
+                    break;
+                case 33:
+                    result = "山西11选5";
+                    break;
+                case 34:
+                    result = "天津11选5";
+                    break;
+                case 35:
+                    result = "新疆11选5";
+                    break;
+                case 36:
+                    result = "云南11选5";
+                    break;
+                case 37:
+                    result = "浙江11选5";
+                    break;
+                case 38:
+                    result = "安徽快三";
+                    break;
+                case 39:
+                    result = "北京快三";
+                    break;
+                case 40:
+                    result = "福建快三";
+                    break;
+                case 41:
+                    result = "甘肃快三";
+                    break;
+                case 42:
+                    result = "广西快三";
+                    break;
+                case 43:
+                    result = "贵州快三";
+                    break;
+                case 44:
+                    result = "河北快三";
+                    break;
+                case 45:
+                    result = "湖北快三";
+                    break;
+                case 46:
+                    result = "吉林快三";
+                    break;
+                case 47:
+                    result = "江苏快三";
+                    break;
+                case 48:
+                    result = "江西快三";
+                    break;
+                case 49:
+                    result = "内蒙古快三";
+                    break;
+                case 50:
+                    result = "上海快三";
+                    break;
+                case 51:
+                    result = "重庆快乐十分";
+                    break;
+                case 52:
+                    result = "广东快乐十分";
+                    break;
+                case 53:
+                    result = "广西快乐十分";
+                    break;
+                case 54:
+                    result = "黑龙江快乐十分";
+                    break;
+                case 55:
+                    result = "湖南快乐十分";
+                    break;
+                case 56:
+                    result = "陕西快乐十分";
+                    break;
+                case 57:
+                    result = "山西快乐十分";
+                    break;
+                case 58:
+                    result = "天津快乐十分";
+                    break;
+                case 59:
+                    result = "云南快乐十分";
+                    break;
+                case 60:
+                    result = "辽宁快乐十二";
+                    break;
+                case 61:
+                    result = "四川快乐十二";
+                    break;
+                case 62:
+                    result = "浙江快乐十二";
+                    break;
+                case 63:
+                    result = "北京赛车(PK10:";
+                    break;
+                case 64:
+                    result = "幸运飞艇";
+                    break;
+                case 65:
+                    result = "北京快乐8(PC蛋蛋:";
+                    break;
+                default:
+                    result = "";
+                    break;
             }
-
-
-
             return result;
         }
 
@@ -25221,7 +25095,7 @@ namespace Qiuxun.C8.Api.Public
         /// <param name="lType"></param>
         /// <param name="openNum"></param>
         /// <returns></returns>
-        public static string GetShowInfo(int lType, string openNum,DateTime subTime)
+        public static string GetShowInfo(int lType, string openNum, DateTime subTime)
         {
             string result = "";
 

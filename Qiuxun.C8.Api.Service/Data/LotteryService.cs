@@ -31,6 +31,7 @@ namespace Qiuxun.C8.Api.Service.Data
         /// <returns></returns>
         public List<LotteryType2> GetLotteryTypeList(int pid = 0)
         {
+
             string sql = "select * from LotteryType2 where PId = " + pid + " order by Position";
             return Util.ReaderToList<LotteryType2>(sql);
         }
