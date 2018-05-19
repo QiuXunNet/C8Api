@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Qiuxun.C8.Api.Public;
+using Qiuxun.C8.Api.Service.Cache;
 using Qiuxun.C8.Api.Service.Caching;
 using Qiuxun.C8.Api.Service.Common;
 using Qiuxun.C8.Api.Service.Dtos;

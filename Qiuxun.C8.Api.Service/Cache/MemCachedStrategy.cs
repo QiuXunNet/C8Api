@@ -7,13 +7,15 @@ using System.Web;
 using System.Net;
 using System.Runtime.Remoting.Messaging;
 using Memcached.Client;
+using QX.Common.Cache;
 
 namespace Qiuxun.C8.Api.Service.Cache
 {
+
     /// <summary>
     /// MemCached缓存
     /// </summary>
-    public class MemCachedStrategy : ICacheStrategy
+    public class MemCachedStrategy : ICacheManager
     {
         #region 构造函数 初始化
         private static MemcachedClient MemClient;
@@ -49,7 +51,7 @@ namespace Qiuxun.C8.Api.Service.Cache
                     pool.SetServers(servers);
                     pool.InitConnections = 3;
                     pool.MinConnections = 3;
-                    pool.MaxConnections = 500;
+                    pool.MaxConnections = 5000;
                     pool.SocketConnectTimeout = 1000;
                     pool.SocketTimeout = 3000;
                     pool.MaintenanceSleep = 30;
@@ -60,7 +62,7 @@ namespace Qiuxun.C8.Api.Service.Cache
                     MemClient = new MemcachedClient();
                     MemClient.EnableCompression = false;
                     CallContext.SetData("client", MemClient);
-                }               
+                }
             }
             catch (Exception ex)
             {
@@ -74,138 +76,73 @@ namespace Qiuxun.C8.Api.Service.Cache
         }
         #endregion
 
-        #region  添加缓存
-        /// <summary>
-        /// 添加缓存 永久
-        /// </summary>
-        /// <param name="cacheKey"></param>
-        /// <param name="obj"></param>
-        public void AddObject<T>(string cacheKey, T obj)
-        {
-            AddObject(cacheKey, obj, 0);
-        }
-        /// <summary>
-        /// 添加缓存
-        /// </summary>
-        /// <param name="cacheKey"></param>
-        /// <param name="obj"></param>
-        /// <param name="expire">分钟</param>
-        public void AddObject<T>(string cacheKey, T obj, int expire = 10)
-        {
-            string json = obj.ToJsonString();
 
-            if (MemClient.KeyExists(cacheKey))
+        public T Get<T>(string key)
+        {
+            string json = MemClient.Get(key).ToString();
+            return json.FromJsonString<T>();
+        }
+
+        public T Get<T>(string key, Func<T> fun, int cacheTime = 20)
+        {
+            if (IsSet(key))
             {
-                MemClient.Replace(cacheKey, json, DateTime.Now.AddMinutes(expire));
+                return Get<T>(key);
             }
             else
             {
-                MemClient.Set(cacheKey, json, DateTime.Now.AddMinutes(expire));
+                T obj = fun();
+                Set(key, obj, cacheTime);
+                return obj;
             }
         }
 
-        /// <summary>
-        /// 添加缓存
-        /// </summary>
-        /// <param name="cacheKey"></param>
-        /// <param name="obj"></param>
-        public void SetObject<T>(string cacheKey, T obj)
+        public void Set(string key, object data)
         {
-            string json = obj.ToJsonString();
+            Set(key, data, 30);
+        }
 
-            if (MemClient.KeyExists(cacheKey))
+        public void Set(string key, object data, int expire)
+        {
+            string json = data.ToJsonString();
+
+            if (MemClient.KeyExists(key))
             {
-                MemClient.Replace(cacheKey, json);
+                MemClient.Replace(key, json, DateTime.Now.AddMinutes(expire));
             }
             else
             {
-                MemClient.Set(cacheKey, json);
+                MemClient.Set(key, json, DateTime.Now.AddMinutes(expire));
             }
         }
 
-        /// <summary>
-        /// 添加缓存
-        /// </summary>
-        /// <param name="cacheKey"></param>
-        /// <param name="obj"></param>
-        /// <param name="date">日期</param>
-        public void SetObject<T>(string cacheKey, T obj, DateTime date)
+        public bool IsSet(string key)
         {
-            string json = obj.ToJsonString();
-
-            if (MemClient.KeyExists(cacheKey))
-            {
-                MemClient.Replace(cacheKey, json, date);
-            }
-            else
-            {
-                MemClient.Set(cacheKey, json, date);
-            }
+            return MemClient.KeyExists(key);
         }
-        #endregion
 
-        #region 不实现缓存依赖
-        /// <summary>
-        /// 不实现
-        /// </summary>
-        /// <param name="cacheKey"></param>
-        /// <param name="obj"></param>
-        /// <param name="dependKey"></param>
-        public void AddObjectWithDepend(string cacheKey, object obj, string[] dependKey)
+        public void Remove(string key)
         {
-
+            MemClient.Delete(key);
         }
-        /// <summary>
-        /// 不实现
-        /// </summary>
-        /// <param name="cacheKey"></param>
-        /// <param name="obj"></param>
-        /// <param name="dependKey"></param>
-        public void AddObjectWithDepend(string cacheKey, object obj, string dependKey)
+
+        public void RemoveByPattern(string pattern)
         {
-
+            throw new NotImplementedException();
         }
-        /// <summary> 
-        #endregion
 
-        #region 删除缓存
-        /// <summary>
-        /// 删除缓存
-        /// </summary>
-        /// <param name="cacheKey"></param>
-        public void RemoveObject(string cacheKey)
-        {
-            MemClient.Delete(cacheKey);
-        }
-        #endregion
-
-        #region 获取缓存
-        /// <summary>
-        /// 获取缓存
-        /// </summary>
-        /// <param name="cacheKey"></param>
-        /// <returns></returns>
-        public T GetObject<T>(string cacheKey)
-        {
-            string json = MemClient.Get(cacheKey).ToString();
-            return json.FromJsonString<T>();            
-        }
-        #endregion
-
-        #region 清空所有缓存
-        /// <summary>
-        /// 清空所有缓存
-        /// </summary>
-        public void FlushAll()
+        public void Clear()
         {
             MemClient.FlushAll();
         }
 
-        public bool Exists(string cacheKey)
+        public void RemoveList(IEnumerable<string> keys)
         {
-            return MemClient.KeyExists(cacheKey);
-        }
+            foreach (var key in keys)
+            {
 
-        #endregion
+                MemClient.Delete(key);
+            }
+        }
     }
 }

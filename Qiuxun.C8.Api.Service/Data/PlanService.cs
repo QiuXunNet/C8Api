@@ -7,6 +7,7 @@ using Qiuxun.C8.Api.Model;
 using Qiuxun.C8.Api.Service.Common;
 using Qiuxun.C8.Api.Public;
 using System.Data.SqlClient;
+using Qiuxun.C8.Api.Service.Cache;
 using Qiuxun.C8.Caching;
 using Qiuxun.C8.Api.Service.Caching;
 using Qiuxun.C8.Api.Service.Enum;

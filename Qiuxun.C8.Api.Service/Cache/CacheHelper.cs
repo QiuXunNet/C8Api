@@ -4,15 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Configuration;
 using Qiuxun.C8.Api.Service.Cache;
+using QX.Common.Cache;
+using QX.Common.Cache.Redis;
 
-namespace Qiuxun.C8.Api.Service.Caching
+namespace Qiuxun.C8.Api.Service.Cache
 {
     /// <summary>
     /// 缓存进行全局控制管理
     /// </summary>
     public static class CacheHelper
     {
-        private static ICacheStrategy cs;
+        private static ICacheManager cs;
         private static object lockHelper = new object();
 
         /// <summary>
@@ -41,7 +43,7 @@ namespace Qiuxun.C8.Api.Service.Caching
                     cs = new MemCachedStrategy();
                     break;
                 case CacheProvider.Redis:
-                    cs = new RedisStrategy();
+                    cs = new RedisCache();
                     break;
                 default:
                     cs = new LocalCacheStrategy();
@@ -58,9 +60,9 @@ namespace Qiuxun.C8.Api.Service.Caching
         {
             lock (lockHelper)
             {
-                /// 如果没有配置但用户又没有传入过期时间则认为永久不失效
-                /// 如果配置为0也认为是永久不失效
-                cs.AddObject<T>(GetCacheKey(cacheKey), obj, timeOut);
+                // 如果没有配置但用户又没有传入过期时间则认为永久不失效
+                // 如果配置为0也认为是永久不失效
+                cs.Set(GetCacheKey(cacheKey), obj);
             }
         }
 
@@ -74,7 +76,7 @@ namespace Qiuxun.C8.Api.Service.Caching
         {
             lock (lockHelper)
             {
-                cs.AddObject<T>(GetCacheKey(cacheKey), obj, expire);
+                cs.Set(GetCacheKey(cacheKey), obj, expire);
             }
         }
 
@@ -87,7 +89,7 @@ namespace Qiuxun.C8.Api.Service.Caching
         {
             lock (lockHelper)
             {
-                cs.SetObject<T>(GetCacheKey(cacheKey), obj);
+                cs.Set(GetCacheKey(cacheKey), obj);
             }
         }
 
@@ -101,44 +103,12 @@ namespace Qiuxun.C8.Api.Service.Caching
         {
             lock (lockHelper)
             {
-                cs.SetObject<T>(GetCacheKey(cacheKey), obj, date);
+                var timeSpan = date - DateTime.Now;
+
+                cs.Set(GetCacheKey(cacheKey), obj, timeSpan.Minutes);
             }
         }
 
-        ///// <summary>
-        ///// 添加缓存附带缓存依赖键
-        ///// </summary>
-        ///// <param name="cacheKey"></param>
-        ///// <param name="obj"></param>
-        ///// <param name="keys"></param>
-        //public static void AddObject(string cacheKey, object obj, string[] keys)
-        //{
-        //    lock (lockHelper)
-        //    {
-        //        if (keys!=null && keys.Length > 0)
-        //        {
-        //            for (int i = 0; i < keys.Length; i++)
-        //            {
-        //                keys[i] = GetCacheKey(keys[i]);
-        //            }
-        //        }
-        //        cs.AddObjectWithDepend(GetCacheKey(cacheKey), obj, keys);
-        //    }
-        //}
-
-        ///// <summary>
-        ///// 添加缓存附带缓存依赖
-        ///// </summary>
-        ///// <param name="cacheKey"></param>
-        ///// <param name="obj"></param>
-        ///// <param name="dep"></param>
-        //public static void AddObject(string cacheKey, object obj, string dependKey)
-        //{
-        //    lock (lockHelper)
-        //    {
-        //        cs.AddObjectWithDepend(GetCacheKey(cacheKey), obj, GetCacheKey(dependKey));
-        //    }
-        //}
         /// <summary>
         /// 获取单个缓存
         /// </summary>
@@ -148,16 +118,12 @@ namespace Qiuxun.C8.Api.Service.Caching
         {
             try
             {
-                T cacheObject = cs.GetObject<T>(GetCacheKey(cacheKey));
+                T cacheObject = cs.Get<T>(GetCacheKey(cacheKey));
                 if (cacheObject != null)
                 {
                     return cacheObject;
                 }
-                else
-                {
-                    return default(T);
-                }
-
+                return default(T);
             }
             catch (Exception ex)
             {
@@ -172,7 +138,7 @@ namespace Qiuxun.C8.Api.Service.Caching
         {
             lock (lockHelper)
             {
-                cs.RemoveObject(GetCacheKey(cacheKey));
+                cs.Remove(GetCacheKey(cacheKey));
             }
         }
 
@@ -183,7 +149,7 @@ namespace Qiuxun.C8.Api.Service.Caching
         {
             lock (lockHelper)
             {
-                cs.FlushAll();
+                cs.Clear();
             }
         }
 
@@ -205,7 +171,7 @@ namespace Qiuxun.C8.Api.Service.Caching
         /// <returns></returns>
         public static bool Exists(string cacheKey)
         {
-            return cs.Exists(cacheKey);
+            return cs.IsSet(cacheKey);
         }
     }
 }
