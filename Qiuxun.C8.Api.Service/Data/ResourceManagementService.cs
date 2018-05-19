@@ -48,6 +48,13 @@ namespace Qiuxun.C8.Api.Service.Data
 
             string rpath = url + filePath + photo.ImgName + "_Min" + photo.Extension;
 
+            string path1 = Tool.UploadFileToOss(filePath + photo.ImgName + "_Min" + photo.Extension);
+            string path2 = Tool.UploadFileToOss(filePath + photo.ImgName + photo.Extension);
+
+            if (string.IsNullOrWhiteSpace(path1) || string.IsNullOrWhiteSpace(path2))
+            {
+                throw new ApiException(50000, "上传资源失败OSS");
+            }
 
             StringBuilder strSql = new StringBuilder();
 
@@ -63,7 +70,7 @@ namespace Qiuxun.C8.Api.Service.Data
                     new SqlParameter("@FkId",createUserId),
                     new SqlParameter("@Type",type),
                     new SqlParameter("@Extension",photo.Extension),
-                    new SqlParameter("@RPath",rpath),
+                    new SqlParameter("@RPath",path1),
                     new SqlParameter("@RSize",photo.RSize),
                     new SqlParameter("@Title",photo.ImgName)
 
@@ -78,7 +85,7 @@ namespace Qiuxun.C8.Api.Service.Data
             UploadFileResDto resDto = new UploadFileResDto()
             {
                 ResouceId = resId,
-                Url = rpath
+                Url = path1
             };
 
             result.Data = resDto;
