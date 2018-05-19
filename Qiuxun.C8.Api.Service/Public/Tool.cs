@@ -12,6 +12,8 @@ using System.Drawing;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Qiuxun.C8.Api.Service.Common;
+using Aliyun.OSS.Util;
+using Aliyun.OSS;
 
 namespace Qiuxun.C8.Api.Public
 {
@@ -449,6 +451,56 @@ namespace Qiuxun.C8.Api.Public
                     break;
             }
             return time;
+        }
+
+        /// <summary>
+        /// 上传图片至阿里云OSS
+        /// </summary>
+        /// <param name="filePath">图片地址</param>
+        /// <returns></returns>
+        public static string UploadFileToOss(string filePath)
+        {
+            FileStream fs = null;
+            try
+            {
+                if (filePath.ToLower().Contains("http://") || filePath.ToLower().Contains("https://"))
+                {
+                    Uri uri = new Uri(filePath);
+                    filePath = System.Web.HttpContext.Current.Server.MapPath(uri.AbsolutePath);
+                }
+                else
+                {
+                    filePath = System.Web.HttpContext.Current.Server.MapPath(filePath);
+                }
+                fs = File.Open(filePath, FileMode.Open);
+                string md5 = OssUtils.ComputeContentMd5(fs, fs.Length);
+                DateTime dt = DateTime.Now;
+                string today = dt.ToString("yyyy/MMdd/HH");
+                //string FileName = uploadFileName + today + Path.GetExtension(uploadFileName);//文件名=文件名+当前上传时间  
+                string FilePath = "c8/" + today + "/" + Path.GetFileName(filePath);//云文件保存路径  
+                OssClient aliyun = new OssClient("https://oss-cn-shenzhen.aliyuncs.com", "LTAIMllFooLyjXJz", "xMiVnoyKWdD3eSV5VUd2XcrLOPeSPa");
+                //将文件md5值赋值给meat头信息，服务器验证文件MD5  
+                var objectMeta = new ObjectMetadata
+                {
+                    ContentMd5 = md5,
+                };
+                //文件上传--空间名、文件保存路径、文件流、meta头信息(文件md5) //返回meta头信息(文件md5)  
+                aliyun.PutObject("c8-public", FilePath, fs, objectMeta);
+                string oospath = "http://c8-public.oss-cn-shenzhen.aliyuncs.com/" + FilePath;
+                return oospath;
+            }
+            catch (Exception ex)
+            {
+                return "";
+            }
+            finally
+            {
+                if (fs != null)
+                {
+                    fs.Dispose();
+                    fs.Close();
+                }
+            }
         }
 
         /// 程序执行时间测试

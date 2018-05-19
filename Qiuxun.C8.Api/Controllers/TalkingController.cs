@@ -15,6 +15,7 @@ using System.Net.Http;
 using System.Web;
 using System.Web.Http;
 using Qiuxun.C8.Api.Service.Cache;
+using Qiuxun.C8.Api.Public;
 
 namespace Qiuxun.C8.Api.Controllers
 {
@@ -102,7 +103,14 @@ namespace Qiuxun.C8.Api.Controllers
                 image2.Dispose();
                 ms2.Close();
 
-                result.Data = "http://" + HttpContext.Current.Request.Url.Host + ":" + HttpContext.Current.Request.Url.Port + xPath + datePath + fileName + "_Min.jpg";
+                string path1 = Tool.UploadFileToOss(xPath + datePath + fileName + "_Min.jpg");
+                string path2 = Tool.UploadFileToOss(xPath + datePath + fileName + ".jpg");
+                if (string.IsNullOrWhiteSpace(path1) || string.IsNullOrWhiteSpace(path2))
+                {
+                    result.Data = "";
+                    throw new ApiException(50000,"图片服务出错OSS");
+                }
+                result.Data = path1;
 
             }
             catch (Exception ex)
