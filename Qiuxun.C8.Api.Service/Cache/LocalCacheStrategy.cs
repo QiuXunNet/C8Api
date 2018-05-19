@@ -5,13 +5,14 @@ using System.Text;
 using System.Web.Caching;
 using System.Collections;
 using System.Web;
+using QX.Common.Cache;
 
 namespace Qiuxun.C8.Api.Service.Cache
 {
     /// <summary>
     /// 本地缓存
     /// </summary>
-    public class LocalCacheStrategy : ICacheStrategy
+    public class LocalCacheStrategy : ICacheManager
     {
         protected static volatile System.Web.Caching.Cache cache = System.Web.HttpRuntime.Cache;
 
@@ -23,7 +24,7 @@ namespace Qiuxun.C8.Api.Service.Cache
         /// <summary>
         /// 默认缓存存活期为3600秒(1小时)
         /// </summary>
-        private int _timeOut = 60;        
+        private int _timeOut = 60;
 
         /// <summary>
         /// 设置到期相对时间[单位: 分钟] 
@@ -32,201 +33,13 @@ namespace Qiuxun.C8.Api.Service.Cache
         {
             set { _timeOut = value; }
             get { return _timeOut; }
-        }        
+        }
 
         public LocalCacheStrategy()
-        {            
+        {
             callBack = new CacheItemRemovedCallback(onRemove);
         }
 
-
-        /// <summary>
-        /// 添加指定ID的对象
-        /// </summary>
-        /// <param name="cacheKey">缓存键</param>
-        /// <param name="obj">缓存对象</param>
-        public void AddObject<T>(string cacheKey, T obj)
-        {
-            string json = obj.ToJsonString();
-
-            if (string.IsNullOrEmpty(cacheKey) || obj == null)
-            {
-                return;
-            }
-            cache.Insert(cacheKey, json, null, DateTime.MaxValue, TimeSpan.Zero, System.Web.Caching.CacheItemPriority.High, callBack);
-        }
-        /// <summary>
-        /// 添加指定ID的对象
-        /// </summary>
-        /// <param name="cacheKey">缓存键</param>
-        /// <param name="obj">缓存对象</param>
-        /// <param name="expire">到期时间,单位:分</param>
-        public void AddObject<T>(string cacheKey, T obj, int expire)
-        {
-            string json = obj.ToJsonString();
-
-            if (string.IsNullOrEmpty(cacheKey) || obj == null)
-            {
-                return;
-            }
-            if (expire == 0)
-            {
-                cache.Insert(cacheKey, json, null, DateTime.MaxValue, TimeSpan.Zero, System.Web.Caching.CacheItemPriority.High, callBack);
-            }
-            else
-            {
-                cache.Insert(cacheKey, json, null, DateTime.Now.AddMinutes(expire),TimeSpan.Zero, System.Web.Caching.CacheItemPriority.High, callBack);
-            }
-        }
-
-        /// <summary>
-        /// 添加缓存
-        /// </summary>
-        /// <param name="cacheKey"></param>
-        /// <param name="obj"></param>
-        /// <param name="date">日期</param>
-        public void SetObject<T>(string cacheKey, T obj)
-        {
-            string json = obj.ToJsonString();
-
-            if (string.IsNullOrEmpty(cacheKey) || obj == null)
-            {
-                return;
-            }
-           
-            cache.Insert(cacheKey, json, null, DateTime.MaxValue, TimeSpan.Zero, System.Web.Caching.CacheItemPriority.High, callBack);
-        }
-
-        /// <summary>
-        /// 添加缓存
-        /// </summary>
-        /// <param name="cacheKey"></param>
-        /// <param name="obj"></param>
-        /// <param name="date">日期</param>
-        public void SetObject<T>(string cacheKey, T obj, DateTime date)
-        {
-            string json = obj.ToJsonString();
-
-            if (string.IsNullOrEmpty(cacheKey) || obj == null)
-            {
-                return;
-            }
-          
-            cache.Insert(cacheKey, json, null, date, TimeSpan.Zero, System.Web.Caching.CacheItemPriority.High, callBack);
-            
-        }
-
-        ///// <summary>
-        ///// 添加指定ID的对象(关联指定键值组)
-        ///// </summary>
-        ///// <param name="cacheKey">缓存键</param>
-        ///// <param name="obj">缓存对象</param>
-        ///// <param name="dependcacheKey">依赖键</param>
-        //public void AddObjectWithDepend(string cacheKey, object obj, string[] dependKey)
-        //{
-        //    if (string.IsNullOrEmpty(cacheKey) || obj == null)
-        //    {
-        //        return;
-        //    }
-
-        //    CacheDependency dep = new CacheDependency(null, dependKey, DateTime.UtcNow);
-
-        //    cache.Insert(cacheKey, obj, dep, DateTime.Now.AddMinutes(TimeOut), TimeSpan.Zero, System.Web.Caching.CacheItemPriority.High, callBack);
-        //}
-
-        ///// <summary>
-        ///// 添加指定ID的cache 有依赖项
-        ///// </summary>
-        ///// <param name="cacheKey"></param>
-        ///// <param name="obj"></param>
-        ///// <param name="dep">ICacheDependency</param>
-        //public void AddObjectWithDepend(string cacheKey, object obj, string dependKey)
-        //{
-        //    if (string.IsNullOrEmpty(cacheKey) || obj == null)
-        //    {
-        //        return;
-        //    }
-        //    else
-        //    {
-        //        AddObjectWithDepend(cacheKey, obj, new string[] { dependKey });
-        //    }
-        //}
-
-        /// <summary>
-        /// 移除指定ID的对象
-        /// </summary>
-        /// <param name="cacheKey">缓存键</param>
-        public void RemoveObject(string cacheKey)
-        {
-            if (string.IsNullOrEmpty(cacheKey))
-            {
-                return;
-            }
-            cache.Remove(cacheKey);
-        }
-        /// <summary>
-        /// 返回指定ID的对象
-        /// </summary>
-        /// <param name="cacheKey">缓存键</param>
-        /// <returns></returns>
-        public T GetObject<T>(string cacheKey)
-        {
-            if (string.IsNullOrEmpty(cacheKey))
-            {
-                return default(T);
-            }
-            var json =cache.Get(cacheKey).ToString();
-            return json.FromJsonString<T>();
-        }
-
-        //public T Get<T>(string cacheKey)
-        //{
-        //    if (string.IsNullOrEmpty(cacheKey))
-        //    {
-        //        return default(T);
-        //    }
-        //    return (T)cache.Get(cacheKey);
-        //}
-
-        //public void Set(string cacheKey,object obj)
-        //{
-        //    if (string.IsNullOrEmpty(cacheKey) || obj == null)
-        //    {
-        //        return;
-        //    }
-        //    cache.Insert(cacheKey, obj, null, DateTime.MaxValue, TimeSpan.Zero, System.Web.Caching.CacheItemPriority.High, callBack);
-        //}
-        //public void Set(string cacheKey, object obj, int expire)
-        //{
-        //    if (string.IsNullOrEmpty(cacheKey) || obj == null)
-        //    {
-        //        return;
-        //    }
-        //    if (expire == 0)
-        //    {
-        //        cache.Insert(cacheKey, obj, null, DateTime.MaxValue, TimeSpan.Zero, System.Web.Caching.CacheItemPriority.High, callBack);
-        //    }
-        //    else
-        //    {
-        //        cache.Insert(cacheKey, obj, null, DateTime.Now.AddMinutes(expire),TimeSpan.Zero, System.Web.Caching.CacheItemPriority.High, callBack);
-        //    }
-        //}
-        /// <summary>
-        /// 清空的有缓存数据
-        /// </summary>
-        public void FlushAll()
-        {
-            IDictionaryEnumerator CacheEnum = HttpRuntime.Cache.GetEnumerator();
-            while (CacheEnum.MoveNext())
-            {
-                cache.Remove(CacheEnum.Key.ToString());
-            }
-        }
-
-        public bool Exists(string cacheKey)
-        {
-            throw new NotImplementedException();
-        }
 
         /// <summary>
         /// 建立回调委托的一个实例
@@ -243,7 +56,7 @@ namespace Qiuxun.C8.Api.Service.Cache
                 case CacheItemRemovedReason.Expired:
                     {
                         break;
-                    }                
+                    }
                 case CacheItemRemovedReason.Underused:
                     {
                         break;
@@ -266,6 +79,95 @@ namespace Qiuxun.C8.Api.Service.Cache
         private void UpdateOtherServer(string cacheKey, object obj)
         {
 
+        }
+
+        public T Get<T>(string key)
+        {
+            if (string.IsNullOrEmpty(key))
+            {
+                return default(T);
+            }
+            var json = cache.Get(key).ToString();
+            return json.FromJsonString<T>();
+        }
+
+        public T Get<T>(string key, Func<T> fun, int cacheTime = 20)
+        {
+            if (string.IsNullOrEmpty(key))
+            {
+                return default(T);
+            }
+
+            T obj = fun();
+            Set(key, obj, cacheTime);
+            return obj;
+
+        }
+
+        public void Set(string key, object data)
+        {
+            string json = data.ToJsonString();
+
+            if (string.IsNullOrEmpty(key) || data == null)
+            {
+                return;
+            }
+
+            cache.Insert(key, json, null, DateTime.Now.AddMinutes(TimeOut), TimeSpan.Zero, CacheItemPriority.High, callBack);
+        }
+
+        public void Set(string key, object data, int expire)
+        {
+            string json = data.ToJsonString();
+
+            if (string.IsNullOrEmpty(key) || data == null)
+            {
+                return;
+            }
+            if (expire == 0)
+            {
+                cache.Insert(key, json, null, DateTime.Now.AddMinutes(TimeOut), TimeSpan.Zero, CacheItemPriority.High, callBack);
+            }
+            else
+            {
+                cache.Insert(key, json, null, DateTime.Now.AddMinutes(expire), TimeSpan.Zero, CacheItemPriority.High, callBack);
+            }
+        }
+
+        public bool IsSet(string key)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Remove(string key)
+        {
+            if (string.IsNullOrEmpty(key))
+            {
+                return;
+            }
+            cache.Remove(key);
+        }
+
+        public void RemoveByPattern(string pattern)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Clear()
+        {
+            IDictionaryEnumerator cacheEnum = HttpRuntime.Cache.GetEnumerator();
+            while (cacheEnum.MoveNext())
+            {
+                cache.Remove(cacheEnum.Key.ToString());
+            }
+        }
+
+        public void RemoveList(IEnumerable<string> keys)
+        {
+            foreach (var key in keys)
+            {
+                Remove(key);
+            }
         }
     }
 }

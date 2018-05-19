@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Web.Http;
 using Qiuxun.C8.Api.Model;
 using Qiuxun.C8.Api.Service.Api;
+using Qiuxun.C8.Api.Service.Cache;
 using Qiuxun.C8.Api.Service.Caching;
 using Qiuxun.C8.Api.Service.Common;
 using Qiuxun.C8.Api.Service.Common.Paging;

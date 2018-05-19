@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using Qiuxun.C8.Api.Service.Cache;
 
 namespace Qiuxun.C8.Api.Service.Data
 {

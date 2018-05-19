@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web;
 using System.Xml;
 using Qiuxun.C8.Api.Public;
+using Qiuxun.C8.Api.Service.Cache;
 using Qiuxun.C8.Api.Service.Caching;
 
 namespace Qiuxun.C8.Api.Service.Public

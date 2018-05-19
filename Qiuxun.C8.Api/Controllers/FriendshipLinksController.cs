@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Web.Http;
+using Qiuxun.C8.Api.Service.Cache;
 
 namespace Qiuxun.C8.Api.Controllers
 {
