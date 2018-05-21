@@ -38,7 +38,7 @@ namespace Qiuxun.C8.Api.Service
         public const string _query_string_header_key = "__h";
         public const string _token_key = "token";
         private static readonly ILog log4Logger = LogManager.GetLogger(typeof(RequestHelper));
-
+        private static readonly string _requstLogStorage = ConfigurationManager.AppSettings["requestLogStorage"] ?? "2";//默认存储到日志文件
         private static readonly RequestLogService logService = new RequestLogService();
         public static RequestInfo BuildRequestInfo(HttpRequestMessage request)
         {
@@ -299,59 +299,69 @@ namespace Qiuxun.C8.Api.Service
 
         public static void WriteAllWebRequestLog(RequestLog log)
         {
-            #region log4net 实体
-            AllWebRequestLogEntity entity = new AllWebRequestLogEntity
-            {
-                ApiDesc = log.ApiDesc,
-                ApiStatus = log.ApiStatus.HasValue ? log.ApiStatus.Value : 0,
-                ClientHeight = log.ClientHeight,
-                ClientIp = log.ClientIp,
-                ClientIpHttp = log.ClientIpHttp,
-                ClientNetType = log.ClientNetType,
-                ClientType = log.ClientType,
-                ClientVersion = log.ClientVersion,
-                ClientWidth = log.ClientWidth,
-                Content = log.ApiDescDetail,
-                CustomerGuid = log.CustomerGuid.HasValue ? log.CustomerGuid.Value : Guid.Empty,
-                CustomerId = log.CustomerId.HasValue ? log.CustomerId.Value : 0,
-                ElapsedMilliseconds = log.ElapsedMilliseconds,
-                HttpMethod = log.HttpMethod,
-                HttpStatus = log.HttpStatus,
-                Imei = log.Imei,
-                InterfaceVersion = log.InterfaceVersion,
-                Lat = log.Lat,
-                Lng = log.Lng,
-                LocationType = log.LocationType,
-                OtherHeader = log.OtherHeader,
-                RequestCookie = log.RequestCookie,
-                RequestData = log.RequestData,
-                RequestTime = log.RequestTime,
-                ResponseCookie = log.ResponseCookie,
-                Route = log.Route,
-                ServerName = log.ServerName,
-                UserAgent = log.UserAgent,
-                UserName = log.UserName,
-                AppName = "C8",
-                ModelName = "所有Web请求",
-                Level = 1,
-                IsFake = log.IsFake,
-                GenerateTime = log.GenerateTime,
-                Province = log.Province,
-                City = log.City,
-                District = log.District,
-                ProvinceCode = log.ProvinceCode,
-                DistrictCode = log.DistrictCode,
-                CityCode = log.CityCode,
-                Id = log.Id
-            };
-
-            #endregion
 
             try
             {
-                //TODO:api请求日志持久化
-                logService.AddRequestLog(log);
-                //LogHelper.InfoFormat("API请求日志：\r\n{0}", entity.ToJsonString());
+
+                if (_requstLogStorage == "0") return;
+
+                if (_requstLogStorage == "1")
+                {
+                    logService.AddRequestLog(log);
+                }
+                else if (_requstLogStorage == "2")
+                {
+
+                    #region log4net 实体
+                    AllWebRequestLogEntity entity = new AllWebRequestLogEntity
+                    {
+                        ApiDesc = log.ApiDesc,
+                        ApiStatus = log.ApiStatus.HasValue ? log.ApiStatus.Value : 0,
+                        ClientHeight = log.ClientHeight,
+                        ClientIp = log.ClientIp,
+                        ClientIpHttp = log.ClientIpHttp,
+                        ClientNetType = log.ClientNetType,
+                        ClientType = log.ClientType,
+                        ClientVersion = log.ClientVersion,
+                        ClientWidth = log.ClientWidth,
+                        Content = log.ApiDescDetail,
+                        CustomerGuid = log.CustomerGuid.HasValue ? log.CustomerGuid.Value : Guid.Empty,
+                        CustomerId = log.CustomerId.HasValue ? log.CustomerId.Value : 0,
+                        ElapsedMilliseconds = log.ElapsedMilliseconds,
+                        HttpMethod = log.HttpMethod,
+                        HttpStatus = log.HttpStatus,
+                        Imei = log.Imei,
+                        InterfaceVersion = log.InterfaceVersion,
+                        Lat = log.Lat,
+                        Lng = log.Lng,
+                        LocationType = log.LocationType,
+                        OtherHeader = log.OtherHeader,
+                        RequestCookie = log.RequestCookie,
+                        RequestData = log.RequestData,
+                        RequestTime = log.RequestTime,
+                        ResponseCookie = log.ResponseCookie,
+                        Route = log.Route,
+                        ServerName = log.ServerName,
+                        UserAgent = log.UserAgent,
+                        UserName = log.UserName,
+                        AppName = "C8",
+                        ModelName = "所有Web请求",
+                        Level = 1,
+                        IsFake = log.IsFake,
+                        GenerateTime = log.GenerateTime,
+                        Province = log.Province,
+                        City = log.City,
+                        District = log.District,
+                        ProvinceCode = log.ProvinceCode,
+                        DistrictCode = log.DistrictCode,
+                        CityCode = log.CityCode,
+                        Id = log.Id
+                    };
+
+                    #endregion
+
+                    LogHelper.InfoFormat("API请求日志：\r\n{0}", entity.ToJsonString());
+                }
             }
             catch (Exception exception)
             {
@@ -362,61 +372,72 @@ namespace Qiuxun.C8.Api.Service
 
         public static void WriteWebRequestLog(RequestLog log)
         {
-            #region log4net 实体
-            WebApiRequestLogEntity entity = new WebApiRequestLogEntity
-            {
-
-                ApiDesc = log.ApiDesc,
-                ApiStatus = log.ApiStatus.HasValue ? log.ApiStatus.Value : 0,
-                ClientHeight = log.ClientHeight,
-                ClientIp = log.ClientIp,
-                ClientIpHttp = log.ClientIpHttp,
-                ClientNetType = log.ClientNetType,
-                ClientType = log.ClientType,
-                ClientVersion = log.ClientVersion,
-                ClientWidth = log.ClientWidth,
-                Content = log.ApiDescDetail,
-                CustomerGuid = log.CustomerGuid.HasValue ? log.CustomerGuid.Value : Guid.Empty,
-                CustomerId = log.CustomerId.HasValue ? log.CustomerId.Value : 0,
-                ElapsedMilliseconds = log.ElapsedMilliseconds,
-                HttpMethod = log.HttpMethod,
-                HttpStatus = log.HttpStatus,
-                Imei = log.Imei,
-                InterfaceVersion = log.InterfaceVersion,
-                Lat = log.Lat,
-                Lng = log.Lng,
-                LocationType = log.LocationType,
-                OtherHeader = log.OtherHeader,
-                RequestCookie = log.RequestCookie,
-                RequestData = log.RequestData,
-                RequestTime = log.RequestTime,
-                ResponseCookie = log.ResponseCookie,
-                Route = log.Route,
-                ServerName = log.ServerName,
-                UserAgent = log.UserAgent,
-                UserName = log.UserName,
-                AppName = "C8",
-                ModelName = "Api请求日志",
-                Level = 1,
-                IsFake = log.IsFake,
-                GenerateTime = log.GenerateTime,
-                Province = log.Province,
-                City = log.City,
-                District = log.District,
-                ProvinceCode = log.ProvinceCode,
-                DistrictCode = log.DistrictCode,
-                CityCode = log.CityCode,
-                Id = log.Id
-
-            };
-
-            #endregion
 
             try
             {
-                //TODO:api请求日志持久化
-                logService.AddRequestLog(log);
-                //LogHelper.InfoFormat("API请求日志：\r\n{0}", entity.ToJsonString());
+                if (_requstLogStorage == "0") return;
+
+                if (_requstLogStorage == "1")
+                {
+
+                    logService.AddRequestLog(log);
+                }
+                else if (_requstLogStorage == "2")
+                {
+
+                    #region log4net 实体
+                    WebApiRequestLogEntity entity = new WebApiRequestLogEntity
+                    {
+
+                        ApiDesc = log.ApiDesc,
+                        ApiStatus = log.ApiStatus.HasValue ? log.ApiStatus.Value : 0,
+                        ClientHeight = log.ClientHeight,
+                        ClientIp = log.ClientIp,
+                        ClientIpHttp = log.ClientIpHttp,
+                        ClientNetType = log.ClientNetType,
+                        ClientType = log.ClientType,
+                        ClientVersion = log.ClientVersion,
+                        ClientWidth = log.ClientWidth,
+                        Content = log.ApiDescDetail,
+                        CustomerGuid = log.CustomerGuid.HasValue ? log.CustomerGuid.Value : Guid.Empty,
+                        CustomerId = log.CustomerId.HasValue ? log.CustomerId.Value : 0,
+                        ElapsedMilliseconds = log.ElapsedMilliseconds,
+                        HttpMethod = log.HttpMethod,
+                        HttpStatus = log.HttpStatus,
+                        Imei = log.Imei,
+                        InterfaceVersion = log.InterfaceVersion,
+                        Lat = log.Lat,
+                        Lng = log.Lng,
+                        LocationType = log.LocationType,
+                        OtherHeader = log.OtherHeader,
+                        RequestCookie = log.RequestCookie,
+                        RequestData = log.RequestData,
+                        RequestTime = log.RequestTime,
+                        ResponseCookie = log.ResponseCookie,
+                        Route = log.Route,
+                        ServerName = log.ServerName,
+                        UserAgent = log.UserAgent,
+                        UserName = log.UserName,
+                        AppName = "C8",
+                        ModelName = "Api请求日志",
+                        Level = 1,
+                        IsFake = log.IsFake,
+                        GenerateTime = log.GenerateTime,
+                        Province = log.Province,
+                        City = log.City,
+                        District = log.District,
+                        ProvinceCode = log.ProvinceCode,
+                        DistrictCode = log.DistrictCode,
+                        CityCode = log.CityCode,
+                        Id = log.Id
+
+                    };
+
+                    #endregion
+
+                    LogHelper.InfoFormat("API请求日志：\r\n{0}", entity.ToJsonString());
+                }
+                
             }
             catch (Exception exception)
             {
@@ -425,61 +446,71 @@ namespace Qiuxun.C8.Api.Service
         }
         public static void WriteWebRequestLog(RequestLog log, string responseData)
         {
-            #region Log4net实体
-            WebApiRequestLogEntity entity = new WebApiRequestLogEntity
-            {
-
-                ApiDesc = log.ApiDesc,
-                ApiStatus = log.ApiStatus ?? 0,
-                ClientHeight = log.ClientHeight,
-                ClientIp = log.ClientIp,
-                ClientIpHttp = log.ClientIpHttp,
-                ClientNetType = log.ClientNetType,
-                ClientType = log.ClientType,
-                ClientVersion = log.ClientVersion,
-                ClientWidth = log.ClientWidth,
-                Content = log.ApiDescDetail,
-                CustomerGuid = log.CustomerGuid ?? Guid.Empty,
-                CustomerId = log.CustomerId ?? 0,
-                ElapsedMilliseconds = log.ElapsedMilliseconds,
-                HttpMethod = log.HttpMethod,
-                HttpStatus = log.HttpStatus,
-                Imei = log.Imei,
-                InterfaceVersion = log.InterfaceVersion,
-                Lat = log.Lat,
-                Lng = log.Lng,
-                LocationType = log.LocationType,
-                OtherHeader = log.OtherHeader,
-                RequestCookie = log.RequestCookie,
-                RequestData = log.RequestData,
-                RequestTime = log.RequestTime,
-                ResponseCookie = log.ResponseCookie,
-                Route = log.Route,
-                ServerName = log.ServerName,
-                UserAgent = log.UserAgent,
-                UserName = log.UserName,
-                AppName = "C8",
-                ModelName = "Api请求日志",
-                Level = 1,
-                IsFake = log.IsFake,
-                GenerateTime = log.GenerateTime,
-                ResponseData = responseData,
-                Province = log.Province,
-                City = log.City,
-                District = log.District,
-                ProvinceCode = log.ProvinceCode,
-                DistrictCode = log.DistrictCode,
-                CityCode = log.CityCode,
-                Id = log.Id
-
-            };
-            #endregion
 
             try
             {
-                //TODO:api请求日志持久化
-                logService.AddRequestLog(log);
-                //LogHelper.InfoFormat("API请求日志：\r\n{0}", entity.ToJsonString());
+                if (_requstLogStorage == "0") return;
+
+                if (_requstLogStorage == "1")
+                {
+
+                    logService.AddRequestLog(log);
+                }
+                else if (_requstLogStorage == "2")
+                {
+
+                    #region Log4net实体
+                    WebApiRequestLogEntity entity = new WebApiRequestLogEntity
+                    {
+
+                        ApiDesc = log.ApiDesc,
+                        ApiStatus = log.ApiStatus ?? 0,
+                        ClientHeight = log.ClientHeight,
+                        ClientIp = log.ClientIp,
+                        ClientIpHttp = log.ClientIpHttp,
+                        ClientNetType = log.ClientNetType,
+                        ClientType = log.ClientType,
+                        ClientVersion = log.ClientVersion,
+                        ClientWidth = log.ClientWidth,
+                        Content = log.ApiDescDetail,
+                        CustomerGuid = log.CustomerGuid ?? Guid.Empty,
+                        CustomerId = log.CustomerId ?? 0,
+                        ElapsedMilliseconds = log.ElapsedMilliseconds,
+                        HttpMethod = log.HttpMethod,
+                        HttpStatus = log.HttpStatus,
+                        Imei = log.Imei,
+                        InterfaceVersion = log.InterfaceVersion,
+                        Lat = log.Lat,
+                        Lng = log.Lng,
+                        LocationType = log.LocationType,
+                        OtherHeader = log.OtherHeader,
+                        RequestCookie = log.RequestCookie,
+                        RequestData = log.RequestData,
+                        RequestTime = log.RequestTime,
+                        ResponseCookie = log.ResponseCookie,
+                        Route = log.Route,
+                        ServerName = log.ServerName,
+                        UserAgent = log.UserAgent,
+                        UserName = log.UserName,
+                        AppName = "C8",
+                        ModelName = "Api请求日志",
+                        Level = 1,
+                        IsFake = log.IsFake,
+                        GenerateTime = log.GenerateTime,
+                        ResponseData = responseData,
+                        Province = log.Province,
+                        City = log.City,
+                        District = log.District,
+                        ProvinceCode = log.ProvinceCode,
+                        DistrictCode = log.DistrictCode,
+                        CityCode = log.CityCode,
+                        Id = log.Id
+
+                    };
+                    #endregion
+
+                    LogHelper.InfoFormat("API请求日志：\r\n{0}", entity.ToJsonString());
+                }
             }
             catch (Exception exception)
             {
