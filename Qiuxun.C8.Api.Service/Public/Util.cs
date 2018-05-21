@@ -25074,7 +25074,11 @@ namespace Qiuxun.C8.Api.Public
         {
             string imgName = GetLotteryIcon(lType);
 
-            string webHost = GetWebHost();
+            string webHost =ConfigurationManager.AppSettings["osshost"].ToString() ;
+            if (string.IsNullOrEmpty(webHost))
+            {
+                webHost = GetWebHost();
+            }
 
             return string.Format("{0}/images/{1}.png", webHost, imgName);
         }

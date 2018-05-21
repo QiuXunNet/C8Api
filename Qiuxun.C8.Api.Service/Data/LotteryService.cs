@@ -223,6 +223,8 @@ namespace Qiuxun.C8.Api.Service.Data
                 newModel.LType = e.lType;
                 newModel.LTypeName = Util.GetLotteryTypeName(e.lType);
                 newModel.Logo = Util.GetLotteryIconUrl(e.lType);
+                newModel.BigLType = e.BigLType;
+
                 newList.Add(newModel);
             });
 

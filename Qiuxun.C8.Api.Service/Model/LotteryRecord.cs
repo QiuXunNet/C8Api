@@ -20,5 +20,9 @@ namespace Qiuxun.C8.Api.Model
         {
             get { return LotteryTime.GetTime(lType.ToString()); }
         }
+        /// <summary>
+        /// 大彩种ID
+        /// </summary>
+        public int BigLType { get; set; }
     }
 }
