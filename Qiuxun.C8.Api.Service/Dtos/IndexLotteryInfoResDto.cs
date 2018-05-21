@@ -19,6 +19,12 @@ namespace Qiuxun.C8.Api.Service.Dtos
         /// 彩种Id
         /// </summary>
         public int LType { get; set; }
+
+        /// <summary>
+        /// 大彩种ID
+        /// </summary>
+        public int BigLType { get; set; }
+
         /// <summary>
         /// 彩种名称
         /// </summary>

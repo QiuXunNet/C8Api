@@ -203,11 +203,12 @@ namespace Qiuxun.C8.Api.Service.Data
 
         public List<IndexLotteryInfoResDto> GetLotteryRecordList(string lTypes, DateTime dateTime)
         {
-           var sql = @"select lr.* from LotteryRecord lr
+           var sql = @"select lr.*,l.lType as BigLType from LotteryRecord lr
                     join(
                     select lType, max(SubTime) SubTime from lotteryRecord where lType in(" + lTypes + ") and SubTime >'" + dateTime + @"' group by lType
                     ) tab on lr.lType = tab.lType and lr.SubTime = tab.SubTime
                     left join LotteryType2 lt on lr.lType = lt.lType
+                    left join Lottery l on lr.lType = l.LotteryCode
                     order by Position";
 
             var newList = new List<IndexLotteryInfoResDto>();
