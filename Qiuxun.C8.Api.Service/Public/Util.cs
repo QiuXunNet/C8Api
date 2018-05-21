@@ -22459,13 +22459,13 @@ namespace Qiuxun.C8.Api.Public
                     result = "浙江快乐十二";
                     break;
                 case 63:
-                    result = "北京赛车(PK10:";
+                    result = "北京赛车(PK10)";
                     break;
                 case 64:
                     result = "幸运飞艇";
                     break;
                 case 65:
-                    result = "北京快乐8(PC蛋蛋:";
+                    result = "北京快乐8(PC蛋蛋)";
                     break;
                 default:
                     result = "";
