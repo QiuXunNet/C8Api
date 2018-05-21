@@ -466,11 +466,11 @@ namespace Qiuxun.C8.Api.Public
                 if (filePath.ToLower().Contains("http://") || filePath.ToLower().Contains("https://"))
                 {
                     Uri uri = new Uri(filePath);
-                    filePath = System.Web.HttpContext.Current.Server.MapPath(uri.AbsolutePath);
+                    filePath = System.Web.Hosting.HostingEnvironment.MapPath(uri.AbsolutePath);
                 }
                 else
                 {
-                    filePath = System.Web.HttpContext.Current.Server.MapPath(filePath);
+                    filePath = System.Web.Hosting.HostingEnvironment.MapPath(filePath);
                 }
                 fs = File.Open(filePath, FileMode.Open);
                 string md5 = OssUtils.ComputeContentMd5(fs, fs.Length);
@@ -491,6 +491,7 @@ namespace Qiuxun.C8.Api.Public
             }
             catch (Exception ex)
             {
+                LogHelper.WriteLog(ex.ToString());
                 return "";
             }
             finally
