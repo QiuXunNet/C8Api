@@ -35,7 +35,7 @@ namespace Qiuxun.C8.Api.Controllers
         {
             lock (_lock)
             {
-                return "T" + DateTime.Now.Ticks;
+                return "M" + DateTime.Now.Ticks;
             }
         }
 

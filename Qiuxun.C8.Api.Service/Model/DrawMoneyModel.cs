@@ -12,5 +12,7 @@ namespace Qiuxun.C8.Api.Model
         public decimal MyYj { get; set; }//我的佣金
         public decimal Txing { get; set; }//提现中
         public decimal Txleiji { get; set; }//提现累计
+
+        public decimal KeTx { get; set; } //可提现
     }
 }

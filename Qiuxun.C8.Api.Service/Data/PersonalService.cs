@@ -422,16 +422,17 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
                              (select isnull(sum([Money]),0)as MyYj from ComeOutRecord c inner join BettingRecord b on c.OrderId=b.Id  where  b.[UserId]=@UserId and Type in(4,9))t1,
                              (select isnull(sum([Money]),0)as Txing from ComeOutRecord where  [UserId]=@UserId and Type=2 and State=1)t2,
                              (select isnull(sum([Money]),0)as Txleiji  from ComeOutRecord where  [UserId]=@UserId and Type=2 and State=3 )t3,
-                             (select isnull(sum([Money]),0)as XfYj  from ComeOutRecord where  [UserId]=@UserId and Type in(3,5))t4";
+                             (select isnull(sum([Money]),0)as XfYj  from ComeOutRecord where  [UserId]=@UserId and Type in(3,5))t4,
+                             (select isnull([Money],0)as KeTx  from UserInfo  where  [Id]=@UserId )t5";
             SqlParameter[] sp = new SqlParameter[] {
                     new SqlParameter("@UserId",userId)
                 };
             DrawMoneyModel dr = Util.ReaderToModel<DrawMoneyModel>(strsql, sp);
             DrawMoneyResDto dto = new DrawMoneyResDto();
-            dto.MyYj = Tool.Rmoney(dr.MyYj - dr.Txleiji - dr.XfYj);
+            dto.MyYj = Tool.Rmoney(dr.KeTx + dr.Txing);
             dto.Txing = Tool.Rmoney(dr.Txing);
             dto.Txleiji = Tool.Rmoney(dr.Txleiji);
-            dto.KeTx = Tool.Rmoney(dr.MyYj - dr.Txing - dr.Txleiji - dr.XfYj);
+            dto.KeTx = Tool.Rmoney(dr.KeTx);
             return new ApiResult<DrawMoneyResDto>() { Data = dto };
         }
 
