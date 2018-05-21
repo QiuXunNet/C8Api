@@ -40,7 +40,17 @@ namespace Qiuxun.C8.Api.Controllers
         [HttpGet]
         public ApiResult GetBankList()
         {
-            var imgUrl = "http://" + HttpContext.Current.Request.Url.Host + ":" + HttpContext.Current.Request.Url.Port + "/Images/";
+            var imgUrl ="";
+            string host = ConfigurationManager.AppSettings["webHost"].ToLower();
+
+            if (string.IsNullOrEmpty(host))
+            {
+                imgUrl = "http://" + HttpContext.Current.Request.Url.Host + ":" + HttpContext.Current.Request.Url.Port + "/Images/";
+            }
+            else
+            {
+                imgUrl = host + "/Images/";
+            }
 
             List<dynamic> list = new List<dynamic>();
             list.Add(new { Abbreviation= "ICBC", Name= "中国工商银行" ,BankImg = imgUrl + "ICBC.png" });
