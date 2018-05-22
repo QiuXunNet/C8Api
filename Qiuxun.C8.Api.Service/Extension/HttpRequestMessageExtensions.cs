@@ -38,10 +38,10 @@ namespace Qiuxun.C8.Api.Service.Common
         {
             ClientIpSource clientIpSource = new ClientIpSource();
             IEnumerable<string> source;
-            if (request.Headers.TryGetValues("X-Real-IP", out source))
-            {
+            //if (request.Headers.TryGetValues("X-Real-IP", out source))
+            //{
                 clientIpSource.ClientIpFromHttp = Tool.GetIP();
-            }
+           // }
             if (request.Headers.TryGetValues("request_port", out source))
             {
                 clientIpSource.IsHttps = (source.FirstOrDefault<string>() == "443");
