@@ -495,7 +495,7 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
                     }
                     if (type == 1)
                     {
-                        x.LotteryIcon = Util.GetLotteryIcon(x.lType);
+                        x.LotteryIcon = Util.GetLotteryIconUrl(x.lType);
                     }
 
                     x.Money = Convert.ToDecimal((x.Money / moneyToCoin).ToString("f2"));
