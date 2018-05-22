@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Qiuxun.C8.Api.Service.Model;
+using System.Configuration;
 
 namespace Qiuxun.C8.Api.Service.Data
 {
@@ -28,10 +29,12 @@ namespace Qiuxun.C8.Api.Service.Data
             string sql = @"insert into ComeOutRecord (UserId,OrderId,Money,Type,SubTime,PayType) 
                             values(@UserId,@OrderId,@Money,1,GETDATE(),@PayType);select @@identity;";
 
+            var moneyToCoin = Convert.ToInt32(ConfigurationManager.AppSettings["MoneyToCoin"]);
+
             SqlParameter[] regsp = new SqlParameter[] {
                     new SqlParameter("@UserId",userId),
                     new SqlParameter("@OrderId",no),
-                    new SqlParameter("@Money",money),
+                    new SqlParameter("@Money",money*moneyToCoin),
                     new SqlParameter("@PayType",payType)
                  };
 
@@ -61,9 +64,10 @@ namespace Qiuxun.C8.Api.Service.Data
                 var money = list.FirstOrDefault().Money;
                 var userId = list.FirstOrDefault().UserId;
                 var addCoin = 0;  //需要增加的金币数
+                var moneyToCoin = Convert.ToInt32(ConfigurationManager.AppSettings["MoneyToCoin"]);
 
                 //每日任务完成充值100元任务
-                if (money >= 100)
+                if (money/moneyToCoin >= 100)
                 {
                     var makeMoneyTaskList = Util.ReaderToList<MakeMoneyTask>("select top(1) * from MakeMoneyTask where Code=100");
                     if (makeMoneyTaskList != null && makeMoneyTaskList.Any())

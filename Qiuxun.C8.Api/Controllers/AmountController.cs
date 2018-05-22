@@ -109,14 +109,18 @@ namespace Qiuxun.C8.Api.Controllers
                 var minExtractCash = int.Parse(ConfigurationManager.AppSettings["minExtractCash"]);
                 var myCommission = _service.GetMyCommission(userId);
 
+                var moneyToCoin = Convert.ToInt32(ConfigurationManager.AppSettings["MoneyToCoin"]);
+
+                decimal money1 = Convert.ToDecimal((myCommission / moneyToCoin).ToString("f2"));
+
                 //后台判断提现佣金是否正确
-                if (money > myCommission || money < minExtractCash)
+                if (money > money1 || money < minExtractCash)
                 {
                     return new ApiResult(10000, "您的佣金出现变动,请重新输入");
                 }
                 else
                 {
-                    _service.AddExtractCash(bankId, money, userId);
+                    _service.AddExtractCash(bankId, money* moneyToCoin, userId);
                 }
             }
             return result;

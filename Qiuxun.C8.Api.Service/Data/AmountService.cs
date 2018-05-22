@@ -65,7 +65,7 @@ namespace Qiuxun.C8.Api.Service.Data
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public int GetMyCommission(int userId)
+        public decimal GetMyCommission(int userId)
         {
             var sql1 = @"select Money from userinfo where id = @UserId";
 
@@ -74,7 +74,7 @@ namespace Qiuxun.C8.Api.Service.Data
                 new SqlParameter("@UserId",userId)
             };
 
-            var money = Convert.ToInt32(SqlHelper.ExecuteScalar(sql1, regsp));
+            var money = Convert.ToDecimal(SqlHelper.ExecuteScalar(sql1, regsp));
 
             return money;
         }

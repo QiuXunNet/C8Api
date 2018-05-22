@@ -7,7 +7,7 @@ using Qiuxun.C8.Api.Service.Model;
 
 namespace Qiuxun.C8.Api.Model
 {
-    public class ComeOutRecordModel : ComeOutRecord
+    public class ComeOutRecordModel
     {
 
 
@@ -42,6 +42,36 @@ namespace Qiuxun.C8.Api.Model
         /// </summary>
         public string Avater { get; set; }
 
+
+        public long Id { get; set; }
+        /// <summary>
+        /// 用户Id
+        /// </summary>
+        public int UserId { get; set; }
+        /// <summary>
+        /// 关联Id
+        /// </summary>
+        public string OrderId { get; set; }
+        /// <summary>
+        /// 记录类型 1=充值 2=提现 3=点阅 4=点阅佣金 5=打赏 6=受邀奖励 7=邀请奖励 8=任务奖励 9=打赏佣金
+        /// </summary>
+        public int Type { get; set; }
+        /// <summary>
+        /// 金额
+        /// </summary>
+        public decimal Money { get; set; }
+        /// <summary>
+        /// 状态
+        /// </summary>
+        public int State { get; set; }
+        /// <summary>
+        /// 创建时间
+        /// </summary>
+        public DateTime SubTime { get; set; }
+        /// <summary>
+        /// 1微信 2支付宝 3银联
+        /// </summary>
+        public int? PayType { get; set; }
 
     }
 

@@ -11,18 +11,18 @@ namespace Qiuxun.C8.Api.Service.Dtos.Personal
         /// <summary>
         /// 我的佣金
         /// </summary>
-        public string MyYj { get; set; }
+        public decimal MyYj { get; set; }
         /// <summary>
         /// 提现中
         /// </summary>
-        public string Txing { get; set; }
+        public decimal Txing { get; set; }
         /// <summary>
         /// 累计提现
         /// </summary>
-        public string Txleiji { get; set; }
+        public decimal Txleiji { get; set; }
         /// <summary>
         /// 可提现
         /// </summary>
-        public string KeTx { get; set; }
+        public decimal KeTx { get; set; }
     }
 }
