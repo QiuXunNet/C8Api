@@ -493,7 +493,7 @@ namespace Qiuxun.C8.Api.Public
                 };
                 //文件上传--空间名、文件保存路径、文件流、meta头信息(文件md5) //返回meta头信息(文件md5)  
                 aliyun.PutObject("c8-public", FilePath, fs, objectMeta);
-                string oospath = "http://c8-public.oss-cn-shenzhen.aliyuncs.com/" + FilePath;
+                string oospath = "https://c8-public.oss-cn-shenzhen.aliyuncs.com/" + FilePath;
                 return oospath;
             }
             catch (Exception ex)
