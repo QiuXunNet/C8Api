@@ -47,17 +47,24 @@ namespace Qiuxun.C8.Api.Public
         /// <returns></returns>
         public static string GetIP()
         {
-            string userIP = string.Empty;
-            // HttpRequest Request = HttpContext.Current.Request;  
-            HttpRequest Request = System.Web.HttpContext.Current.Request; // 如果使用代理，获取真实IP  
-            if (Request.ServerVariables["HTTP_X_FORWARDED_FOR"] != "")
-                userIP = Request.ServerVariables["REMOTE_ADDR"];
-            else
-                userIP = Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
-            if (userIP == null || userIP == "")
-                userIP = Request.UserHostAddress;
-
-            return userIP;
+            string clientIP = "";
+            if (System.Web.HttpContext.Current != null)
+            {
+                clientIP = System.Web.HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
+                if (string.IsNullOrEmpty(clientIP) || (clientIP.ToLower() == "unknown"))
+                {
+                    clientIP = System.Web.HttpContext.Current.Request.ServerVariables["HTTP_X_REAL_IP"];
+                    if (string.IsNullOrEmpty(clientIP))
+                    {
+                        clientIP = System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"];
+                    }
+                }
+                else
+                {
+                    clientIP = clientIP.Split(',')[0];
+                }
+            }
+            return clientIP;
         }
 
 
@@ -258,9 +265,9 @@ namespace Qiuxun.C8.Api.Public
         /// </summary>
         /// <param name="money"></param>
         /// <returns></returns>
-        public static string Rmoney(decimal money)
+        public static decimal Rmoney(decimal money)
         {
-            return string.Format("{0:N}", money);
+            return Convert.ToDecimal(money.ToString("f2"));
         }
 
 

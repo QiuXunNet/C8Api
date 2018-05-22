@@ -15,6 +15,7 @@ using System.Collections;
 using Qiuxun.C8.Api.Model.News;
 using Qiuxun.C8.Api.Service.Dtos;
 using Qiuxun.C8.Api.Service.Model;
+using System.Configuration;
 
 namespace Qiuxun.C8.Api.Service.Data
 {
@@ -418,21 +419,21 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
         /// </summary>
         public ApiResult<DrawMoneyResDto> GetMyCommission(long userId)
         {
-            string strsql = @"	select MyYj,Txing,Txleiji,XfYj,KeTx from 
-                             (select isnull(sum([Money]),0)as MyYj from ComeOutRecord c inner join BettingRecord b on c.OrderId=b.Id  where  b.[UserId]=@UserId and Type in(4,9))t1,
+            string strsql = @"	select Txing,Txleiji,KeTx from 
                              (select isnull(sum([Money]),0)as Txing from ComeOutRecord where  [UserId]=@UserId and Type=2 and State=1)t2,
                              (select isnull(sum([Money]),0)as Txleiji  from ComeOutRecord where  [UserId]=@UserId and Type=2 and State=3 )t3,
-                             (select isnull(sum([Money]),0)as XfYj  from ComeOutRecord where  [UserId]=@UserId and Type in(3,5))t4,
                              (select isnull([Money],0)as KeTx  from UserInfo  where  [Id]=@UserId )t5";
             SqlParameter[] sp = new SqlParameter[] {
                     new SqlParameter("@UserId",userId)
                 };
             DrawMoneyModel dr = Util.ReaderToModel<DrawMoneyModel>(strsql, sp);
+            var moneyToCoin = Convert.ToInt32(ConfigurationManager.AppSettings["MoneyToCoin"]);
+
             DrawMoneyResDto dto = new DrawMoneyResDto();
-            dto.MyYj = Tool.Rmoney(dr.KeTx + dr.Txing);
-            dto.Txing = Tool.Rmoney(dr.Txing);
-            dto.Txleiji = Tool.Rmoney(dr.Txleiji);
-            dto.KeTx = Tool.Rmoney(dr.KeTx);
+            dto.MyYj = Tool.Rmoney((dr.KeTx + dr.Txing)/ moneyToCoin);
+            dto.Txing = Tool.Rmoney((dr.Txing) / moneyToCoin);
+            dto.Txleiji = Tool.Rmoney((dr.Txleiji) / moneyToCoin);
+            dto.KeTx = Tool.Rmoney((dr.KeTx) / moneyToCoin);
             return new ApiResult<DrawMoneyResDto>() { Data = dto };
         }
 
@@ -481,24 +482,24 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
 
             List<ComeOutRecordModel> list = Util.ReaderToList<ComeOutRecordModel>(strsql, sp);
             int count = Convert.ToInt32(SqlHelper.ExecuteScalar(countsql, sp));
+            var moneyToCoin = Convert.ToInt32(ConfigurationManager.AppSettings["MoneyToCoin"]);
+
             if (list != null)
             {
-                if (type == 2)
-                {
-                    list.ForEach(x =>
-                    {
 
+                list.ForEach(x =>
+                {
+                    if (type == 2)
+                    {
                         x.LotteryIcon = "/images/41.png";
-                    });
-                }
-                else if (type == 1)
-                {
-                    list.ForEach(x =>
+                    }
+                    if (type == 1)
                     {
+                        x.LotteryIcon = Util.GetLotteryIcon(x.lType);
+                    }
 
-                        x.LotteryIcon = Util.GetLotteryIconUrl(x.lType);
-                    });
-                }
+                    x.Money = Convert.ToDecimal((x.Money / moneyToCoin).ToString("f2"));
+                });
             }
             pager.PageData = list;
             pager.TotalCount = count;

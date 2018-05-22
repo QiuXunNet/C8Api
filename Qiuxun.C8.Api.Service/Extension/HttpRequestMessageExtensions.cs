@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Qiuxun.C8.Api.Public;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Configuration;
@@ -37,10 +38,10 @@ namespace Qiuxun.C8.Api.Service.Common
         {
             ClientIpSource clientIpSource = new ClientIpSource();
             IEnumerable<string> source;
-            if (request.Headers.TryGetValues("X-Real-IP", out source))
-            {
-                clientIpSource.ClientIpFromHttp = source.FirstOrDefault<string>();
-            }
+            //if (request.Headers.TryGetValues("X-Real-IP", out source))
+            //{
+                clientIpSource.ClientIpFromHttp = Tool.GetIP();
+           // }
             if (request.Headers.TryGetValues("request_port", out source))
             {
                 clientIpSource.IsHttps = (source.FirstOrDefault<string>() == "443");

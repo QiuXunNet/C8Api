@@ -4,6 +4,7 @@ using Aop.Api.Request;
 using Aop.Api.Response;
 using Aop.Api.Util;
 using Newtonsoft.Json;
+using Qiuxun.C8.Api.Public;
 using Qiuxun.C8.Api.Service.Api;
 using Qiuxun.C8.Api.Service.Common;
 using Qiuxun.C8.Api.Service.Data;
@@ -57,7 +58,7 @@ namespace Qiuxun.C8.Api.Controllers
         [HttpGet]
         public ApiResult GetWxInfo(int money)
         {
-            spbillCreateIp = HttpContext.Current.Request.UserHostAddress;
+            spbillCreateIp = Tool.GetIP();//HttpContext.Current.Request.UserHostAddress;
             notifyUrl = "http://" + HttpContext.Current.Request.Url.Host + ":" + HttpContext.Current.Request.Url.Port + "/api/Recharge/WxNotify";
             nonceStr = Guid.NewGuid().ToString("N");
 

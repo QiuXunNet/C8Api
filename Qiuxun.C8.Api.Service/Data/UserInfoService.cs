@@ -303,10 +303,10 @@ namespace Qiuxun.C8.Api.Service.Data
                     {
                         //受邀奖励
                         int myReward = GetRadomReward(3);
-                        AddCoinReward(userId, myReward, 6, (int)inviteUser.Id, 1);
+                        AddCoinReward(userId, inviteUser.Id.ToString(), 6, myReward, 1);
                         //邀请奖励
                         int upReward = GetRadomReward(1);
-                        AddCoinReward((int)inviteUser.Id, upReward, 7, userId, 1);
+                        AddCoinReward((int)inviteUser.Id, userId.ToString(), 7,upReward,1);
                         //添加邀请任务记录
                         AddUserTask((int)dto.InviteCode.Value, 105);
 
@@ -318,7 +318,7 @@ namespace Qiuxun.C8.Api.Service.Data
                             if (superUser != null)
                             {
                                 int superReward = GetRadomReward(2);
-                                AddCoinReward((int)superUser.Id, superReward, 7, (int)inviteUser.Id, userId);
+                                AddCoinReward((int)superUser.Id, inviteUser.Id.ToString(),7, superReward,userId);
                             }
                         }
 
@@ -426,27 +426,26 @@ namespace Qiuxun.C8.Api.Service.Data
         /// <param name="type"></param>
         /// <param name="otherId"></param>
         /// <param name="state"></param>
-        public void AddCoinReward(int id, int coin, int type, int otherId, int state)
+        public void AddCoinReward(int UserId, string OrderId, int Type, int Money, int State)
         {
             try
             {
-
                 StringBuilder strSql = new StringBuilder();
 
-                strSql.Append("update UserInfo set Coin+=@Coin where Id =@UserId;");
-                strSql.Append(@"insert into CoinRecord(lType, UserId, OtherId, Type, [Money],[State], SubTime)
-                             values(0, @UserId, @OtherId, @Type, @Coin,@State, getdate());");
+                strSql.Append("update UserInfo set Coin+=@Money where Id =@UserId;");
+                strSql.Append(@"insert into ComeOutRecord(UserId, OrderId, Type, Money,State, SubTime)
+                                 values(@UserId, @OrderId, @Type, @Money, @State,getdate())");
 
-                var parameters = new[]
+                SqlParameter[] sp = new SqlParameter[]
                 {
-                    new SqlParameter("@UserId",id),
-                    new SqlParameter("@OrderId",otherId),
-                    new SqlParameter("@Type",type),
-                    new SqlParameter("@Money",coin),
-                    new SqlParameter("@State",state)
+                    new SqlParameter("@UserId",UserId),
+                    new SqlParameter("@OrderId",OrderId),
+                    new SqlParameter("@Type",Type),
+                    new SqlParameter("@Money",Money),
+                    new SqlParameter("@State",State)
                 };
 
-                SqlHelper.ExecuteTransaction(strSql.ToString(), parameters);
+                SqlHelper.ExecuteTransaction(strSql.ToString(), sp);
             }
             catch (Exception ex)
             {
@@ -481,10 +480,7 @@ namespace Qiuxun.C8.Api.Service.Data
                         MakeMoneyTask mtask = Util.ReaderToModel<MakeMoneyTask>(strtasksql);
                         if (task1.CompletedCount == mtask.Count)
                         {
-                            string strsqlinstask = string.Format(@"insert into ComeOutRecord(UserId, OrderId, Type, Money, SubTime)
-                                   values({0}, {1}, 8, {2}, getdate())", userId, taskCode, mtask.Coin);
-                            SqlHelper.ExecuteNonQuery(strsqlinstask);
-
+                            AddCoinReward(userId, taskCode.ToString(),8, mtask.Coin,1);
                         }
                     }
                 }
