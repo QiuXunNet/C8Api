@@ -660,9 +660,9 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
             {
                 strsql = string.Format(@"select * from BettingRecord   where UserId ={0} and lType = {1}", userId, lType);
                 numsql = string.Format(@"SELECT * FROM (  select row_number() over(order by l.SubTime desc  ) as rowNumber, Num,l.SubTime,l.Issue,b.lType from LotteryRecord l
-	                                  ,BettingRecord b
-	                                  where b.Issue=l.Issue and b.lType=l.lType
-	                                  and b.UserId={0} and b.lType={1}  and b.WinState in(3,4)
+	                                  join BettingRecord b
+	                                  on b.Issue=l.Issue and b.lType=l.lType
+	                                  where b.UserId={0} and b.lType={1}  and b.WinState in(3,4)
 	                                  group by l.Issue,Num,l.SubTime,b.lType
 	                                  )t
 	                                  where   rowNumber BETWEEN {2} AND {3}  ", userId, lType, pager.StartIndex, pager.EndIndex);
@@ -673,9 +673,9 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
             {
                 strsql = string.Format(@"select * from BettingRecord   where UserId ={0} and lType = {1}  and PlayName = @PlayName", userId, lType);
                 numsql = string.Format(@"SELECT * FROM (  select row_number() over(order by l.SubTime desc  ) as rowNumber,  Num,l.SubTime,l.Issue,b.lType from LotteryRecord l
-	                                      ,BettingRecord b
-	                                      where b.Issue=l.Issue and b.lType=l.lType
-	                                      and b.UserId={0} and b.lType={1} and b.PlayName=@PlayName  and b.WinState in(3,4)
+	                                      join BettingRecord b
+	                                      on b.Issue=l.Issue and b.lType=l.lType
+	                                      where b.UserId={0} and b.lType={1} and b.PlayName=@PlayName  and b.WinState in(3,4)
 	                                      group by l.Issue,Num,l.SubTime,b.lType
 	                                      )t
 	                                      where   rowNumber BETWEEN {2} AND {3} ", userId, lType, pager.StartIndex, pager.EndIndex);
