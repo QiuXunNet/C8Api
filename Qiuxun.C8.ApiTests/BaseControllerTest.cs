@@ -33,7 +33,7 @@ namespace Qiuxun.C8.ApiTests
                 InterfaceVersion = "1.0",
                 ClientVersion = "1.0.0",
                 ClientType = DevicePlatform.Ios,
-                ClientSourceId = 2
+                ClientSourceId = 10
             });
         }
     }

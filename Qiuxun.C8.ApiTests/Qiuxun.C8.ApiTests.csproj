@@ -86,6 +86,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="BaseControllerTest.cs" />
+    <Compile Include="Controllers\AdvertControllerTests.cs" />
     <Compile Include="Controllers\CommonControllerTests.cs" />
     <Compile Include="Controllers\NewsControllerTests.cs" />
     <Compile Include="Controllers\VersionControllerTests.cs" />

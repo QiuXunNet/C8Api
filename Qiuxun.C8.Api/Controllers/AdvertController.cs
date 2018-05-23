@@ -43,6 +43,12 @@ namespace Qiuxun.C8.Api.Controllers
             }
             else if (this.RequestInfo.ClientType == DevicePlatform.Ios)
             {
+                //Ios App Store不返回广告
+                if (this.RequestInfo.ClientSourceId == 10)
+                {
+                    return new ApiResult<List<AdvertisementResDto>>();
+                }
+
                 deviceType = 2;
             }
             else if (this.RequestInfo.ClientType == DevicePlatform.Browser)
