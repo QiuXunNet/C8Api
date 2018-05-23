@@ -46,7 +46,7 @@ namespace Qiuxun.C8.Api.Controllers
                 //Ios App Store不返回广告
                 if (this.RequestInfo.ClientSourceId == 10)
                 {
-                    return null;
+                    return new ApiResult<List<AdvertisementResDto>>();
                 }
 
                 deviceType = 2;
