@@ -49,7 +49,7 @@ namespace Qiuxun.C8.Api.Controllers
             }
             else
             {
-                imgUrl = host + "/Images/";
+                imgUrl = host + "/Images/Banklogo/";
             }
 
             List<dynamic> list = new List<dynamic>();
