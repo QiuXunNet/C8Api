@@ -25087,7 +25087,7 @@ namespace Qiuxun.C8.Api.Public
         {
             string host = ConfigurationManager.AppSettings["webHost"].ToLower();
 
-            if (host.StartsWith("http://"))
+            if (host.StartsWith("http://") || host.StartsWith("https://"))
                 return host;
             else
                 return "http://" + host;
