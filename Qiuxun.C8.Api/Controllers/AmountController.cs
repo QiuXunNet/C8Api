@@ -41,7 +41,7 @@ namespace Qiuxun.C8.Api.Controllers
         public ApiResult GetBankList()
         {
             var imgUrl ="";
-            string host = ConfigurationManager.AppSettings["webHost"].ToLower();
+            string host = ConfigurationManager.AppSettings["osshost"].ToLower();
 
             if (string.IsNullOrEmpty(host))
             {
@@ -49,7 +49,7 @@ namespace Qiuxun.C8.Api.Controllers
             }
             else
             {
-                imgUrl = host + "/Images/";
+                imgUrl = host + "/Images/Banklogo/";
             }
 
             List<dynamic> list = new List<dynamic>();
