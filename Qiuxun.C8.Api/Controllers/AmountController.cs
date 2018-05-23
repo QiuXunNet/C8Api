@@ -45,7 +45,7 @@ namespace Qiuxun.C8.Api.Controllers
 
             if (string.IsNullOrEmpty(host))
             {
-                imgUrl = HttpContext.Current.Request.Url.Scheme + "://" + HttpContext.Current.Request.Url.Host + ":" + HttpContext.Current.Request.Url.Port + "/Images/";
+                imgUrl = "https://" + HttpContext.Current.Request.Url.Host + ":" + HttpContext.Current.Request.Url.Port + "/Images/";
             }
             else
             {
