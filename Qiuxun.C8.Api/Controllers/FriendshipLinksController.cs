@@ -26,7 +26,7 @@ namespace Qiuxun.C8.Api.Controllers
         public FriendshipLinksController()
         {
             if (sendTimer == null)
-                sendTimer = new Timer(new TimerCallback(AddPvUv), this, 1000,  6 * 1000);
+                sendTimer = new Timer(new TimerCallback(AddPvUv), this, 1000,  10*60 * 1000);
         }
 
         /// <summary>
