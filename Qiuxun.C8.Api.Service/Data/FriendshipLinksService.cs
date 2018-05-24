@@ -103,6 +103,30 @@ namespace Qiuxun.C8.Api.Service.Data
         }
 
         /// <summary>
+        /// 添加UV数量
+        /// </summary>
+        /// <param name="id"></param>
+        public void AddLink(int id, int linkCount)
+        {
+            var count = GetLinkVisitRecordNum(id);
+
+            if (count == 0)
+            {
+                //新增
+                string insertRecordSql = string.Format(
+                        @"insert into dbo.LinkVisitRecord (RefId,ClickCount,UV,IP,PV,RegCount,Type,SubTime)
+                                        values({0},{1},0,0,0,0,1,'{2}')", id, linkCount, DateTime.Today);
+                SqlHelper.ExecuteScalar(insertRecordSql);
+            }
+            else
+            {
+                //修改
+                string updateRecordSql = string.Format(@"update dbo.LinkVisitRecord set ClickCount+=1 where RefId={0} and SubTime = '{1}' and [Type]=1 ", id, DateTime.Today);
+                SqlHelper.ExecuteScalar(updateRecordSql);
+            }
+        }
+
+        /// <summary>
         /// 查询所有友联
         /// </summary>
         /// <returns></returns>

@@ -26,7 +26,7 @@ namespace Qiuxun.C8.Api.Controllers
         public FriendshipLinksController()
         {
             if (sendTimer == null)
-                sendTimer = new Timer(new TimerCallback(AddPvUv), this, 10000, 10 * 60 * 1000);
+                sendTimer = new Timer(new TimerCallback(AddPvUv), this, 1000,  6 * 1000);
         }
 
         /// <summary>
@@ -42,19 +42,6 @@ namespace Qiuxun.C8.Api.Controllers
             FriendLink model = GetFriendLink(linkCode);
             if (model != null && model.Id > 0)
             {
-                //#region 向缓存中加入linkCode
-                //var linkCodesObj = CacheHelper.GetCache<string>("FriendshipLinksControllerlinkCodes");
-                //var linkCodes = linkCodesObj == null ? "": linkCodesObj.ToString();
-                //if (string.IsNullOrEmpty(linkCodes))
-                //{
-                //    CacheHelper.AddCache("FriendshipLinksControllerlinkCodes", linkCode + ",");
-                //}
-                //else if (linkCodes.IndexOf(linkCode) == -1)
-                //{
-                //    CacheHelper.SetCache("FriendshipLinksControllerlinkCodes", linkCodes + linkCode + ",");
-                //}
-                //#endregion
-
                 if (type == "ip")
                 {
                     var endDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 23, 59, 59);
@@ -78,37 +65,31 @@ namespace Qiuxun.C8.Api.Controllers
                 if (type == "uv")
                 {
                     #region 向缓存中增加PV数
-                    //lock (objUv)
-                    //{
-                        var obj = CacheHelper.GetCache<int>("FriendshipLinksControllerUv" + linkCode);
-                        if (obj == default(int))
-                        {
-                            CacheHelper.AddCache("FriendshipLinksControllerUv" + linkCode, 1);
-                        }
-                        else
-                        {
-                            var uvNum = Convert.ToInt32(CacheHelper.GetCache<int>("FriendshipLinksControllerUv" + linkCode));
-                            CacheHelper.SetCache("FriendshipLinksControllerUv" + linkCode, uvNum + 1);
-                        }
-                   // }
+                    var obj = CacheHelper.GetCache<int>("FriendshipLinksControllerUv" + linkCode);
+                    if (obj == default(int))
+                    {
+                        CacheHelper.AddCache("FriendshipLinksControllerUv" + linkCode, 1);
+                    }
+                    else
+                    {
+                        var uvNum = Convert.ToInt32(CacheHelper.GetCache<int>("FriendshipLinksControllerUv" + linkCode));
+                        CacheHelper.SetCache("FriendshipLinksControllerUv" + linkCode, uvNum + 1);
+                    }
                     #endregion
                 }
                 if (type == "pv")
                 {
                     #region 向缓存中增加PV数
-                    //lock (objPv)
-                    //{
-                        var obj = CacheHelper.GetCache<int>("FriendshipLinksControllerPv" + linkCode);
-                        if (obj == default(int))
-                        {
-                            CacheHelper.AddCache("FriendshipLinksControllerPv" + linkCode, 1);
-                        }
-                        else
-                        {
-                            var pvNum = Convert.ToInt32(CacheHelper.GetCache<int>("FriendshipLinksControllerPv" + linkCode));
-                            CacheHelper.SetCache("FriendshipLinksControllerPv" + linkCode, pvNum + 1);
-                        }
-                   // }
+                    var obj = CacheHelper.GetCache<int>("FriendshipLinksControllerPv" + linkCode);
+                    if (obj == default(int))
+                    {
+                        CacheHelper.AddCache("FriendshipLinksControllerPv" + linkCode, 1);
+                    }
+                    else
+                    {
+                        var pvNum = Convert.ToInt32(CacheHelper.GetCache<int>("FriendshipLinksControllerPv" + linkCode));
+                        CacheHelper.SetCache("FriendshipLinksControllerPv" + linkCode, pvNum + 1);
+                    }
                     #endregion
                 }
             }
@@ -120,50 +101,44 @@ namespace Qiuxun.C8.Api.Controllers
         /// <param name="state"></param>
         private void AddPvUv(object state)
         {
-            //var linkCodesObj = CacheHelper.GetCache<string>("FriendshipLinksControllerlinkCodes");
-            //var linkCodes = linkCodesObj == null ? "" : linkCodesObj.ToString();
             var list = CacheHelper.GetCache<List<FriendLink>>("FriendshipLinksControllerFriendLinkList");
 
             if (list != null && list.Any())
             {
-               // var linkCodeArray = linkCodes.Split(',');
-
                 foreach (var model in list)
                 {
-                    //if (string.IsNullOrEmpty(linkCode))
-                    //    continue;
+                    #region 保存PV
+                    var pvCount = 0;
+                    pvCount = Convert.ToInt32(CacheHelper.GetCache<string>("FriendshipLinksControllerPv" + model.Code));
+                    CacheHelper.SetCache("FriendshipLinksControllerPv" + model.Code, 0);
 
-                    //FriendLink model = GetFriendLink(linkCode);
-                    //if (model.Id > 0)
-                    //{
-                        #region 保存PV
-                        var pvCount = 0;
-                        //lock (objPv)
-                        //{
-                            pvCount = Convert.ToInt32(CacheHelper.GetCache<string>("FriendshipLinksControllerPv" + model.Code));
-                            CacheHelper.SetCache("FriendshipLinksControllerPv" + model.Code, 0);
-                       // }
+                    if (pvCount != 0)
+                    {
+                        _service.AddPv(model.Id, pvCount);
+                    }
+                    #endregion
 
-                        if (pvCount != 0)
-                        {
-                            _service.AddPv(model.Id, pvCount);
-                        }
-                        #endregion
+                    #region 保存UV
+                    var uvCount = 0;
+                    uvCount = Convert.ToInt32(CacheHelper.GetCache<string>("FriendshipLinksControllerUv" + model.Code));
+                    CacheHelper.SetCache("FriendshipLinksControllerUv" + model.Code, 0);
 
-                        #region 保存UV
-                        var uvCount = 0;
-                        //lock (objUv)
-                        //{
-                            uvCount = Convert.ToInt32(CacheHelper.GetCache<string>("FriendshipLinksControllerUv" + model.Code));
-                            CacheHelper.SetCache("FriendshipLinksControllerUv" + model.Code, 0);
-                      //  }
+                    if (uvCount != 0)
+                    {
+                        _service.AddUv(model.Id, uvCount);
+                    }
+                    #endregion
 
-                        if (uvCount != 0)
-                        {
-                            _service.AddUv(model.Id, uvCount);
-                        }
-                        #endregion
-                  //  }
+                    #region 保存点击数
+                    var linkCount = 0;
+                    linkCount = Convert.ToInt32(CacheHelper.GetCache<string>("FriendshipLinksControllerLink" + model.Code));
+                    CacheHelper.SetCache("FriendshipLinksControllerLink" + model.Code, 0);
+
+                    if (linkCount != 0)
+                    {
+                        _service.AddLink(model.Id, linkCount);
+                    }
+                    #endregion
                 }
             }
         }
