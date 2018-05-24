@@ -167,10 +167,10 @@ namespace Qiuxun.C8.Api.Service.Data
             {
                 return new ApiResult<BettingRecord>() { Code = 6001, Desc = "彩种名称不能为空", Data = null };
             }
-            if (uid == userId)
-            {
-                return new ApiResult<BettingRecord>() { Code = 6002, Desc = "相同用户，不能获取", Data = null };
-            }
+            //if (uid == userId)
+            //{
+            //    return new ApiResult<BettingRecord>() { Code = 6002, Desc = "相同用户，不能获取", Data = null };
+            //}
 
             #region 校验,添加点阅记录，扣费，分佣
             UserInfo user = PersonalService.GetUser(userId);
@@ -189,6 +189,14 @@ namespace Qiuxun.C8.Api.Service.Data
             if (lastBettingRecord == null)
             {
                 return new ApiResult<BettingRecord>() { Code = 6003, Desc = "未获取到数据", Data = null };
+            }
+
+            if (uid == userId)
+            {
+                return new ApiResult<BettingRecord>()
+                {
+                    Data = lastBettingRecord
+                };
             }
 
             //如果是使用金币查看,否则使用查看劵查看
