@@ -409,7 +409,7 @@ namespace Qiuxun.C8.Api.Service.Data
                     list.Add(e);
                 }
 
-               // CacheHelper.WriteCache(memberKey, list, 144000);
+                // CacheHelper.WriteCache(memberKey, list, 144000);
                 CacheHelper.AddCache(memberKey, list, 144000);
                 return new ApiResult();
             }
@@ -457,6 +457,9 @@ namespace Qiuxun.C8.Api.Service.Data
             var model = Util.GetEntityById<BettingRecord>(id);
             if (model == null)
                 return new ApiResult(60017, "该计划不存在");
+
+            if (model.UserId == userId)
+                return new ApiResult(60019, "不能打赏你自己");
 
             //step3.验证用户金币是否充足
             if (user.Coin < coin)
@@ -793,7 +796,7 @@ namespace Qiuxun.C8.Api.Service.Data
                 list = Util.ReaderToList<CommissionSetting>(sql);
                 if (list != null)
                 {
-                   // CacheHelper.WriteCache(memKey, list, 60);
+                    // CacheHelper.WriteCache(memKey, list, 60);
                     CacheHelper.AddCache(memKey, list, 60);
                 }
             }
@@ -847,7 +850,7 @@ namespace Qiuxun.C8.Api.Service.Data
 
             if (list != null)
             {
-               // CacheHelper.WriteCache(memKey, list);
+                // CacheHelper.WriteCache(memKey, list);
                 CacheHelper.AddCache(memKey, list);
                 return list;
             }

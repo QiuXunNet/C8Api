@@ -188,6 +188,7 @@ namespace Qiuxun.C8.Api.Controllers
         [HttpGet, AllowAnonymous]
         public ApiResult DeleteAccount(string phone)
         {
+            return new ApiResult(404, "已停用");
             #region 验证参数
             if (string.IsNullOrWhiteSpace(phone))
                 throw new ApiException(11000, "参数Phone验证失败");
