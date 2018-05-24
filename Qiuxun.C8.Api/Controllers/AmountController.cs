@@ -45,11 +45,11 @@ namespace Qiuxun.C8.Api.Controllers
 
             if (string.IsNullOrEmpty(host))
             {
-                imgUrl = "http://" + HttpContext.Current.Request.Url.Host + ":" + HttpContext.Current.Request.Url.Port + "/Images/";
+                imgUrl = "https://" + HttpContext.Current.Request.Url.Host + ":" + HttpContext.Current.Request.Url.Port + "/Images/";
             }
             else
             {
-                imgUrl = host + "/Images/Banklogo/";
+                imgUrl = host + "/images/Banklogo/";
             }
 
             List<dynamic> list = new List<dynamic>();

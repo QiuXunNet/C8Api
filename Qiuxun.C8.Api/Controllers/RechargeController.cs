@@ -59,7 +59,7 @@ namespace Qiuxun.C8.Api.Controllers
         public ApiResult GetWxInfo(int money)
         {
             spbillCreateIp = Tool.GetIP();//HttpContext.Current.Request.UserHostAddress;
-            notifyUrl = "http://" + HttpContext.Current.Request.Url.Host + ":" + HttpContext.Current.Request.Url.Port + "/api/Recharge/WxNotify";
+            notifyUrl = "https://" + HttpContext.Current.Request.Url.Host + ":" + HttpContext.Current.Request.Url.Port + "/api/Recharge/WxNotify";
             nonceStr = Guid.NewGuid().ToString("N");
 
 
@@ -205,7 +205,7 @@ namespace Qiuxun.C8.Api.Controllers
                 model.OutTradeNo = zFBResDto.OrderId;
                 model.TimeoutExpress = "5m";
                 request.SetBizModel(model);
-                request.SetNotifyUrl("http://" + HttpContext.Current.Request.Url.Host + ":" + HttpContext.Current.Request.Url.Port + "/api/Recharge/AsyncPay");
+                request.SetNotifyUrl("https://" + HttpContext.Current.Request.Url.Host + ":" + HttpContext.Current.Request.Url.Port + "/api/Recharge/AsyncPay");
                 //这里和普通的接口调用不同，使用的是sdkExecute
                 AlipayTradeAppPayResponse response = client.SdkExecute(request);
                 //页面输出的response.Body就是orderString 可以直接给客户端请求，无需再做处理。
