@@ -28,7 +28,7 @@ namespace Qiuxun.C8.Api.Service.Data
                 (
                   SELECT  UserId, Date, Score,b.Name as NickName,isnull(c.RPath,'') as Avater 
                   FROM dbo.SuperiorRecord a
-                  left join UserInfo b on b.Id=a.UserId
+                  join UserInfo b on b.Id=a.UserId
                   left join ResourceMapping c on c.FkId=a.UserId and c.[Type]=@ResourceType
                  )t
                  where 1=1   {0}
@@ -103,7 +103,7 @@ namespace Qiuxun.C8.Api.Service.Data
                   select row_number() over(order by Score DESC ) as [Rank], * from (
                   SELECT Top 100 isnull(sum(a.Score),0) as Score,a.UserId, a.lType,b.Name as NickName,c.RPath as Avater 
                   FROM dbo.SuperiorRecord a
-                  left join UserInfo b on b.Id=a.UserId
+                  join UserInfo b on b.Id=a.UserId
                   left join ResourceMapping c on c.FkId=a.UserId and c.[Type]=2
                   WHERE a.lType=@lType {0}
                   GROUP BY a.lType,a.UserId,b.Name,c.RPath
@@ -153,7 +153,7 @@ namespace Qiuxun.C8.Api.Service.Data
                     (select 
                     b.UserId,a.Money,b.lType,c.Name as NickName,d.RPath as Avater  from [dbo].[ComeOutRecord] a
                     left join BettingRecord b on b.Id=a.OrderId 
-                    left join UserInfo c on c.Id=b.UserId
+                    join UserInfo c on c.Id=b.UserId
                     left join ResourceMapping d on d.FkId=b.UserId and d.[Type]=@ResourceType
                     where a.Type=@RType and b.lType=@lType
                     {0}

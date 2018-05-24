@@ -167,10 +167,10 @@ namespace Qiuxun.C8.Api.Service.Data
             {
                 return new ApiResult<BettingRecord>() { Code = 6001, Desc = "彩种名称不能为空", Data = null };
             }
-            if (uid == userId)
-            {
-                return new ApiResult<BettingRecord>() { Code = 6002, Desc = "相同用户，不能获取", Data = null };
-            }
+            //if (uid == userId)
+            //{
+            //    return new ApiResult<BettingRecord>() { Code = 6002, Desc = "相同用户，不能获取", Data = null };
+            //}
 
             #region 校验,添加点阅记录，扣费，分佣
             UserInfo user = PersonalService.GetUser(userId);
@@ -189,6 +189,14 @@ namespace Qiuxun.C8.Api.Service.Data
             if (lastBettingRecord == null)
             {
                 return new ApiResult<BettingRecord>() { Code = 6003, Desc = "未获取到数据", Data = null };
+            }
+
+            if (uid == userId)
+            {
+                return new ApiResult<BettingRecord>()
+                {
+                    Data = lastBettingRecord
+                };
             }
 
             //如果是使用金币查看,否则使用查看劵查看
@@ -409,7 +417,7 @@ namespace Qiuxun.C8.Api.Service.Data
                     list.Add(e);
                 }
 
-               // CacheHelper.WriteCache(memberKey, list, 144000);
+                // CacheHelper.WriteCache(memberKey, list, 144000);
                 CacheHelper.AddCache(memberKey, list, 144000);
                 return new ApiResult();
             }
@@ -457,6 +465,9 @@ namespace Qiuxun.C8.Api.Service.Data
             var model = Util.GetEntityById<BettingRecord>(id);
             if (model == null)
                 return new ApiResult(60017, "该计划不存在");
+
+            if (model.UserId == userId)
+                return new ApiResult(60019, "不能打赏你自己");
 
             //step3.验证用户金币是否充足
             if (user.Coin < coin)
@@ -793,7 +804,7 @@ namespace Qiuxun.C8.Api.Service.Data
                 list = Util.ReaderToList<CommissionSetting>(sql);
                 if (list != null)
                 {
-                   // CacheHelper.WriteCache(memKey, list, 60);
+                    // CacheHelper.WriteCache(memKey, list, 60);
                     CacheHelper.AddCache(memKey, list, 60);
                 }
             }
@@ -847,7 +858,7 @@ namespace Qiuxun.C8.Api.Service.Data
 
             if (list != null)
             {
-               // CacheHelper.WriteCache(memKey, list);
+                // CacheHelper.WriteCache(memKey, list);
                 CacheHelper.AddCache(memKey, list);
                 return list;
             }
