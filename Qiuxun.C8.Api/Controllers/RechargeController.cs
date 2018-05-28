@@ -14,6 +14,7 @@ using Senparc.Weixin.MP.TenPayLibV3;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -29,7 +30,7 @@ namespace Qiuxun.C8.Api.Controllers
     public class RechargeController : QiuxunApiController
     {
         private static object _lock = new object();
-
+        private static string ApiHost = ConfigurationManager.AppSettings["apiHost"];
         RechargeService _service = new RechargeService();
 
         private string GetRandom()
@@ -59,9 +60,10 @@ namespace Qiuxun.C8.Api.Controllers
         public ApiResult GetWxInfo(int money)
         {
             spbillCreateIp = Tool.GetIP();//HttpContext.Current.Request.UserHostAddress;
-            notifyUrl = "https://" + HttpContext.Current.Request.Url.Host + ":" + HttpContext.Current.Request.Url.Port + "/api/Recharge/WxNotify";
+            notifyUrl = ApiHost + "/api/Recharge/WxNotify";
             nonceStr = Guid.NewGuid().ToString("N");
 
+            LogHelper.Info("notifyUrl=" + notifyUrl);
 
             var result = new ApiResult<WXResDto>();
             WXResDto model = new WXResDto();
@@ -193,6 +195,8 @@ namespace Qiuxun.C8.Api.Controllers
 
             if (_service.AddComeOutRecord(zFBResDto.OrderId, money, 2, (int)this.UserInfo.UserId))
             {
+                notifyUrl = ApiHost + "/api/Recharge/AsyncPay";
+                LogHelper.Info("notifyUrl=" + notifyUrl);
                 IAopClient client = new DefaultAopClient(apiUrl, app_id, merchant_private_key, format, version, sign_type, alipay_public_key, charset, false);
                 //实例化具体API对应的request类,类名称和接口名称对应,当前调用接口名称如：alipay.trade.app.pay
                 AlipayTradeAppPayRequest request = new AlipayTradeAppPayRequest();
@@ -205,7 +209,7 @@ namespace Qiuxun.C8.Api.Controllers
                 model.OutTradeNo = zFBResDto.OrderId;
                 model.TimeoutExpress = "5m";
                 request.SetBizModel(model);
-                request.SetNotifyUrl("https://" + HttpContext.Current.Request.Url.Host + ":" + HttpContext.Current.Request.Url.Port + "/api/Recharge/AsyncPay");
+                request.SetNotifyUrl(notifyUrl);
                 //这里和普通的接口调用不同，使用的是sdkExecute
                 AlipayTradeAppPayResponse response = client.SdkExecute(request);
                 //页面输出的response.Body就是orderString 可以直接给客户端请求，无需再做处理。
