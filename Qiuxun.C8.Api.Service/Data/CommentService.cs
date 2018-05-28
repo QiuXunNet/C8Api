@@ -402,7 +402,9 @@ from Comment a
                 RefCommentId = x.RefCommentId,
                 ReplayCount = x.ReplayCount,
                 StarCount = x.StarCount,
-                ParentComment = GetParentComment(x.PId)
+                ParentComment = GetParentComment(x.PId),
+                SubTime = x.SubTime,
+                UserId = x.UserId
             }).ToList();
 
             return new ApiResult<List<CommentResDto>>()
