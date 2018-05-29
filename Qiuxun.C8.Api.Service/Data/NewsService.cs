@@ -218,6 +218,7 @@ WHERE [TypeId]=@TypeId and DeleteMark=0 and EnabledMark=1 ";
         /// <returns></returns>
         public ApiResult<PagedListDto<GalleryTypeResDto>> GetGalleryTypeList(long ltype, int newsTypeId)
         {
+           
             string sql = @" SELECT Max(a.Id) as Id, FullHead as Name, right(Max(a.LotteryNumber),3) as LastIssue,isnull(a.QuickQuery,'#') as QuickQuery
  from News  a
  left join NewsType b on b.Id= a.TypeId
@@ -458,6 +459,12 @@ ORDER BY ModifyDate DESC,SortCode ASC ";
         /// <returns></returns>
         public ApiResult<List<Gallery>> GetGalleryList(int articleId)
         {
+            //添加新闻PV计数
+            new Task(() =>
+            {
+                AddNewsPv(articleId);
+            }).Start();
+
             var news = Util.GetEntityById<News>(articleId);
 
             var galleryList = GetGalleries(news.Id, news.FullHead, (int)news.TypeId);
