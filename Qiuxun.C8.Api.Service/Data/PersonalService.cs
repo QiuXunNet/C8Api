@@ -856,7 +856,7 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
             pager.PageIndex = pageIndex;
             pager.PageSize = pageSize;
             string sql = @"SELECT * FROM (
-	                      select row_number() over(order by SubTime DESC ) as rowNumber,a.Id,a.UserId,a.Module,a.AccessTime,isnull(b.Name,'') as NickName,isnull(c.RPath,'') as Avater from  [dbo].[AccessRecord] a
+	                      select row_number() over(order by AccessTime DESC ) as rowNumber,a.Id,a.UserId,a.Module,a.AccessTime,isnull(b.Name,'') as NickName,isnull(c.RPath,'') as Avater from  [dbo].[AccessRecord] a
 	                      left join UserInfo b on b.Id=a.UserId
 	                      left join ResourceMapping c on c.FkId=a.UserId and c.[Type]=@ResourceType
 	                      where a.RespondentsUserId=@RespondentsUserId
