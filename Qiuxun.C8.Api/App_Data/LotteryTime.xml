@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <LotteryRule>
-  <Rule BeginIssue ="23" Name="重庆时时彩" LType="9" BeginTime="09:50" EndTime="22:00" TimeInterval="10" LotteryInterval="30" IsStop="0"></Rule>
-  <Rule BeginIssue ="96" Name="重庆时时彩" LType="9" BeginTime="22:00" EndTime="02:00" TimeInterval="5" LotteryInterval="30" IsStop="0"></Rule>
+  <Rule BeginIssue ="24" Name="重庆时时彩" LType="9" BeginTime="09:50" EndTime="22:00" TimeInterval="10" LotteryInterval="30" IsStop="0"></Rule>
+  <Rule BeginIssue ="97" Name="重庆时时彩" LType="9" BeginTime="22:00" EndTime="02:00" TimeInterval="5" LotteryInterval="30" IsStop="0"></Rule>
   <Rule BeginIssue ="1" Name="黑龙江时时彩" LType="10" BeginTime="08:41" EndTime="23:21" TimeInterval="10" LotteryInterval="30" IsStop="0"></Rule>
   <Rule BeginIssue ="1" Name="内蒙古时时彩" LType="11" BeginTime="" EndTime="" TimeInterval="" LotteryInterval="30" IsStop="1"></Rule>
   <Rule BeginIssue ="1" Name="天津时时彩" LType="12" BeginTime="09:00" EndTime="23:00" TimeInterval="10" LotteryInterval="30" IsStop="0"></Rule>
@@ -43,7 +43,7 @@
   <Rule BeginIssue ="1" Name="江西快三" LType="48" BeginTime="08:55" EndTime="22:55" TimeInterval="10" LotteryInterval="30" IsStop="0"></Rule>
   <Rule BeginIssue ="1" Name="内蒙古快三" LType="49" BeginTime="09:35" EndTime="21:55" TimeInterval="10" LotteryInterval="30" IsStop="0"></Rule>
   <Rule BeginIssue ="1" Name="上海快三" LType="50" BeginTime="08:48" EndTime="22:28" TimeInterval="10" LotteryInterval="30" IsStop="0"></Rule>
-  <Rule BeginIssue ="13" Name="重庆快乐十分" LType="51" BeginTime="09:53" EndTime="02:03" TimeInterval="10" LotteryInterval="30" IsStop="0"></Rule>
+  <Rule BeginIssue ="14" Name="重庆快乐十分" LType="51" BeginTime="09:53" EndTime="02:03" TimeInterval="10" LotteryInterval="30" IsStop="0"></Rule>
   <Rule BeginIssue ="1" Name="广东快乐十分" LType="52" BeginTime="09:00" EndTime="23:00" TimeInterval="10" LotteryInterval="30" IsStop="0"></Rule>
   <Rule BeginIssue ="1" Name="广西快乐十分" LType="53" BeginTime="08:55" EndTime="21:25" TimeInterval="15" LotteryInterval="30" IsStop="0"></Rule>
   <Rule BeginIssue ="1" Name="黑龙江快乐十分" LType="54" BeginTime="08:35" EndTime="22:35" TimeInterval="10" LotteryInterval="30" IsStop="0"></Rule>

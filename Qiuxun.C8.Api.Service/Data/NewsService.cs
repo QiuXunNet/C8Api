@@ -500,30 +500,48 @@ ORDER BY ModifyDate DESC,SortCode ASC ";
         /// <returns></returns>
         public ApiResult<List<NewsListResDto>> GetHotNewsList(int count)
         {
-            string hotArticlesql = "SELECT TOP " + count + @" [Id],[FullHead],[SortCode],[Thumb],[ReleaseTime],[ThumbStyle],[TypeId],
-(SELECT COUNT(1) FROM[dbo].[Comment] WHERE [ArticleId]=a.Id and RefCommentId=0) as CommentCount
-FROM [dbo].[News] a
-WHERE  DeleteMark=0 AND EnabledMark=1
-ORDER BY CommentCount DESC,SortCode ASC ";
-
-
-            var list = Util.ReaderToList<News>(hotArticlesql);
-
-
-            int sourceType = (int)ResourceTypeEnum.新闻缩略图;
-            var data = list.Select(x => new NewsListResDto()
+            List<NewsListResDto> data = CacheHelper.GetCache<List<NewsListResDto>>("GetNewListToWebAPI");
+            if (data == null)
             {
-                Id = x.Id,
-                ParentId = x.ParentId,
-                CommentCount = x.CommentCount,
-                ReleaseTime = x.ReleaseTime,
-                SortCode = x.SortCode,
-                ThumbStyle = x.ThumbStyle,
-                Title = x.FullHead,
-                TypeId = x.TypeId,
-                ThumbList = sourceService.GetResources(sourceType, x.Id)
-                                .Select(n => n.RPath).ToList()
-            }).ToList();
+                //string hotArticlesql = "SELECT TOP " + count + @" [Id],[FullHead],[SortCode],[Thumb],[ReleaseTime],[ThumbStyle],[TypeId],
+                //(SELECT COUNT(1) FROM[dbo].[Comment] WHERE [ArticleId]=a.Id and RefCommentId=0) as CommentCount
+                //FROM [dbo].[News] a
+                //WHERE  DeleteMark=0 AND EnabledMark=1
+                //ORDER BY CommentCount DESC,SortCode ASC ";
+
+                string hotArticlesql = @"select top " + count + @" n.Id,n.FullHead,n.SortCode,n.Thumb,n.ReleaseTime,n.ThumbStyle ,
+                    count(c.id) as CommentCount
+                    from News n
+                    left join Comment c on n.id = c.ArticleId and RefCommentId = 0
+                    where n.id in(
+                    select max(n.Id) from News n 
+                    join newsType nt on n.TypeId = nt.Id
+                    where nt.lType in (1,2,3,4,6) and nt.SortCode = 1 and n.DeleteMark=0 and n.EnabledMark = 1
+                    group by nt.lType
+                    )
+                    group by n.Id,n.FullHead,n.SortCode,n.Thumb,n.ReleaseTime,n.ThumbStyle";
+
+                var list = Util.ReaderToList<News>(hotArticlesql);
+
+                //int sourceType = (int)ResourceTypeEnum.新闻缩略图;
+                data = list.Select(x => new NewsListResDto()
+                {
+                    Id = x.Id,
+                    ParentId = x.ParentId,
+                    CommentCount = x.CommentCount,
+                    ReleaseTime = x.ReleaseTime,
+                    SortCode = x.SortCode,
+                    ThumbStyle = x.ThumbStyle,
+                    Title = x.FullHead,
+                    TypeId = x.TypeId,
+                    //ThumbList = sourceService.GetResources(sourceType, x.Id)
+                    //                .Select(n => n.RPath).ToList()
+                    ThumbList = new List<string>()
+                }).ToList();
+
+                //新闻缓存2小时
+                CacheHelper.AddCache<List<NewsListResDto>>("GetNewListToWebAPI", data, 2 * 60);
+            }
 
             return new ApiResult<List<NewsListResDto>>()
             {
