@@ -340,6 +340,7 @@
     <Compile Include="Model\News\LikeRecord.cs" />
     <Compile Include="Model\News\News.cs" />
     <Compile Include="Model\News\NewsType.cs" />
+    <Compile Include="Model\PageView.cs" />
     <Compile Include="Model\Plan.cs" />
     <Compile Include="Model\Play.cs" />
     <Compile Include="Model\RankingList.cs" />
