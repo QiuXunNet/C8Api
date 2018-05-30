@@ -164,7 +164,10 @@ order by a.LotteryNumber desc";
         /// <returns></returns>
         public ApiResult<PagedListDto<NewsListResDto>> GetNewsList(int ltype, int pageIndex, int pageSize)
         {
-            string sql = @"SELECT * FROM ( 
+            List<News> list = CacheHelper.GetCache<List<News>>(string.Format("z_newslist_{0}_{1}", ltype, pageIndex));
+            if (list == null || list.Count <= 0)
+            {
+                string sql = @"SELECT * FROM ( 
                             SELECT row_number() over(order by SortCode ASC, LotteryNumber DESC, ReleaseTime DESC ) as rowNumber,
                             [Id],[FullHead],[SortCode],[Thumb],[ReleaseTime],[ThumbStyle],(SELECT COUNT(1) FROM [dbo].[Comment] WHERE [ArticleId]=a.Id and RefCommentId=0) as CommentCount
                             ,STUFF((SELECT ',' + RPath FROM  dbo.ResourceMapping WHERE  Type=1 AND FkId=a.Id FOR XML PATH('')), 1, 1, '') AS ThumbListStr
@@ -172,17 +175,17 @@ order by a.LotteryNumber desc";
                             WHERE [TypeId]=@TypeId and DeleteMark=0 and EnabledMark=1 ) T
                             WHERE rowNumber BETWEEN @Start AND @End 
                             ORDER BY rowNumber";
-            SqlParameter[] parameters =
-            {
+                SqlParameter[] parameters =
+                {
                 new SqlParameter("@TypeId",SqlDbType.BigInt),
                 new SqlParameter("@Start",SqlDbType.Int),
                 new SqlParameter("@End",SqlDbType.Int),
-            };
-            parameters[0].Value = ltype;
-            parameters[1].Value = (pageIndex - 1) * pageSize + 1;
-            parameters[2].Value = pageSize * pageIndex;
-            var list = Util.ReaderToList<News>(sql, parameters) ?? new List<News>();
-
+                };
+                parameters[0].Value = ltype;
+                parameters[1].Value = (pageIndex - 1) * pageSize + 1;
+                parameters[2].Value = pageSize * pageIndex;
+                list = Util.ReaderToList<News>(sql, parameters) ?? new List<News>();
+            }
             var pageData = list.Select(x => new NewsListResDto()
             {
                 Id = x.Id,
@@ -219,40 +222,46 @@ WHERE [TypeId]=@TypeId and DeleteMark=0 and EnabledMark=1 ";
         public ApiResult<PagedListDto<GalleryTypeResDto>> GetGalleryTypeList(long ltype, int newsTypeId)
         {
 
-            string sql = @" SELECT Max(a.Id) as Id, FullHead as Name, right(Max(a.LotteryNumber),3) as LastIssue,isnull(a.QuickQuery,'#') as QuickQuery
- from News  a
- left join NewsType b on b.Id= a.TypeId
- where a.TypeId=@NewsTypeId and b.lType=@LType and DeleteMark=0 and EnabledMark=1
- group by a.FullHead,a.QuickQuery
- order by a.QuickQuery";
+            List<GalleryTypeResDto> list = CacheHelper.GetCache<List<GalleryTypeResDto>>(string.Format("z_GalleryTypeList_{0}_{1}", ltype, newsTypeId));
             SqlParameter[] parameters =
-            {
+                {
                 new SqlParameter("@NewsTypeId",SqlDbType.Int),
                 new SqlParameter("@LType",SqlDbType.BigInt)
             };
             parameters[0].Value = newsTypeId;
             parameters[1].Value = ltype;
+            if (list == null)
+            {
+                string sql = @" SELECT Max(a.Id) as Id, FullHead as Name, right(Max(a.LotteryNumber),3) as LastIssue,isnull(a.QuickQuery,'#') as QuickQuery
+                                 from News  a
+                                 left join NewsType b on b.Id= a.TypeId
+                                 where a.TypeId=@NewsTypeId and b.lType=@LType and DeleteMark=0 and EnabledMark=1
+                                 group by a.FullHead,a.QuickQuery
+                                 order by a.QuickQuery";
 
-            var list = Util.ReaderToList<GalleryTypeResDto>(sql, parameters) ?? new List<GalleryTypeResDto>();
 
+                list = Util.ReaderToList<GalleryTypeResDto>(sql, parameters) ?? new List<GalleryTypeResDto>();
+            }
             var page = new PagedList<GalleryTypeResDto>(list, 1, 10000, list.Count)
                 .GetPagedListDto();
 
             //查询推荐图
-            string recGallerySql = @" SELECT TOP 3 a.Id,FullHead as Name,LotteryNumber as Issue FROM News a 
- left join NewsType b on b.Id= a.TypeId
- where a.RecommendMark=1 and DeleteMark=0 and EnabledMark=1 and TypeId=@NewsTypeId and b.lType=@LType order by ModifyDate DESC";
-            var recGalleryList = Util.ReaderToList<Gallery>(recGallerySql, parameters);
-
-            int sourceType = (int)ResourceTypeEnum.新闻缩略图;
-            recGalleryList.ForEach(x =>
+            List<Gallery> recGalleryList = CacheHelper.GetCache<List<Gallery>>(string.Format("z_GalleryList_{0}_{1}", ltype, newsTypeId));
+            if (recGalleryList == null)
             {
-                var pic = sourceService.GetResources(sourceType, x.Id);
-                if (pic.Count > 0)
-                {
-                    x.Picture = pic[0].RPath;
-                }
-            });
+                string recGallerySql = @" SELECT TOP 3 a.Id,FullHead as Name,LotteryNumber as Issue,
+                                            STUFF(( SELECT  ',' + RPath
+                                                            FROM    dbo.ResourceMapping
+                                                            WHERE   Type = 1
+                                                                    AND FkId = a.Id
+                                                          FOR
+                                                            XML PATH('')
+                                                          ), 1, 1, '') AS Picture
+                                        FROM News a 
+                                         left join NewsType b on b.Id= a.TypeId
+                                         where a.RecommendMark=1 and DeleteMark=0 and EnabledMark=1 and TypeId=@NewsTypeId and b.lType=@LType order by ModifyDate DESC";
+                recGalleryList = Util.ReaderToList<Gallery>(recGallerySql, parameters);
+            }
             page.ExtraData = recGalleryList;
 
             return new ApiResult<PagedListDto<GalleryTypeResDto>>()
@@ -272,10 +281,10 @@ WHERE [TypeId]=@TypeId and DeleteMark=0 and EnabledMark=1 ";
             //获取新闻实体
 
             string sql = @"SELECT 
-[Id],[FullHead],[SortCode],[Thumb],[TypeId],[ReleaseTime],[ThumbStyle],NewsContent,
-(SELECT COUNT(1) FROM [dbo].[Comment] WHERE [ArticleId]=a.Id and RefCommentId=0) as CommentCount
-FROM [dbo].[News] a
-WHERE [Id]=@Id and DeleteMark=0 and EnabledMark=1 ";
+                            [Id],[FullHead],[SortCode],[Thumb],[TypeId],[ReleaseTime],[ThumbStyle],NewsContent,
+                            (SELECT COUNT(1) FROM [dbo].[Comment] WHERE [ArticleId]=a.Id and RefCommentId=0) as CommentCount
+                            FROM [dbo].[News] a
+                            WHERE [Id]=@Id and DeleteMark=0 and EnabledMark=1 ";
             SqlParameter[] parameters =
             {
                 new SqlParameter("@Id",id),
@@ -438,19 +447,24 @@ ORDER BY SortCode desc,Id DESC";
         /// <returns></returns>
         public ApiResult<List<NewsListResDto>> GetRecommendNewsList(int newsTypeId)
         {
-            string recommendArticlesql = @"SELECT TOP 3 [Id],TypeId,[FullHead],[SortCode],[Thumb],[ReleaseTime],[ThumbStyle],
-(SELECT COUNT(1) FROM[dbo].[Comment] WHERE [ArticleId]=a.Id and RefCommentId=0) as CommentCount
-FROM [dbo].[News] a
-WHERE [TypeId] = @TypeId AND DeleteMark=0 AND EnabledMark=1
-ORDER BY ModifyDate DESC,SortCode ASC ";
-            //AND RecommendMark = 1
-
-            var recommendArticleParameters = new[]
+            List<News> list = CacheHelper.GetCache<List<News>>(("z_newstop3list_" + newsTypeId));
+            if (list == null || list.Count <= 0)
             {
-                new SqlParameter("@TypeId",newsTypeId),
-            };
+                string recommendArticlesql = @"SELECT TOP 3 [Id],TypeId,[FullHead],[SortCode],[Thumb],[ReleaseTime],[ThumbStyle],
+                                                (SELECT COUNT(1) FROM[dbo].[Comment] WHERE [ArticleId]=a.Id and RefCommentId=0) as CommentCount
+                                                FROM [dbo].[News] a
+                                                WHERE [TypeId] = @TypeId AND DeleteMark=0 AND EnabledMark=1
+                                                ORDER BY ModifyDate DESC,SortCode ASC ";
+                //AND RecommendMark = 1
 
-            var list = Util.ReaderToList<News>(recommendArticlesql, recommendArticleParameters);
+                var recommendArticleParameters = new[]
+                {
+                    new SqlParameter("@TypeId",newsTypeId),
+                };
+
+                list = Util.ReaderToList<News>(recommendArticlesql, recommendArticleParameters);
+                CacheHelper.AddCache<List<News>>(("z_newstop3list_" + newsTypeId), list, 120);
+            }
 
 
             int sourceType = (int)ResourceTypeEnum.新闻缩略图;
@@ -503,14 +517,18 @@ ORDER BY ModifyDate DESC,SortCode ASC ";
         {
 
             var news = Util.GetEntityById<News>(articleId);
-            string recGallerySql = " SELECT TOP " + count + @" FullHead as Name, Id,LotteryNumber as Issue 
- from News where Id  in(
-	select max(id) from News where TypeId=" + news.TypeId + @" group by FullHead having count(FullHead)>=1
- )
- and DeleteMark=0 and EnabledMark=1 
- order by RecommendMark DESC,LotteryNumber DESC,ModifyDate DESC";
-            var recGalleryList = Util.ReaderToList<RecommendGalleryResDto>(recGallerySql);
-
+            List<RecommendGalleryResDto> recGalleryList = CacheHelper.GetCache<List<RecommendGalleryResDto>>(("z_recGalleryList_" + articleId));
+            if (recGalleryList == null || recGalleryList.Count <= 0)
+            {
+                string recGallerySql = " SELECT TOP " + count + @" FullHead as Name, Id,LotteryNumber as Issue 
+                                         from News where Id  in(
+	                                        select max(id) from News where TypeId=" + news.TypeId + @" group by FullHead having count(FullHead)>=1
+                                         )
+                                         and DeleteMark=0 and EnabledMark=1 
+                                         order by RecommendMark DESC,LotteryNumber DESC,ModifyDate DESC";
+                recGalleryList = Util.ReaderToList<RecommendGalleryResDto>(recGallerySql);
+                CacheHelper.AddCache<List<RecommendGalleryResDto>>(("z_recGalleryList_" + articleId), recGalleryList, 60);
+            }
             return new ApiResult<List<RecommendGalleryResDto>>()
             {
                 Data = recGalleryList

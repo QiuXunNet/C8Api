@@ -100,8 +100,8 @@ namespace Qiuxun.C8.Api.Service.Data
         {
 
             string strsql = string.Format(@"
-                  select row_number() over(order by Score DESC ) as [Rank], * from (
-                  SELECT Top 100 isnull(sum(a.Score),0) as Score,a.UserId, a.lType,b.Name as NickName,c.RPath as Avater 
+                  select Top 100 row_number() over(order by Score DESC ) as [Rank], * from (
+                  SELECT isnull(sum(a.Score),0) as Score,a.UserId, a.lType,b.Name as NickName,c.RPath as Avater 
                   FROM dbo.SuperiorRecord a
                   join UserInfo b on b.Id=a.UserId
                   left join ResourceMapping c on c.FkId=a.UserId and c.[Type]=2
