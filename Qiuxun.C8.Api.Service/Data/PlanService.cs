@@ -646,7 +646,7 @@ namespace Qiuxun.C8.Api.Service.Data
 
             string sqlWhere = type == 1 ? ">=" : "<";
 
-            #region 分页查询专家排行数据行
+            #region 分页查询专家排行数据行--CPU高
             string sql = string.Format(@"select * from (
                                          select top 100 row_number() over(order by a.playTotalScore DESC ) as rowNumber,
                                             a.*,b.ltypeTotalScore,c.MinIntegral,isnull(d.Name,'') as Name,isnull(e.RPath,'') as avater 
@@ -691,7 +691,7 @@ namespace Qiuxun.C8.Api.Service.Data
 
             #endregion
 
-            #region 数据总行数
+            #region 数据总行数--CPU高
             //查询分页总数量
             string countSql = string.Format(@"select count(1) from (
                                               select UserId,lType,PlayName, isnull( sum(score),0) AS playTotalScore from [dbo].[BettingRecord]
