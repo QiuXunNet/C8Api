@@ -18,27 +18,46 @@ namespace Qiuxun.C8.Api.Service.Data
 {
     public class PlanService
     {
+        LotteryService lotteryService = new LotteryService();
         /// <summary>
         /// 获取官方计划推荐数据(分页)
         /// </summary>
         public PagedListP<Plan> GetPlanData(int lType, int pageIndex, int pageSize)
         {
-            var pager = new PagedListP<Plan>();
-            int count = Util.GetGFTJCount(lType);
-            int totalSize = (pageSize + 1) * count;
 
-            pager.PageSize = totalSize;
-            pager.PageIndex = pageIndex;
-            string totalsql = "select COUNT(1) from ( select row_number() over(order by Id desc) as rownumber,* from [Plan] where lType = " + lType + ") as temp";
-            string sql = string.Format(@"select top {0} temp.* from ( 
+            string memcacheKey = string.Format("recommendPlanData_api_{0}_{1}", lType, pageIndex);
+
+            var pager = CacheHelper.GetCache<PagedListP<Plan>>(memcacheKey);
+
+            if (pager == null)
+            {
+                int count = Util.GetGFTJCount(lType);
+                int totalSize = (pageSize + 1) * count;
+
+                pager = new PagedListP<Plan>();
+                pager.PageSize = totalSize;
+                pager.PageIndex = pageIndex;
+                string totalsql =
+                    "select COUNT(1) from ( select row_number() over(order by Id desc) as rownumber,* from [Plan] where lType = " +
+                    lType + ") as temp";
+                string sql = string.Format(@"select top {0} temp.* from ( 
        select row_number() over(order by a.Id desc,a.Sort) as rownumber,a.*,b.Num as OpenNum,b.SubTime as OpenTime 
 	    from [Plan] a 
 	    left join LotteryRecord b on b.Issue=a.Issue and b.lType=a.lType
         where a.lType = {1}
     )as temp where rownumber>{2} 
 	order by temp.Issue desc,temp.Sort", totalSize, lType, (pageIndex - 1) * totalSize);
-            pager.PageData = Util.ReaderToList<Plan>(sql);        //计划列表
-            pager.TotalCount = ToolsHelper.ObjectToInt(SqlHelper.ExecuteScalar(totalsql));
+                pager.PageData = Util.ReaderToList<Plan>(sql); //计划列表
+                pager.TotalCount = ToolsHelper.ObjectToInt(SqlHelper.ExecuteScalar(totalsql));
+
+                int memcacheTimeout = 4;
+                if (lType < 9)
+                {
+                    memcacheTimeout = 1440; //24小时
+                }
+                CacheHelper.AddCache(memcacheKey, pager, memcacheTimeout);
+            }
+
             return pager;
         }
 
@@ -644,83 +663,77 @@ namespace Qiuxun.C8.Api.Service.Data
             pager.PageIndex = pageIndex;
             pager.PageSize = pageSize;
 
-            string sqlWhere = type == 1 ? ">=" : "<";
+            var playList = lotteryService.GetPlayList(lType).Data;
 
-            #region 分页查询专家排行数据行--CPU高
-            string sql = string.Format(@"select * from (
-                                         select top 100 row_number() over(order by a.playTotalScore DESC ) as rowNumber,
-                                            a.*,b.ltypeTotalScore,c.MinIntegral,isnull(d.Name,'') as Name,isnull(e.RPath,'') as avater 
-                                        from (
-                                          select UserId,lType,PlayName, isnull( sum(score),0) AS playTotalScore from [C8].[dbo].[BettingRecord]
-                                          where WinState>1 and lType=@lType and PlayName=@PlayName
-                                          group by UserId, lType, PlayName
-                                         ) a
-                                          left join (
-                                           select UserId,lType, isnull( sum(score),0) AS ltypeTotalScore from [C8].[dbo].[BettingRecord]
-                                           where WinState>1 and lType=@lType
-                                           group by UserId, lType
-                                          ) b on b.lType=a.lType and b.UserId=a.UserId
-                                          left join ( 
-	                                        select lType, isnull( min(MinIntegral),0) as MinIntegral 
-	                                        from [dbo].[LotteryCharge] 
-                                            where lType=@lType
-                                            group by lType
-                                          ) c on c.lType=a.lType
-                                          left join UserInfo d on d.Id=a.UserId
-                                          left join ResourceMapping e on e.FkId =a.UserId and e.[Type]=@ResourceType
+            int? playNameId = playList.FirstOrDefault(x => x.PlayName == playName)?.Id;
 
-                                          where b.ltypeTotalScore {0} c.MinIntegral and a.PlayName=@PlayName and a.lType=@lType 
-                                          ) tt
-                                          where tt.rowNumber between @Start and  @End", sqlWhere);
-
-            var sqlParameter = new[]
+            if (!playNameId.HasValue)
             {
-                new SqlParameter("@ResourceType",(int)ResourceTypeEnum.用户头像),
-                new SqlParameter("@PlayName",playName),
-                new SqlParameter("@lType",lType),
-                new SqlParameter("@Start",pager.StartIndex),
-                new SqlParameter("@End",pager.EndIndex),
+                return pager;
+            }
 
-            };
-            pager.PageData = Util.ReaderToList<Expert>(sql, sqlParameter);
+            string memcacheKey = string.Format("expertList_{0}_{1}_{2}", lType, playNameId, type);
+            var list = CacheHelper.GetCache<List<Expert>>(memcacheKey);
 
-            pager.PageData.ForEach(x =>
+            if (list == null)
             {
-                GetLastBettingRecord(x);
-            });
+                string sqlWhere = type == 1 ? ">=" : "<";
+                string sql = string.Format(@"
+ select top 100 row_number() over(order by a.playTotalScore DESC ) as rowNumber,
+    a.*,b.ltypeTotalScore,c.MinIntegral,isnull(d.Name,'') as Name,isnull(e.RPath,'') as avater 
+from (
+  select UserId,lType,PlayName, isnull( sum(score),0) AS playTotalScore from [C8].[dbo].[BettingRecord]
+  where WinState>1 and lType=@lType and PlayName=@PlayName
+  group by UserId, lType, PlayName
+ ) a
+  left join (
+   select UserId,lType, isnull( sum(score),0) AS ltypeTotalScore from [C8].[dbo].[BettingRecord]
+   where WinState>1 and lType=@lType
+   group by UserId, lType
+  ) b on b.lType=a.lType and b.UserId=a.UserId
+  left join ( 
+	select lType, isnull( min(MinIntegral),0) as MinIntegral 
+	from [dbo].[LotteryCharge] 
+    where lType=@lType
+    group by lType
+  ) c on c.lType=a.lType
+  left join UserInfo d on d.Id=a.UserId
+  left join ResourceMapping e on e.FkId =a.UserId and e.[Type]=@ResourceType
 
+  where b.ltypeTotalScore {0} c.MinIntegral and a.PlayName=@PlayName and a.lType=@lType 
+  ", sqlWhere);
+
+                var sqlParameter = new[]
+                {
+                    new SqlParameter("@ResourceType",(int)ResourceTypeEnum.用户头像),
+                    new SqlParameter("@PlayName",playName),
+                    new SqlParameter("@lType",lType),
+
+                };
+                list = Util.ReaderToList<Expert>(sql, sqlParameter);
+
+                if (list == null)
+                {
+                    return pager;
+                }
+
+                list.ForEach(x =>
+                {
+                    GetLastBettingRecord(x, 10);
+                });
+
+                CacheHelper.AddCache(memcacheKey, list, 120);
+            }
+
+
+            #region 分页查询专家排行数据行
+
+            pager.PageData = list.Skip(pager.StartIndex - 1).Take(pageSize).ToList();
+
+
+            pager.TotalCount = list.Count;
             #endregion
 
-            #region 数据总行数--CPU高
-            //查询分页总数量
-            string countSql = string.Format(@"select count(1) from (
-                                              select UserId,lType,PlayName, isnull( sum(score),0) AS playTotalScore from [dbo].[BettingRecord]
-                                              where WinState>1 and lType=@lType and PlayName=@PlayName
-                                              group by UserId, lType, PlayName
-                                             ) a
-                                              left join (
-                                               select UserId,lType, isnull( sum(score),0) AS ltypeTotalScore from [dbo].[BettingRecord]
-                                               where WinState>1 and lType=@lType
-                                               group by UserId, lType
-                                              ) b on b.lType=a.lType and b.UserId=a.UserId
-                                              left join ( 
-	                                            select lType, isnull( min(MinIntegral),0) as MinIntegral 
-	                                            from [dbo].[LotteryCharge]
-                                                where lType=@lType
-                                                group by lType
-                                              ) c on c.lType=a.lType
-
-                                              where b.ltypeTotalScore {0} c.MinIntegral and a.PlayName=@PlayName and a.lType=@lType", sqlWhere);
-
-            var countSqlParameter = new[]
-            {
-                new SqlParameter("@PlayName",playName),
-                new SqlParameter("@lType",lType),
-            };
-            object obj = SqlHelper.ExecuteScalar(countSql, countSqlParameter);
-            int totalCount = Convert.ToInt32(obj ?? 0);
-            pager.TotalCount = totalCount > 100 ? 100 : totalCount;
-            #endregion
             return pager;
         }
 
