@@ -562,7 +562,7 @@ ORDER BY SortCode desc,Id DESC";
                     where nt.lType in (1,2,3,4,6) and nt.SortCode = 1 and n.DeleteMark=0 and n.EnabledMark = 1
                     group by nt.lType
                     )
-                    group by n.Id,n.FullHead,n.SortCode,n.Thumb,n.ReleaseTime,n.ThumbStyle";
+                    group by n.Id,n.FullHead,n.SortCode,n.Thumb,n.ReleaseTime,n.ThumbStyle,TypeId";
 
                 var list = Util.ReaderToList<News>(hotArticlesql);
 
