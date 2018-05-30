@@ -110,14 +110,35 @@ namespace Qiuxun.C8.Api.Service.Data
         /// <returns></returns>
         public ApiResult<List<IndexLotteryInfoResDto>> GetIndexLotteryList(int lotteryTypePId)
         {
-            var lotteryList = GetLotteryTypeList(lotteryTypePId);
-            string lTypes = "";
 
-            lotteryList.ForEach(e => lTypes += e.lType + ",");
-            lTypes = lTypes.Trim(',');
+            string memcacheKey = string.Format("GetIndexLotteryList_{0}", lotteryTypePId);
 
-            var dateTime = DateTime.Now.AddDays(-5);
-            var resDto = GetLotteryRecordList(lTypes, dateTime);
+            var resDto = CacheHelper.GetCache<List<IndexLotteryInfoResDto>>(memcacheKey);
+
+            if (resDto == null || resDto.Count < 1)
+            {
+                var lotteryList = GetLotteryTypeList(lotteryTypePId).Select(x => x.lType);
+
+                string lTypes = string.Join(",", lotteryList);
+
+
+                var dateTime = DateTime.Now.AddDays(-5);
+                resDto = GetLotteryRecordList(lTypes, dateTime);
+
+                if (resDto != null && resDto.Any())
+                {
+
+                    int cacheTimeout = 4;
+                    if (lotteryTypePId == 1)
+                    {
+                        cacheTimeout = 1440;
+                    }
+
+                    CacheHelper.AddCache(memcacheKey, resDto, cacheTimeout);
+                }
+            }
+
+
 
 
             //lotteryList.ForEach(x =>
@@ -203,7 +224,7 @@ namespace Qiuxun.C8.Api.Service.Data
 
         public List<IndexLotteryInfoResDto> GetLotteryRecordList(string lTypes, DateTime dateTime)
         {
-           var sql = @"select lr.*,l.lType as BigLType from LotteryRecord lr
+            var sql = @"select lr.*,l.lType as BigLType from LotteryRecord lr
                     join(
                     select lType, max(SubTime) SubTime from lotteryRecord where lType in(" + lTypes + ") and SubTime >'" + dateTime + @"' group by lType
                     ) tab on lr.lType = tab.lType and lr.SubTime = tab.SubTime
@@ -213,7 +234,8 @@ namespace Qiuxun.C8.Api.Service.Data
 
             var newList = new List<IndexLotteryInfoResDto>();
 
-            Util.ReaderToList<LotteryRecord>(sql).ForEach(e => {
+            Util.ReaderToList<LotteryRecord>(sql).ForEach(e =>
+            {
                 IndexLotteryInfoResDto newModel = new IndexLotteryInfoResDto();
                 newModel.OpenNum = e.Num;
                 newModel.Issue = e.Issue;
