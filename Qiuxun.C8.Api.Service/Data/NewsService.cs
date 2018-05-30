@@ -499,7 +499,7 @@ UPDATE dbo.News SET PV+=1 WHERE Id=@Id";
         {
 
             var news = Util.GetEntityById<News>(articleId);
-            List<RecommendGalleryResDto> recGalleryList = CacheHelper.GetCache<List<RecommendGalleryResDto>>(("z_recGalleryList_" + articleId));
+            List<RecommendGalleryResDto> recGalleryList = CacheHelper.GetCache<List<RecommendGalleryResDto>>(("z_recGalleryList_" + news.TypeId));
             if (recGalleryList == null || recGalleryList.Count <= 0)
             {
                 string recGallerySql = " SELECT TOP " + count + @" FullHead as Name, Id,LotteryNumber as Issue 
@@ -509,7 +509,7 @@ UPDATE dbo.News SET PV+=1 WHERE Id=@Id";
                                          and DeleteMark=0 and EnabledMark=1 
                                          order by RecommendMark DESC,LotteryNumber DESC,ModifyDate DESC";
                 recGalleryList = Util.ReaderToList<RecommendGalleryResDto>(recGallerySql);
-                CacheHelper.AddCache<List<RecommendGalleryResDto>>(("z_recGalleryList_" + articleId), recGalleryList, 60);
+                CacheHelper.AddCache<List<RecommendGalleryResDto>>(("z_recGalleryList_" + news.TypeId), recGalleryList, 60);
             }
             return new ApiResult<List<RecommendGalleryResDto>>()
             {
