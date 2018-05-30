@@ -78,7 +78,7 @@ namespace Qiuxun.C8.Api.Service.Data
                 list = Util.ReaderToList<NewsType>(newsTypeSql) ?? new List<NewsType>();
 
 
-               // CacheHelper.WriteCache(memKey, list);
+                // CacheHelper.WriteCache(memKey, list);
                 CacheHelper.AddCache(memKey, list);
             }
 
@@ -197,8 +197,8 @@ order by a.LotteryNumber desc";
                 Title = x.FullHead,
                 TypeId = x.TypeId,
                 ThumbList = !(string.IsNullOrWhiteSpace(x.ThumbListStr)) ? x.ThumbListStr.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList() : new List<string>()
-        }).ToList();
-            
+            }).ToList();
+
             //查询总数量
             string countSql = @"SELECT count(1) FROM [dbo].[News]
 WHERE [TypeId]=@TypeId and DeleteMark=0 and EnabledMark=1 ";
@@ -277,11 +277,7 @@ WHERE [TypeId]=@TypeId and DeleteMark=0 and EnabledMark=1 ";
         /// <returns></returns>
         public ApiResult<NewsResDto> GetNewsDetal(int id)
         {
-            //添加新闻PV计数
-            new Task(() =>
-            {
-                AddNewsPv(id);
-            }).Start();
+            AddNewsPv(id);
             //获取新闻实体
 
             string sql = @"SELECT 
@@ -389,33 +385,59 @@ ORDER BY SortCode desc,Id DESC";
         /// 添加新闻PV计数
         /// </summary>
         /// <param name="id"></param>
-        private void AddNewsPv(int id)
+        //        private void AddNewsPv(int id)
+        //        {
+        //            try
+        //            {
+        //                string pvSql = @"if exists(
+        //	select 1 from dbo.PageView where [Type]=@Type and FkId=@Id and ViewDate=@ViewDate
+        //  )
+        //  begin
+        //   update dbo.PageView set ViewTotal+=1 where [Type]=@Type and FkId=@Id and ViewDate=@ViewDate
+        //  end
+        //  else
+        //  begin
+        //  insert into dbo.PageView(ViewDate,ViewTotal,[Type],FkId) values(GETDATE(),1,@Type,@Id)
+        //  end;
+        //UPDATE dbo.News SET PV+=1 WHERE Id=@Id";
+        //                var pvParam = new[]
+        //                {
+        //                        new SqlParameter("@Type",1),//新闻类型=1
+        //                        new SqlParameter("@Id",id),
+        //                        new SqlParameter("@ViewDate",DateTime.Today),
+        //                    };
+        //                SqlHelper.ExecuteNonQuery(pvSql, pvParam);
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                LogHelper.ErrorFormat("新闻{2}PV增加异常，Message:{0},StackTrace:{1}", ex.Message, ex.StackTrace, id);
+        //            }
+        //        }
+
+        public void AddNewsPv(int id)
         {
-            try
+            var pageViewList = CacheHelper.GetCache<List<PageView>>("SavePageViewList");
+
+            if (pageViewList == null || !pageViewList.Any(e => e.FkId == id && e.Type == 1))
             {
-                string pvSql = @"if exists(
-	select 1 from dbo.PageView where [Type]=@Type and FkId=@Id and ViewDate=@ViewDate
-  )
-  begin
-   update dbo.PageView set ViewTotal+=1 where [Type]=@Type and FkId=@Id and ViewDate=@ViewDate
-  end
-  else
-  begin
-  insert into dbo.PageView(ViewDate,ViewTotal,[Type],FkId) values(GETDATE(),1,@Type,@Id)
-  end;
-UPDATE dbo.News SET PV+=1 WHERE Id=@Id";
-                var pvParam = new[]
+                var pageView = new PageView()
                 {
-                        new SqlParameter("@Type",1),//新闻类型=1
-                        new SqlParameter("@Id",id),
-                        new SqlParameter("@ViewDate",DateTime.Today),
-                    };
-                SqlHelper.ExecuteNonQuery(pvSql, pvParam);
+                    FkId = id,
+                    Type = 1,
+                    ViewTotal = 1
+                };
+
+                if (pageViewList == null)
+                    pageViewList = new List<PageView>();
+
+                pageViewList.Add(pageView);
             }
-            catch (Exception ex)
+            else
             {
-                LogHelper.ErrorFormat("新闻{2}PV增加异常，Message:{0},StackTrace:{1}", ex.Message, ex.StackTrace, id);
+                pageViewList.FirstOrDefault(e => e.FkId == id && e.Type == 1).ViewTotal++;
             }
+
+            CacheHelper.SetCache<List<PageView>>("SavePageViewList", pageViewList, DateTime.Now.AddDays(2));
         }
 
         /// <summary>
@@ -473,11 +495,7 @@ UPDATE dbo.News SET PV+=1 WHERE Id=@Id";
         /// <returns></returns>
         public ApiResult<List<Gallery>> GetGalleryList(int articleId)
         {
-            //添加新闻PV计数
-            new Task(() =>
-            {
-                AddNewsPv(articleId);
-            }).Start();
+            AddNewsPv(articleId);
 
             var news = Util.GetEntityById<News>(articleId);
 
@@ -534,7 +552,7 @@ UPDATE dbo.News SET PV+=1 WHERE Id=@Id";
                 //WHERE  DeleteMark=0 AND EnabledMark=1
                 //ORDER BY CommentCount DESC,SortCode ASC ";
 
-                string hotArticlesql = @"select top " + count + @" n.Id,n.FullHead,n.SortCode,n.Thumb,n.ReleaseTime,n.ThumbStyle ,
+                string hotArticlesql = @"select top " + count + @" n.Id,n.FullHead,n.SortCode,n.Thumb,n.ReleaseTime,n.ThumbStyle ,TypeId,
                     count(c.id) as CommentCount
                     from News n
                     left join Comment c on n.id = c.ArticleId and RefCommentId = 0

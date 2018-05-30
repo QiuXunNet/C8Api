@@ -111,58 +111,64 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
         public ApiResult EditUserInfo(string value, int type, long userId)
         {
             string strsql = string.Empty;
+
+            bool iscz = Tool.CheckSensitiveWords(value);
+            if (iscz)
+            {
+                return new ApiResult(60008, "修改失败，包含敏感字符");
+            }
+
             if (type == 1)
             {
+                //昵称
+                if (value.Length > 7)
+                {
+                    return new ApiResult(60012, "昵称不能超过7个字符");
+                }
+
+                string namesql = "select count(1) from UserInfo where Name=@value";
+                SqlParameter[] sp1 = {
+                    new SqlParameter("@value",value),
+                    new SqlParameter("@UserId",userId)
+                };
+                int count = Convert.ToInt32(SqlHelper.ExecuteScalar(namesql, sp1));
+                if (count > 0)
+                {
+                    return new ApiResult(60007, "该昵称已经存在");
+                }
                 strsql = "  Name=@value ";
 
             }
             else if (type == 2)
             {
+                //签名
+                if (value.Length > 20)
+                {
+                    return new ApiResult(60012, "签名不能超过20个字符");
+                }
+
                 strsql = "  Autograph=@value ";
             }
             else if (type == 3)
             {
                 strsql = " Sex=@value ";
             }
-            string usersql = "update  UserInfo set  " + strsql + "      where  Id=@UserId";
 
-            string namesql = "select count(1) from UserInfo where Name=@value";
+            string usersql = "update  UserInfo set  " + strsql + " where  Id=@UserId";
 
             SqlParameter[] sp = new SqlParameter[] {
                 new SqlParameter("@value",value),
                 new SqlParameter("@UserId",userId)
 
                 };
-            if (type == 1)
-            {
-                int count = Convert.ToInt32(SqlHelper.ExecuteScalar(namesql, sp));
-                if (count > 0)
-                {
-                    return new ApiResult(60007, "该昵称已经存在");
-                }
-                else
-                {
-                    if (value.Trim().Length > 20)
-                    {
-                        return new ApiResult(60012, "签名长度不能超过20");
-                    }
-                    bool iscz = Tool.CheckSensitiveWords(value);
-                    if (iscz == true)
-                    {
-                        return new ApiResult(60008, "该昵称包含敏感字符");
-                    }
-                }
-            }
 
             int result = SqlHelper.ExecuteNonQuery(usersql, sp);
             if (result > 0)
             {
                 return new ApiResult(100, "success");
             }
-            else
-            {
-                return new ApiResult(-999, "数据库出现错误。");
-            }
+
+            return new ApiResult(-999, "数据库出现错误。");
         }
 
         /// <summary>
@@ -430,7 +436,7 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
             var moneyToCoin = Convert.ToInt32(ConfigurationManager.AppSettings["MoneyToCoin"]);
 
             DrawMoneyResDto dto = new DrawMoneyResDto();
-            dto.MyYj = Tool.Rmoney((dr.KeTx + dr.Txing)/ moneyToCoin);
+            dto.MyYj = Tool.Rmoney((dr.KeTx + dr.Txing) / moneyToCoin);
             dto.Txing = Tool.Rmoney((dr.Txing) / moneyToCoin);
             dto.Txleiji = Tool.Rmoney((dr.Txleiji) / moneyToCoin);
             dto.KeTx = Tool.Rmoney((dr.KeTx) / moneyToCoin);
