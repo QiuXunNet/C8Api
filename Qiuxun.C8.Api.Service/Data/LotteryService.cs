@@ -10,6 +10,7 @@ using Qiuxun.C8.Api.Service.Caching;
 using Qiuxun.C8.Api.Service.Common;
 using Qiuxun.C8.Api.Service.Dtos;
 using Qiuxun.C8.Api.Service.Model;
+using Qiuxun.C8.Api.Service.Public;
 
 namespace Qiuxun.C8.Api.Service.Data
 {
@@ -137,9 +138,15 @@ namespace Qiuxun.C8.Api.Service.Data
                     CacheHelper.AddCache(memcacheKey, resDto, cacheTimeout);
                 }
             }
-
-
-
+            else
+            {
+                //从缓存获取的数据，重新计算下期开奖时间
+                resDto.ForEach(x =>
+                {
+                    x.OpenTime = LotteryTime.GetTime(x.LType.ToString());
+                });
+            }
+            
 
             //lotteryList.ForEach(x =>
             //{
