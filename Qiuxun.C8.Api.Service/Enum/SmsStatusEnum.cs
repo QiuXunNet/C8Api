@@ -22,10 +22,10 @@ namespace Qiuxun.C8.Api.Service.Enum
         /// <summary>
         /// 失败
         /// </summary>
-        Failue = 2,
+        Failue = 3,
         /// <summary>
         /// 已使用
         /// </summary>
-        Used = 3
+        Used = 2
     }
 }
