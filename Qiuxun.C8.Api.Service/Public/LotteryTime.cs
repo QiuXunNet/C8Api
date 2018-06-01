@@ -72,7 +72,7 @@ namespace Qiuxun.C8.Api.Service.Public
                     string sql = "select OpenLine from DateLine where lType = " + lType;
                     target = (DateTime)SqlHelper.ExecuteScalar(sql);
 
-                    CacheHelper.SetCache<DateTime>("LotteryTypeLotteryTimeCache" + lType, target, target.AddMinutes(-5));
+                    CacheHelper.SetCache<DateTime>("LotteryTypeLotteryTimeCache" + lType, target, target.AddMinutes(7 * 24 * 60));
                 }
 
                 if (nowTime > target) return "正在开奖";
