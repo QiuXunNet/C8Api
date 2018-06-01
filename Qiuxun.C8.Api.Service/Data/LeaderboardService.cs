@@ -23,7 +23,10 @@ namespace Qiuxun.C8.Api.Service.Data
         /// <returns></returns>
         public List<RankIntegralResDto> GetIntegralList(string queryType)
         {
-            string strsql = string.Format(@"
+            List<RankIntegralResDto> list= Cache.CacheHelper.GetCache<List<RankIntegralResDto>>("GetIntegralListWebSite" + queryType); ;
+            if (list == null)
+            {
+                string strsql = string.Format(@"
                 select top 100 row_number() over(order by Sum(Score) DESC) as [Rank],Sum(Score)Score,UserId,NickName,Avater from
                 (
                   SELECT  UserId, Date, Score,b.Name as NickName,isnull(c.RPath,'') as Avater 
@@ -34,11 +37,16 @@ namespace Qiuxun.C8.Api.Service.Data
                  where 1=1   {0}
                  group by UserId,NickName,Avater", Tool.GetTimeWhere("Date", queryType));
 
-            SqlParameter[] sp = new SqlParameter[]{
+                SqlParameter[] sp = new SqlParameter[]
+                {
                 new SqlParameter("@ResourceType",(int)ResourceTypeEnum.用户头像)
-            };
+                };
+                list= Util.ReaderToList<RankIntegralResDto>(strsql, sp);
+                Cache.CacheHelper.SetCache<List<RankIntegralResDto>>("GetIntegralListWebSite" + queryType, list, DateTime.Parse("23:59:59"));
+            }
 
-            return Util.ReaderToList<RankIntegralResDto>(strsql, sp);
+
+            return list;
         }
 
         /// <summary>

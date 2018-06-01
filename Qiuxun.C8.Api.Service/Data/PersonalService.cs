@@ -236,7 +236,10 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
         /// </summary>
         public ApiResult<List<FansResDto>> GetFansBangList(string type, int pageIndex, int pageSize)
         {
-            string strsql = string.Format(@"select  * from ( select top 100 row_number() over(order by count(1) desc  ) as Rank, count(1)as Number,Followed_UserId as FollowedUserId,Name as NickName,isnull(RPath,'/images/default_avater.png') as Avater
+            List<FansResDto> list = Cache.CacheHelper.GetCache<List<FansResDto>>("GetFansBangListWebSite" + type + "_" + pageIndex);
+            if (list == null)
+            {
+                string strsql = string.Format(@"select  * from ( select top 100 row_number() over(order by count(1) desc  ) as Rank, count(1)as Number,Followed_UserId as FollowedUserId,Name as NickName,isnull(RPath,'/images/default_avater.png') as Avater
                                              from Follow f 
                                              left join UserInfo u on f.Followed_UserId=u.id
                                              left join ResourceMapping r on (r.FkId=f.Followed_UserId and r.Type=@ResourceType)
@@ -246,12 +249,17 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
                                             WHERE Rank BETWEEN @Start AND @End", Tool.GetTimeWhere("FollowTime", type));
 
 
-            SqlParameter[] sp = new SqlParameter[] {
+                SqlParameter[] sp = new SqlParameter[]
+                {
                         new SqlParameter("@ResourceType",(int)ResourceTypeEnum.用户头像),
                         new SqlParameter("@Start", (pageIndex - 1) * pageSize + 1),
                         new SqlParameter("@End", pageSize * pageIndex)
-                    };
-            var list = Util.ReaderToList<FansResDto>(strsql, sp) ?? new List<FansResDto>();
+                        };
+                 list = Util.ReaderToList<FansResDto>(strsql, sp) ?? new List<FansResDto>();
+                 Cache.CacheHelper.SetCache<List<FansResDto>>("GetFansBangListWebSite" + type + "_" + pageIndex, list, DateTime.Parse("23:59:59"));
+            }
+          
+
             return new ApiResult<List<FansResDto>>()
             {
                 Data = list
@@ -1116,6 +1124,8 @@ WHERE rowNumber BETWEEN @Start AND @End", ltypeWhere, winStateWhere);
         /// </summary>
         public ApiResult<FansResDto> GetMyFanBangRank(string type, long userId)
         {
+
+          
             string strsql = string.Format(@" select  * from ( select top 100 row_number() over(order by count(1) desc  ) as Rank, count(1)as Number,Followed_UserId,Name as NickName,isnull(RPath,'/images/default_avater.png') as Avater
                              from Follow f 
                              left join UserInfo u on f.Followed_UserId=u.id
