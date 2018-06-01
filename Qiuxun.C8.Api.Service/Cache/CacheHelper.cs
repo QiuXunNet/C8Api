@@ -105,7 +105,7 @@ namespace Qiuxun.C8.Api.Service.Cache
             {
                 var timeSpan = date - DateTime.Now;
 
-                cs.Set(GetCacheKey(cacheKey), obj, timeSpan.Minutes);
+                cs.Set(GetCacheKey(cacheKey), obj, (int)timeSpan.TotalMinutes);
             }
         }
 
