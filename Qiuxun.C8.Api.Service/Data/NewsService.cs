@@ -416,13 +416,13 @@ ORDER BY SortCode desc,Id DESC";
 
         public void AddNewsPv(int id)
         {
-            var ids = CacheHelper.GetCache<string>("SavePageViewNewsIdsWebSite");
-            if (string.IsNullOrEmpty(ids))
-                ids = ",";
-            if (ids.IndexOf("," + id + ",") == -1)
-                ids += id + ",";
-            ids += id + ",";
-            CacheHelper.SetCache<string>("SavePageViewNewsIdsWebSite", ids, DateTime.Now.AddDays(30));
+            //var ids = CacheHelper.GetCache<string>("SavePageViewNewsIdsWebSite");
+            //if (string.IsNullOrEmpty(ids))
+            //    ids = ",";
+            //if (ids.IndexOf("," + id + ",") == -1)
+            //    ids += id + ",";
+            //ids += id + ",";
+            //CacheHelper.SetCache<string>("SavePageViewNewsIdsWebSite", ids, DateTime.Now.AddDays(30));
 
             var pageView = CacheHelper.GetCache<PageView>("SavePageViewWebSite_1_" + id);
 
