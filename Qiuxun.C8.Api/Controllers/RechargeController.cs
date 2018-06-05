@@ -9,16 +9,19 @@ using Qiuxun.C8.Api.Service.Api;
 using Qiuxun.C8.Api.Service.Common;
 using Qiuxun.C8.Api.Service.Data;
 using Qiuxun.C8.Api.Service.Dtos;
+using Senparc.Weixin.HttpUtility;
 using Senparc.Weixin.MP;
 using Senparc.Weixin.MP.TenPayLibV3;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Security.Cryptography;
+using System.Text;
 using System.Web;
 using System.Web.Http;
 
@@ -86,8 +89,63 @@ namespace Qiuxun.C8.Api.Controllers
                 model.CreatedOn = GetTimeStamp();
                 model.NonceStr = resultWx.nonce_str;
                 model.Sign = GetAppPaySign(appid, model.CreatedOn, model.NonceStr, model.Package, key, mchid, model.PrepayId);
-                model.TradeType = resultWx.trade_type; 
+                model.TradeType = resultWx.trade_type;
                 result.Data = model;
+                return result;
+            }
+            else
+            {
+                return new ApiResult(10000, "生成订单失败");
+            }
+        }
+
+        /// <summary>
+        /// 获取微信充值必要的数据和订单号
+        /// </summary>
+        /// <param name="money">充值金额</param>
+        /// <param name="userId">用户Id</param>
+        /// <returns></returns>
+        [HttpGet]
+        public ApiResult GetWxUrlToMobile(int money, string userId)
+        {
+             appid = "wx226d38e96ed8f01e";
+             mchid = "1375852802";
+             key = "1de60212dceafe2b4fdb621bd6f04288";
+
+            var no = GetRandom();
+            var total = (money * 100).ToString();
+            notifyUrl = ApiHost + "/api/Recharge/WxNotify";
+            var result = new ApiResult<string>();
+
+            if (_service.AddComeOutRecord(no, money, 1, int.Parse(userId)))
+            {
+                RequestHandler packageReqHandler = new RequestHandler(null);
+                packageReqHandler.SetParameter("appid", appid);//APPID
+                packageReqHandler.SetParameter("mch_id", mchid);//商户号
+                packageReqHandler.SetParameter("nonce_str", TenPayV3Util.GetNoncestr());
+                packageReqHandler.SetParameter("body", "金币充值");
+                packageReqHandler.SetParameter("out_trade_no", no);//订单号
+                //packageReqHandler.SetParameter("total_fee", total); //金额,以分为单位
+                packageReqHandler.SetParameter("total_fee", "1"); //金额,以分为单位
+                packageReqHandler.SetParameter("spbill_create_ip", Tool.GetIP());//IP
+                packageReqHandler.SetParameter("notify_url", notifyUrl); //回调地址
+                packageReqHandler.SetParameter("trade_type", "MWEB");//这个不可以改。固定为Mweb
+                packageReqHandler.SetParameter("sign", packageReqHandler.CreateMd5Sign("key", key));
+                string data = packageReqHandler.ParseXML();
+                var urlFormat = "https://api.mch.weixin.qq.com/pay/unifiedorder";
+                var formDataBytes = data == null ? new byte[0] : Encoding.UTF8.GetBytes(data);
+                MemoryStream ms = new MemoryStream();
+                ms.Write(formDataBytes, 0, formDataBytes.Length);
+                ms.Seek(0, SeekOrigin.Begin);
+               
+                var obj = RequestUtility.HttpPost(urlFormat, null, ms);
+
+                var res = System.Xml.Linq.XDocument.Parse(obj);
+                string mweb_url = res.Element("xml").Element("mweb_url").Value + "&redirect_url=www.izk138.com://pay=1";
+                result.Data = mweb_url;
+
+                LogHelper.Info("notifyUrl：" + notifyUrl);
+
                 return result;
             }
             else
@@ -127,12 +185,15 @@ namespace Qiuxun.C8.Api.Controllers
         [AllowAnonymous]
         public string WxNotify()
         {
+            LogHelper.Info("微信回调成功");
             Senparc.Weixin.MP.TenPayLibV3.ResponseHandler payNotifyRepHandler = new Senparc.Weixin.MP.TenPayLibV3.ResponseHandler(null);
             payNotifyRepHandler.SetKey(key);
 
             string return_code = payNotifyRepHandler.GetParameter("return_code");
             string return_msg = payNotifyRepHandler.GetParameter("return_msg");
             string xml = string.Format(@"<xml><return_code><![CDATA[{0}]]></return_code><return_msg><![CDATA[{1}]]></return_msg></xml>", return_code, return_msg);
+
+            LogHelper.Info("return_code:"+ return_code);
 
             //   log.Info(xml);
             if (return_code.ToUpper() != "SUCCESS")
@@ -148,6 +209,7 @@ namespace Qiuxun.C8.Api.Controllers
             //{
             if (payNotifyRepHandler.IsTenpaySign())
             {
+                LogHelper.Info("微信验证成功");
                 if (_service.AlertComeOutRecord(out_trade_no, 1))
                 {
                     return xml;
