@@ -28,7 +28,8 @@ namespace Qiuxun.C8.Api.Service.Data
         /// <returns></returns>
         public ApiResult<List<AdvertisementResDto>> GetAdvertList(int location, int adtype, int deviceType, string city, string reqIp)
         {
-            string memKey = string.Format("advertisement_{0}_{1}_{2}", location, adtype, deviceType);
+            //string memKey = string.Format("advertisement_{0}_{1}_{2}", location, adtype, deviceType);
+            string memKey = string.Format(RedisKeyConst.Advertisement_List, adtype, deviceType, location);
 
             var list = CacheHelper.GetCache<List<Advertisement>>(memKey);
             if (list == null)

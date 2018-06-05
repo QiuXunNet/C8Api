@@ -25,7 +25,7 @@ namespace Qiuxun.C8.Api.Service.Data
         /// <returns></returns>
         public List<LotteryCharge> GetLotteryCharge()
         {
-            string memKey = "base_lottery_charge_settings";
+            string memKey = RedisKeyConst.Base_LotteryChargeSettings; //"base_lottery_charge_settings";
             var list = CacheHelper.GetCache<List<LotteryCharge>>(memKey);
             if (list != null && list.Any()) return list;
 
@@ -48,7 +48,7 @@ namespace Qiuxun.C8.Api.Service.Data
         /// <returns></returns>
         public List<CommissionSetting> GetCommissionSetting()
         {
-            string memKey = "base_commission_settings";
+            string memKey = RedisKeyConst.Base_CommissionSettings; //"base_commission_settings";
             var list = CacheHelper.GetCache<List<CommissionSetting>>(memKey);
             if (list == null || list.Count < 1)
             {

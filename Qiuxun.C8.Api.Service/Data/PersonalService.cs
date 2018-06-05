@@ -236,7 +236,8 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
         /// </summary>
         public ApiResult<List<FansResDto>> GetFansBangList(string type, int pageIndex, int pageSize)
         {
-            List<FansResDto> list = Cache.CacheHelper.GetCache<List<FansResDto>>("GetFansBangListWebSite" + type + "_" + pageIndex);
+            string cachekey = string.Format(RedisKeyConst.Rank_Fans, type + "_" + pageIndex);
+            List<FansResDto> list = Cache.CacheHelper.GetCache<List<FansResDto>>(cachekey);
             if (list == null)
             {
                 string strsql = string.Format(@"select  * from ( select top 100 row_number() over(order by count(1) desc  ) as Rank, count(1)as Number,Followed_UserId as FollowedUserId,Name as NickName,isnull(RPath,'/images/default_avater.png') as Avater
@@ -256,7 +257,7 @@ r.RPath as Avater,u.Name as NickName,u.Id as UserId,u.* from UserInfo  u
                         new SqlParameter("@End", pageSize * pageIndex)
                         };
                  list = Util.ReaderToList<FansResDto>(strsql, sp) ?? new List<FansResDto>();
-                 Cache.CacheHelper.SetCache<List<FansResDto>>("GetFansBangListWebSite" + type + "_" + pageIndex, list, DateTime.Parse("23:59:59"));
+                 Cache.CacheHelper.SetCache<List<FansResDto>>(cachekey, list, DateTime.Parse("23:59:59"));
             }
           
 

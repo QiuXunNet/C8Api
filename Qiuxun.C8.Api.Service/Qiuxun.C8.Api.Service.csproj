@@ -172,6 +172,7 @@
     <Compile Include="Cache\Redis\DoRedisString.cs" />
     <Compile Include="Cache\Redis\RedisBase.cs" />
     <Compile Include="Cache\Redis\RedisConfig.cs" />
+    <Compile Include="Cache\Redis\RedisKeyConst.cs" />
     <Compile Include="Cache\Redis\RedisManager.cs" />
     <Compile Include="Caching\CacheHelper.cs" />
     <Compile Include="Caching\MemClientFactory.cs" />
