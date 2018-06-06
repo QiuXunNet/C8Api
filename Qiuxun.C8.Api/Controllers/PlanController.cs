@@ -194,7 +194,7 @@ namespace Qiuxun.C8.Api.Controllers
         [HttpGet]
         public ApiResult<List<ExpertSearchModel>> GetHistoryExpertSearch(int lType)
         {
-            string memberKey = "history_" + this.UserInfo.UserId + "_" + lType;
+            string memberKey = string.Format(Service.RedisKeyConst.Plan_ExpertHistory, lType, this.UserInfo.UserId);// "history_" + this.UserInfo.UserId + "_" + lType;
             List<ExpertSearchModel> historyList = CacheHelper.GetCache<List<ExpertSearchModel>>(memberKey) ?? new List<ExpertSearchModel>();
             return new ApiResult<List<ExpertSearchModel>>() { Data = historyList };
         }

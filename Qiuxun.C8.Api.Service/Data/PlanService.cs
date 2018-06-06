@@ -24,8 +24,7 @@ namespace Qiuxun.C8.Api.Service.Data
         /// </summary>
         public PagedListP<Plan> GetPlanData(int lType, int pageIndex, int pageSize)
         {
-
-            string memcacheKey = string.Format("recommendPlanData_api_{0}_{1}", lType, pageIndex);
+            string memcacheKey = string.Format(RedisKeyConst.Plan_RecommendListApi, lType, pageIndex);
 
             var pager = CacheHelper.GetCache<PagedListP<Plan>>(memcacheKey);
 
@@ -366,7 +365,7 @@ namespace Qiuxun.C8.Api.Service.Data
         /// </summary>
         public ApiResult DeleteHistory(int uid, int lType, long userId)
         {
-            string memberKey = "history_" + userId + "_" + lType;
+            string memberKey = string.Format(RedisKeyConst.Plan_ExpertHistory, lType, userId);//"history_" + userId + "_" + lType;
             List<ExpertSearchModel> list = CacheHelper.GetCache<List<ExpertSearchModel>>(memberKey);
             if (uid > 0)
             {
@@ -412,7 +411,7 @@ namespace Qiuxun.C8.Api.Service.Data
                 List<ExpertSearchModel> list = new List<ExpertSearchModel>();
 
                 long MyUserId = userId;
-                string memberKey = "history_" + MyUserId + "_" + lType;
+                string memberKey = string.Format(RedisKeyConst.Plan_ExpertHistory, lType, MyUserId);// "history_" + MyUserId + "_" + lType;
                 list = CacheHelper.GetCache<List<ExpertSearchModel>>(memberKey) ?? new List<ExpertSearchModel>();
 
                 UserInfo u = PersonalService.GetUser(uid);
@@ -672,7 +671,7 @@ namespace Qiuxun.C8.Api.Service.Data
                 return pager;
             }
 
-            string memcacheKey = string.Format("expertList_{0}_{1}_{2}", lType, playNameId, type);
+            string memcacheKey = string.Format(RedisKeyConst.Plan_ExpertList, type, lType, playNameId); //string.Format("expertList_{0}_{1}_{2}", lType, playNameId, type);
             var list = CacheHelper.GetCache<List<Expert>>(memcacheKey);
 
             if (list == null)
@@ -809,7 +808,7 @@ from (
         /// <returns></returns>
         private IList<CommissionSetting> GetCommissionSetting()
         {
-            string memKey = "base_commission_settings";
+            string memKey = RedisKeyConst.Base_CommissionSettings; //"base_commission_settings";
             var list = CacheHelper.GetCache<IList<CommissionSetting>>(memKey);
             if (list == null || list.Count < 1)
             {
@@ -862,7 +861,7 @@ from (
         /// <returns></returns>
         private IList<LotteryCharge> GetLotteryCharge()
         {
-            string memKey = "base_lottery_charge_settings";
+            string memKey = RedisKeyConst.Base_LotteryChargeSettings; //"base_lottery_charge_settings";
             var list = CacheHelper.GetCache<IList<LotteryCharge>>(memKey);
             if (list != null && list.Any()) return list;
 

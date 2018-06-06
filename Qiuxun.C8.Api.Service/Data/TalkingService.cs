@@ -360,17 +360,18 @@ namespace Qiuxun.C8.Api.Service.Data
         public string GetSensitiveWordsList()
         {
             //屏蔽字一般不会变动，为减少数据库操作，加入2小时缓存
+            string cachekey = RedisKeyConst.Base_SensitiveWords;
             var str = "";
-            if (CacheHelper.GetCache<string>("GetSensitiveWordsList") == null)
+            if (CacheHelper.GetCache<string>(cachekey) == null)
             {
                 string sql = " select content from SensitiveWords ";
                 str = Convert.ToString(SqlHelper.ExecuteScalar(sql));
 
-                CacheHelper.SetCache("GetSensitiveWordsList", str, DateTime.Now.AddHours(2));
+                CacheHelper.SetCache(cachekey, str, DateTime.Now.AddHours(2));
             }
             else
             {
-                str = CacheHelper.GetCache<string>("GetSensitiveWordsList").ToString();
+                str = CacheHelper.GetCache<string>(cachekey).ToString();
             }
 
             return str;

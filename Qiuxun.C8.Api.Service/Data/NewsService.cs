@@ -34,13 +34,14 @@ namespace Qiuxun.C8.Api.Service.Data
         /// <returns></returns>
         public ApiResult<List<LotteryTypeResDto>> GetLotteryTypeList()
         {
-            List<LotteryType> list = CacheHelper.GetCache<List<LotteryType>>("base_lottery_type");
+            string cachekey = RedisKeyConst.Base_LotteryType;
+            List<LotteryType> list = CacheHelper.GetCache<List<LotteryType>>(cachekey);
             if (list == null)
             {
                 list = Util.GetEntityAll<LotteryType>().OrderBy(x => x.SortCode).ToList();
 
                 //CacheHelper.WriteCache("base_lottery_type", list);
-                CacheHelper.AddCache("base_lottery_type", list);
+                CacheHelper.AddCache(cachekey, list);
             }
             var resDto = list.Select(x => new LotteryTypeResDto()
             {
@@ -66,7 +67,7 @@ namespace Qiuxun.C8.Api.Service.Data
         /// <returns></returns>
         public ApiResult<List<NewsTypeResDto>> GetNewsTypeList(long ltype, int layer = 1)
         {
-            string memKey = "base_news_type_" + ltype;
+            string memKey = string.Format(RedisKeyConst.Base_NewsType, ltype); //"base_news_type_" + ltype;
 
             var list = CacheHelper.GetCache<List<NewsType>>(memKey);
 
@@ -129,7 +130,7 @@ namespace Qiuxun.C8.Api.Service.Data
         /// <returns></returns>
         public List<Gallery> GetGalleries(long newsId, string newsTitle, int lType)
         {
-            string memKey = "base_gallery_id_" + newsId;
+            string memKey = string.Format(RedisKeyConst.Base_GalleryId, newsId); //"base_gallery_id_" + newsId;
             var list = CacheHelper.GetCache<List<Gallery>>(memKey);
 
             if (list != null && list.Any()) return list;
@@ -164,7 +165,8 @@ order by a.LotteryNumber desc";
         /// <returns></returns>
         public ApiResult<PagedListDto<NewsListResDto>> GetNewsList(int ltype, int pageIndex, int pageSize)
         {
-            List<News> list = CacheHelper.GetCache<List<News>>(string.Format("z_newslist_{0}_{1}", ltype, pageIndex));
+            string cachekey = string.Format(RedisKeyConst.News_NewsList, ltype, pageIndex);
+            List<News> list = CacheHelper.GetCache<List<News>>(cachekey);
             if (list == null || list.Count <= 0)
             {
                 string sql = @"SELECT * FROM ( 
@@ -221,8 +223,8 @@ WHERE [TypeId]=@TypeId and DeleteMark=0 and EnabledMark=1 ";
         /// <returns></returns>
         public ApiResult<PagedListDto<GalleryTypeResDto>> GetGalleryTypeList(long ltype, int newsTypeId)
         {
-
-            List<GalleryTypeResDto> list = CacheHelper.GetCache<List<GalleryTypeResDto>>(string.Format("z_GalleryTypeList_{0}_{1}", ltype, newsTypeId));
+            string cachekey = string.Format(RedisKeyConst.News_GalleryTypeList, ltype, newsTypeId);
+            List<GalleryTypeResDto> list = CacheHelper.GetCache<List<GalleryTypeResDto>>(cachekey);
             SqlParameter[] parameters =
                 {
                 new SqlParameter("@NewsTypeId",SqlDbType.Int),
@@ -246,7 +248,8 @@ WHERE [TypeId]=@TypeId and DeleteMark=0 and EnabledMark=1 ";
                 .GetPagedListDto();
 
             //查询推荐图
-            List<Gallery> recGalleryList = CacheHelper.GetCache<List<Gallery>>(string.Format("z_GalleryList_{0}_{1}", ltype, newsTypeId));
+            cachekey = string.Format(RedisKeyConst.News_GalleryList, ltype, newsTypeId);
+            List<Gallery> recGalleryList = CacheHelper.GetCache<List<Gallery>>(cachekey);
             if (recGalleryList == null)
             {
                 string recGallerySql = @" SELECT TOP 3 a.Id,FullHead as Name,LotteryNumber as Issue,
@@ -423,8 +426,8 @@ ORDER BY SortCode desc,Id DESC";
             //    ids += id + ",";
             //ids += id + ",";
             //CacheHelper.SetCache<string>("SavePageViewNewsIdsWebSite", ids, DateTime.Now.AddDays(30));
-
-            var pageView = CacheHelper.GetCache<PageView>("SavePageViewWebSite_1_" + id);
+            string cachekey = string.Format(RedisKeyConst.News_NewsPV, id);
+            var pageView = CacheHelper.GetCache<PageView>(cachekey);
 
             if (pageView == null)
             {
@@ -440,7 +443,7 @@ ORDER BY SortCode desc,Id DESC";
                 pageView.ViewTotal = pageView.ViewTotal + 1;
             }
 
-            CacheHelper.SetCache<PageView>("SavePageViewWebSite_1_" + id, pageView, DateTime.Now.AddDays(10));
+            CacheHelper.SetCache<PageView>(cachekey, pageView, DateTime.Now.AddDays(10));
         }
 
         /// <summary>
@@ -450,7 +453,8 @@ ORDER BY SortCode desc,Id DESC";
         /// <returns></returns>
         public ApiResult<List<NewsListResDto>> GetRecommendNewsList(int newsTypeId)
         {
-            List<News> list = CacheHelper.GetCache<List<News>>(("z_newstop3list_" + newsTypeId));
+            string cachekey = string.Format(RedisKeyConst.News_Recommend, newsTypeId);
+            List<News> list = CacheHelper.GetCache<List<News>>(cachekey);
             if (list == null || list.Count <= 0)
             {
                 string recommendArticlesql = @"SELECT TOP 3 [Id],TypeId,[FullHead],[SortCode],[Thumb],[ReleaseTime],[ThumbStyle],
@@ -466,7 +470,7 @@ ORDER BY SortCode desc,Id DESC";
                 };
 
                 list = Util.ReaderToList<News>(recommendArticlesql, recommendArticleParameters);
-                CacheHelper.AddCache<List<News>>(("z_newstop3list_" + newsTypeId), list, 120);
+                CacheHelper.AddCache<List<News>>(cachekey, list, 120);
             }
 
 
@@ -520,7 +524,8 @@ ORDER BY SortCode desc,Id DESC";
         {
 
             var news = Util.GetEntityById<News>(articleId);
-            List<RecommendGalleryResDto> recGalleryList = CacheHelper.GetCache<List<RecommendGalleryResDto>>(("z_recGalleryList_" + news.TypeId));
+            string cachekey = string.Format(RedisKeyConst.News_RecommendGallery, news.TypeId);
+            List<RecommendGalleryResDto> recGalleryList = CacheHelper.GetCache<List<RecommendGalleryResDto>>(cachekey);
             if (recGalleryList == null || recGalleryList.Count <= 0)
             {
                 string recGallerySql = " SELECT TOP " + count + @" FullHead as Name, Id,LotteryNumber as Issue 
@@ -530,7 +535,7 @@ ORDER BY SortCode desc,Id DESC";
                                          and DeleteMark=0 and EnabledMark=1 
                                          order by RecommendMark DESC,LotteryNumber DESC,ModifyDate DESC";
                 recGalleryList = Util.ReaderToList<RecommendGalleryResDto>(recGallerySql);
-                CacheHelper.AddCache<List<RecommendGalleryResDto>>(("z_recGalleryList_" + news.TypeId), recGalleryList, 60);
+                CacheHelper.AddCache<List<RecommendGalleryResDto>>(cachekey, recGalleryList, 60);
             }
             return new ApiResult<List<RecommendGalleryResDto>>()
             {
@@ -546,7 +551,8 @@ ORDER BY SortCode desc,Id DESC";
         /// <returns></returns>
         public ApiResult<List<NewsListResDto>> GetHotNewsList(int count)
         {
-            List<NewsListResDto> data = CacheHelper.GetCache<List<NewsListResDto>>("GetNewListToWebAPI");
+            string cachekey = RedisKeyConst.News_NewsListApi;
+            List<NewsListResDto> data = CacheHelper.GetCache<List<NewsListResDto>>(cachekey);
             if (data == null)
             {
                 //string hotArticlesql = "SELECT TOP " + count + @" [Id],[FullHead],[SortCode],[Thumb],[ReleaseTime],[ThumbStyle],[TypeId],
@@ -586,7 +592,7 @@ ORDER BY SortCode desc,Id DESC";
                 }).ToList();
 
                 //新闻缓存2小时
-                CacheHelper.AddCache<List<NewsListResDto>>("GetNewListToWebAPI", data, 2 * 60);
+                CacheHelper.AddCache<List<NewsListResDto>>(cachekey, data, 2 * 60);
             }
 
             return new ApiResult<List<NewsListResDto>>()

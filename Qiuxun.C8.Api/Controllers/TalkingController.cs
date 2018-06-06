@@ -316,15 +316,16 @@ namespace Qiuxun.C8.Api.Controllers
         public ApiResult<string> GetSensitiveWordsList()
         {
             var str = "";
-            if (CacheHelper.GetCache<string>("GetSensitiveWordsList") == null)
+            string cachekey = Service.RedisKeyConst.Base_SensitiveWords;
+            if (CacheHelper.GetCache<string>(cachekey) == null)
             {                
                 str = _service.GetSensitiveWordsList();
 
-                CacheHelper.SetCache("GetSensitiveWordsList", str, DateTime.Now.AddHours(2));
+                CacheHelper.SetCache(cachekey, str, DateTime.Now.AddHours(2));
             }
             else
             {
-                str = CacheHelper.GetCache<string>("GetSensitiveWordsList").ToString();
+                str = CacheHelper.GetCache<string>(cachekey).ToString();
             }
 
             var result = new ApiResult<string>();

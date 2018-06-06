@@ -32,7 +32,7 @@ namespace Qiuxun.C8.Api.Service.Data
         {
             long versionCode = GetDefaultVersionCode(version.FullVersion, clientType);
             //客户端版本
-            string clientSourceKey = string.Format("client_source_{0}_{1}_{2}_{3}",
+            string clientSourceKey = string.Format(RedisKeyConst.Installationpackage_ClientSourceKey,
                 GetDefaultVersionCode(version.FullVersion, clientType),
                 (int)clientType, customerSourceId, appName);
 

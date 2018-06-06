@@ -23,7 +23,8 @@ namespace Qiuxun.C8.Api.Service.Data
         /// <returns></returns>
         public List<RankIntegralResDto> GetIntegralList(string queryType)
         {
-            List<RankIntegralResDto> list= Cache.CacheHelper.GetCache<List<RankIntegralResDto>>("GetIntegralListWebSite" + queryType); ;
+            string cachekey = string.Format(RedisKeyConst.Rank_IntegralList, queryType);
+            List<RankIntegralResDto> list= Cache.CacheHelper.GetCache<List<RankIntegralResDto>>(cachekey); ;
             if (list == null)
             {
                 string strsql = string.Format(@"
@@ -42,7 +43,7 @@ namespace Qiuxun.C8.Api.Service.Data
                 new SqlParameter("@ResourceType",(int)ResourceTypeEnum.用户头像)
                 };
                 list= Util.ReaderToList<RankIntegralResDto>(strsql, sp);
-                Cache.CacheHelper.SetCache<List<RankIntegralResDto>>("GetIntegralListWebSite" + queryType, list, DateTime.Parse("23:59:59"));
+                Cache.CacheHelper.SetCache<List<RankIntegralResDto>>(cachekey, list, DateTime.Parse("23:59:59"));
             }
 
 

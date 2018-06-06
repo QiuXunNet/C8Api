@@ -33,14 +33,15 @@ namespace Qiuxun.C8.Api.Service.Data
         /// <returns></returns>
         public List<LotteryType2> GetLotteryTypeList(int pid = 0)
         {
-            List<LotteryType2> list = CacheHelper.GetCache<List<LotteryType2>>("GetChildLotteryTypeToWebSite" + pid);
+            string cachekey = string.Format(RedisKeyConst.Home_ChildLotteryType, pid);
+            List<LotteryType2> list = CacheHelper.GetCache<List<LotteryType2>>(cachekey);
             if (list == null)
             {
                 string sql = "select * from LotteryType2 where PId = " + pid + " order by Position";
 
                 list = Util.ReaderToList<LotteryType2>(sql);
 
-                CacheHelper.AddCache<List<LotteryType2>>("GetChildLotteryTypeToWebSite" + pid, list, 30 * 24 * 60);
+                CacheHelper.AddCache<List<LotteryType2>>(cachekey, list, 30 * 24 * 60);
             }
             return list;
         }
@@ -64,7 +65,7 @@ namespace Qiuxun.C8.Api.Service.Data
         public ApiResult<List<PlayResDto>> GetPlayList(int? ltype)
         {
 
-            string memKey = "base_play_name";
+            string memKey = string.Format(RedisKeyConst.Base_PlayName, ltype.HasValue ? ltype.Value.ToString() : "all"); //"base_play_name";
 
             if (ltype.HasValue)
             {
@@ -112,8 +113,8 @@ namespace Qiuxun.C8.Api.Service.Data
         public ApiResult<List<IndexLotteryInfoResDto>> GetIndexLotteryList(int lotteryTypePId)
         {
 
-            string memcacheKey = string.Format("GetIndexLotteryList_{0}", lotteryTypePId);
-
+            //string memcacheKey = string.Format("GetIndexLotteryList_{0}", lotteryTypePId);
+            string memcacheKey = string.Format(RedisKeyConst.Home_IndexLotteryList, lotteryTypePId);
             var resDto = CacheHelper.GetCache<List<IndexLotteryInfoResDto>>(memcacheKey);
 
             if (resDto == null || resDto.Count < 1)

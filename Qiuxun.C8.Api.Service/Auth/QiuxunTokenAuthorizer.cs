@@ -86,7 +86,7 @@ namespace Qiuxun.C8.Api.Service.Auth
             try
             {
                 //CacheHelper.WriteCache("identity_" + _token, identity, 43200);
-                CacheHelper.AddCache("identity_" + _token, identity, 43200);
+                CacheHelper.AddCache(string.Format(RedisKeyConst.Login_LoginApiToken, _token), identity, 43200);
             }
             catch (Exception ex)
             {
@@ -128,7 +128,7 @@ namespace Qiuxun.C8.Api.Service.Auth
 
         public void Expire()
         {
-            CacheHelper.DeleteCache("identity_" + _token);
+            CacheHelper.DeleteCache(string.Format(RedisKeyConst.Login_LoginApiToken, _token));
             this._container.SetToken(this._token, DateTime.Now.AddMinutes(-60.0));
         }
 
@@ -140,7 +140,7 @@ namespace Qiuxun.C8.Api.Service.Auth
             }
             if (this._identity == null)
             {
-                this._identity = CacheHelper.GetCache<IdentityInfo>("identity_" + _token);
+                this._identity = CacheHelper.GetCache<IdentityInfo>(string.Format(RedisKeyConst.Login_LoginApiToken, _token));
 
                 if (this._identity == null)
                     return null;
@@ -154,7 +154,7 @@ namespace Qiuxun.C8.Api.Service.Auth
             {
                 this._identity.ExpireTime = expireTime;
 
-                CacheHelper.SetCache("identity_" + _token, _identity, expireTime);
+                CacheHelper.SetCache(string.Format(RedisKeyConst.Login_LoginApiToken, _token), _identity, expireTime);
                 this._container.SetToken(this._token, expireTime);
             }
             return this._identity;
@@ -166,7 +166,7 @@ namespace Qiuxun.C8.Api.Service.Auth
             {
                 return null;
             }
-            IdentityInfo info = CacheHelper.GetCache<IdentityInfo>("identity_" + token);
+            IdentityInfo info = CacheHelper.GetCache<IdentityInfo>(string.Format(RedisKeyConst.Login_LoginApiToken, token));
             if (info == null)
             {
                 return null;
@@ -177,12 +177,12 @@ namespace Qiuxun.C8.Api.Service.Auth
 
         public void Update(IdentityInfo identity)
         {
-            IdentityInfo info = CacheHelper.GetCache<IdentityInfo>("identity_" + _token);
+            IdentityInfo info = CacheHelper.GetCache<IdentityInfo>(string.Format(RedisKeyConst.Login_LoginApiToken, _token));
             identity.ExpireTime = info.ExpireTime;
             try
             {
                 //CacheHelper.SetCache("identity_" + _token, identity, identity.ExpireTime);
-                CacheHelper.SetCache("identity_" + _token, identity, identity.ExpireTime);
+                CacheHelper.SetCache(string.Format(RedisKeyConst.Login_LoginApiToken, _token), identity, identity.ExpireTime);
             }
             catch (Exception ex)
             {
@@ -197,7 +197,7 @@ namespace Qiuxun.C8.Api.Service.Auth
             try
             {
                 //CacheHelper.SetCache("identity_" + _token, identity, identity.ExpireTime);
-                CacheHelper.SetCache("identity_" + _token, identity, identity.ExpireTime);
+                CacheHelper.SetCache(string.Format(RedisKeyConst.Login_LoginApiToken, _token), identity, identity.ExpireTime);
             }
             catch (Exception ex)
             {
