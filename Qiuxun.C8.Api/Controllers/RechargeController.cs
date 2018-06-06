@@ -193,7 +193,7 @@ namespace Qiuxun.C8.Api.Controllers
             string return_msg = payNotifyRepHandler.GetParameter("return_msg");
             string xml = string.Format(@"<xml><return_code><![CDATA[{0}]]></return_code><return_msg><![CDATA[{1}]]></return_msg></xml>", return_code, return_msg);
 
-            LogHelper.Info("return_code:"+ return_code);
+            
 
             //   log.Info(xml);
             if (return_code.ToUpper() != "SUCCESS")
@@ -202,14 +202,14 @@ namespace Qiuxun.C8.Api.Controllers
             }
 
             string out_trade_no = payNotifyRepHandler.GetParameter("out_trade_no");
-
+            LogHelper.Info("订单号:" + out_trade_no);
             //log.Info("微信回调订单号：-" + out_trade_no);
             //微信服务器可能会多次推送到本接口，这里需要根据out_trade_no去查询订单是否处理，如果处理直接返回：return Content(xml, "text/xml"); 不跑下面代码
             //if (false)
             //{
             if (payNotifyRepHandler.IsTenpaySign())
             {
-                LogHelper.Info("微信验证成功");
+                LogHelper.Info("微信验证成功;订单号："+ out_trade_no);
                 if (_service.AlertComeOutRecord(out_trade_no, 1))
                 {
                     return xml;
@@ -331,6 +331,7 @@ namespace Qiuxun.C8.Api.Controllers
         [AllowAnonymous]
         public void AsyncPay()
         {
+            LogHelper.Info("支付宝回调成功");
             SortedDictionary<string, string> sPara = GetRequestPost();//将post请求过来的参数传化为SortedDictionary
                                                                       // log.Info("sPara.Count:" + sPara.Count);
             if (sPara.Count > 0)
@@ -352,7 +353,7 @@ namespace Qiuxun.C8.Api.Controllers
                         }
                         else if (trade_status == "TRADE_SUCCESS")
                         {
-
+                            LogHelper.Info("支付宝验签成功; 订单号："+ out_trade_no);
                             if (_service.AlertComeOutRecord(out_trade_no, 2))
                             {
                                 HttpContext.Current.Response.Write("success");  //请不要修改或删除

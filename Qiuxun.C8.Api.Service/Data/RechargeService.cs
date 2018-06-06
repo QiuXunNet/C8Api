@@ -52,6 +52,8 @@ namespace Qiuxun.C8.Api.Service.Data
         {
             try
             {
+                LogHelper.Info("数据更改开始，订单号：" + no);
+
                 //判断支付中的订单是否存在,如果不存在.则说明已经改变状态了
                 string sql = "select * from ComeOutRecord where OrderId=@OrderId and PayType=@PayType and State=1";
                 var list = Util.ReaderToList<ComeOutRecord>(sql, new SqlParameter[] { new SqlParameter("@OrderId", no), new SqlParameter("@PayType", payType) });
@@ -107,12 +109,14 @@ namespace Qiuxun.C8.Api.Service.Data
                  };
 
                 SqlHelper.ExecuteTransaction(sql, regsp);
+
+                LogHelper.Info("数据更改结束，订单号：" + no);
                 return true;
             }
             catch (Exception ex)
             {
+                LogHelper.Info("错误：" + ex.Message);
                 return false;
-                throw new ApiException(ex);
             }
         }
     }
